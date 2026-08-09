@@ -23,6 +23,10 @@ not by itself prove a particular client version installs or renders the plugin.
 Release evidence must therefore name the client, version, operating system,
 installation path, routed Skill, and observed result.
 
+The current dated Codex observation and explicit unverified-host boundaries are
+recorded in the
+[Hengmu 1.0.3 host compatibility report](compatibility-evidence/2026-08-09-hengmu-1.0.3.md).
+
 ## Capability equivalence boundary
 
 | Outcome | Portable core | Host-specific boundary |
