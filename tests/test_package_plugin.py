@@ -148,7 +148,11 @@ class PackagePluginTests(unittest.TestCase):
     def test_agent_plugins_smoke_rejects_unsafe_zip_entries(self) -> None:
         cases: tuple[tuple[str, zipfile.ZipInfo | str, str], ...] = (
             ("duplicate", "plugin.json", "duplicate entry names"),
-            ("backslash", r"unsafe\entry", "uses a backslash"),
+            (
+                "backslash",
+                self._raw_name_info(r"unsafe\entry"),
+                "uses a backslash",
+            ),
             ("windows-drive-relative", "C:unsafe", "Unsafe archive entry"),
             ("windows-drive-absolute", "C:/unsafe", "Unsafe archive entry"),
             ("absolute", "/unsafe", "Unsafe archive entry"),
@@ -193,6 +197,16 @@ class PackagePluginTests(unittest.TestCase):
         info = zipfile.ZipInfo(name)
         info.create_system = 3
         info.external_attr = (stat.S_IFLNK | 0o777) << 16
+        return info
+
+    @staticmethod
+    def _raw_name_info(name: str) -> zipfile.ZipInfo:
+        info = zipfile.ZipInfo(name)
+        # ZipInfo normalizes platform separators in ``filename`` during
+        # construction. Restore the archive spelling so this fixture contains
+        # the unsafe bytes even when the test itself runs on Windows.
+        info.filename = name
+        info.orig_filename = name
         return info
 
     def test_agent_plugins_manifest_projection_rejects_identity_drift(self) -> None:

@@ -100,7 +100,9 @@ class RepositoryContractTests(unittest.TestCase):
         self.assertIn("Never reuse or overwrite", decision)
 
     def test_remediation_evals_require_an_accepted_decision(self) -> None:
-        payload = yaml.safe_load((ROOT / "evals" / "cases.yaml").read_text())
+        payload = yaml.safe_load(
+            (ROOT / "evals" / "cases.yaml").read_text(encoding="utf-8")
+        )
         cases = {case["id"]: case for case in payload["cases"]}
 
         for case_id in ("remediation-direct", "remediation-indirect"):
