@@ -1,0 +1,180 @@
+schema_version: '1.2'
+decision:
+  id: ADR-HENGMU-RELEASE-1.0.3-001
+  source_review: hengmu-20260809-release-1.0.3-verified
+  source_review_sha256: f37328e94006c01f179261cb564615bf94e6a035e0214f21d66dbf2fe169de47
+  decided_at: '2026-08-09T10:15:44+08:00'
+  decision_makers: [architecture-owner]
+  status: accepted
+  supersedes: ADR-HENGMU-RELEASE-1.0.2-001
+  knowledge_selection_path: .architecture/reviews/inputs/2026-08-09-release-1.0.3-decision-current-knowledge-selection.yaml
+  knowledge_selection_sha256: 76b2222678569c88a4b85f257ba04c5ab157ca2ac312151c2d7aaa4db5d9c1aa
+problem:
+  quality_attributes:
+    - compatibility
+    - deterministic-enforcement
+    - safety
+    - traceability
+  constraints:
+    - Preserve the local-first plugin and deterministic Python CLI as the product boundary.
+    - Preserve public Skill names and artifact schemas while correcting unsafe or ambiguous execution paths.
+    - Reject unsafe archive entries before platform-specific path normalization.
+    - Do not publish a tag until the complete supported OS and Python quality matrix passes.
+    - Keep host and model claims bounded to dated, reproducible evidence.
+  finding_ids: []
+  assumptions:
+    - Version 1.0.3 remains a compatible patch release for the existing public plugin surface.
+    - GitHub Actions remains the hosted publication environment after local gates pass.
+  known_facts:
+    - The independent V2 Review reports zero confirmed, rejected, or needs-evidence Findings across 31 rules and six critical flows.
+    - A source-matched deterministic Evidence Provider run at 059f36e reports 161 passing tests.
+    - Version 1.0.2 was published even though Windows Python 3.11 and 3.13 CI rejected the backslash archive test.
+    - The 1.0.3 implementation rejects raw backslashes and Windows drive forms before extraction and tests both package formats.
+    - The tag release job now depends on the complete six-job Linux, macOS, and Windows quality matrix.
+    - Dated host evidence proves one Codex CLI 0.147.0 macOS installation and routed project audit without claiming other hosts.
+    - Two identified models completed 60 accepted behavior trials with immutable source, context, fixture, command, and log bindings.
+  unknowns:
+    - Hosted GitHub CI and tag publication remain external evidence until the branch and tag workflows finish.
+    - Cursor, VS Code Copilot, and Kiro activation remain unverified for Hengmu 1.0.3.
+knowledge_snapshot:
+  - {id: domain.plugin-platform, version: 1.0.0, sha256: b72a0e3b6959464b32c9a4d44b50baa40b4baf13b5b14f65f99d094f301bf58c}
+  - {id: foundation.evolutionary-architecture, version: 1.0.0, sha256: b9b125fa34bdeb346145f926210f7052d60d8f3b5f4e225cf1aa0fdb6a7888e5}
+  - {id: foundation.proportional-design, version: 1.0.0, sha256: ccfa63d523fab3503c47dbf73fc7a9ae85c7fc516856bcf422322c0d92a409df}
+  - {id: foundation.quality-attributes, version: 1.0.0, sha256: 50d92ab7563d70605408ba4592d9445f79f6eb0cecb50195471b56e42418b680}
+  - {id: foundation.technology-selection, version: 1.0.0, sha256: ce43c17d29cc79ad65c0f1a551a938f3fec642d1e75070b98d4aa3336ddf882d}
+  - {id: foundation.tradeoff-analysis, version: 1.0.0, sha256: 058c9756ba4d9306f42e0fb49365aff3564f3545e103c05812040ce2c9f8b9d5}
+  - {id: domain.test-automation-platform, version: 1.0.0, sha256: 7ce2621239bad831f4a6689a1718b5dd1cdbbf1d6d2e3bb9a6d043457a70e016}
+options:
+  - id: keep-current
+    title: Keep the local-first architecture and harden release integrity
+    complexity_tier: keep-current
+    architecture_styles: []
+    patterns: []
+    technologies: []
+    benefits:
+      - Repairs the demonstrated Windows archive and publication dependency gaps at their owning boundaries.
+      - Preserves public Skills, artifact schemas, local execution, and both package projections.
+      - Adds current host and behavior evidence without broad compatibility claims.
+    liabilities:
+      - Each future host and model claim still requires its own dated evidence.
+      - Maintainers must preserve the full-matrix release dependency as workflows evolve.
+    assumptions:
+      - A compatible patch can add stricter unsafe-input rejection and unique per-run evidence paths.
+    quality_attribute_effects:
+      - {attribute: compatibility, effect: improves, rationale: Public identities remain stable while platform-specific archive ambiguity is rejected consistently.}
+      - {attribute: deterministic-enforcement, effect: improves, rationale: Publication waits for every supported matrix job and revalidates both archives.}
+      - {attribute: safety, effect: improves, rationale: Unsafe raw archive names are rejected before operating-system normalization.}
+      - {attribute: traceability, effect: improves, rationale: 'Per-run inputs, host observations, benchmark runs, checksums, SBOMs, and attestations bind release evidence.'}
+    business_fit: Delivers the smallest compatible correction to an already published open-source plugin.
+    team_fit: Uses the existing Python, GitHub Actions, Skill, schema, and evidence boundaries owned by the maintainers.
+    evolution_fit: Leaves host adapters and internal module boundaries conditional on measured evidence.
+    implementation_complexity: low
+    operational_complexity: low
+    migration_risk: low
+    reversibility: easy
+    cost: low
+    technical_maturity: mature
+    lock_in: none
+    tradeoff_scores: {business_fit: 2, quality_fit: 2, team_fit: 2, implementation: 2, operations: 2, migration: 2, reversibility: 2, cost: 2, maturity: 2, lock_in: 2, evolution: 2}
+    rejected_reasons: []
+  - id: defer-public-contract-changes
+    title: Defer the 1.0.3 public-contract corrections
+    complexity_tier: low
+    architecture_styles: []
+    patterns: []
+    technologies: []
+    benefits:
+      - Avoids changing manifests, Skill procedures, templates, and release workflows immediately.
+    liabilities:
+      - Leaves the demonstrated Windows archive invariant and release publication race unresolved.
+      - Retains fixed-name audit inputs that can collide across consecutive runs.
+    assumptions:
+      - A later release can safely absorb the correction despite a published failing matrix.
+    quality_attribute_effects:
+      - {attribute: compatibility, effect: degrades, rationale: Windows and repeated-run behavior remain inconsistent with the documented contract.}
+      - {attribute: deterministic-enforcement, effect: degrades, rationale: A tag can still publish before the complete quality matrix succeeds.}
+      - {attribute: safety, effect: degrades, rationale: Raw archive names remain dependent on platform normalization behavior.}
+      - {attribute: traceability, effect: degrades, rationale: Fixed-name inputs and premature publication leave ambiguous run and release ancestry.}
+    business_fit: Avoids short-term change but leaves a released defect and weakens maintainer trust.
+    team_fit: Requires repeated manual release checking and future rework.
+    evolution_fit: Delays rather than removes the same bounded correction.
+    implementation_complexity: low
+    operational_complexity: medium
+    migration_risk: medium
+    reversibility: easy
+    cost: medium
+    technical_maturity: mature
+    lock_in: low
+    tradeoff_scores: {business_fit: -1, quality_fit: -2, team_fit: -1, implementation: 2, operations: -1, migration: 0, reversibility: 2, cost: 0, maturity: 2, lock_in: 1, evolution: -1}
+    rejected_reasons:
+      - It preserves two directly observed release-integrity failures instead of repairing them.
+  - id: add-host-adapters-now
+    title: Add lifecycle adapters for every named host now
+    complexity_tier: high
+    architecture_styles: []
+    patterns: []
+    technologies: []
+    benefits:
+      - Could provide host-specific installation and lifecycle behavior if each host later proves it necessary.
+    liabilities:
+      - Adds unverified host APIs, lifecycle states, permissions, maintenance, and test obligations.
+      - Expands scope beyond the observed Codex CLI route and the portable archive contract.
+    assumptions:
+      - Every named host requires a custom adapter for a public Hengmu outcome.
+    quality_attribute_effects:
+      - {attribute: compatibility, effect: unknown, rationale: No failing named-host activation path currently proves an adapter requirement.}
+      - {attribute: deterministic-enforcement, effect: degrades, rationale: Additional unowned host-specific release paths increase the verification surface.}
+      - {attribute: safety, effect: degrades, rationale: New host permissions and lifecycle hooks would lack current evidence and accountable controls.}
+      - {attribute: traceability, effect: degrades, rationale: Multiple unobserved adapters add provenance paths that cannot yet be verified.}
+    business_fit: Unsupported by current adoption or failing-host evidence.
+    team_fit: Creates multi-host maintenance without accountable host owners or test environments.
+    evolution_fit: Prematurely commits to lifecycle seams that should follow measured incompatibility.
+    implementation_complexity: high
+    operational_complexity: high
+    migration_risk: high
+    reversibility: difficult
+    cost: high
+    technical_maturity: unknown
+    lock_in: high
+    tradeoff_scores: {business_fit: -2, quality_fit: -1, team_fit: -2, implementation: -2, operations: -2, migration: -2, reversibility: -1, cost: -2, maturity: -1, lock_in: -2, evolution: -1}
+    rejected_reasons:
+      - No verified host failure or accountable owner justifies the additional lifecycle boundaries.
+selected_option: keep-current
+rationale: >-
+  The accepted scope is the smallest compatible correction to demonstrated
+  release-integrity failures. It preserves Hengmu's local-first architecture and
+  public contracts while fixing unsafe cross-platform archive handling, release
+  dependency ordering, consecutive-run evidence identity, and current-version
+  evidence. Deferral leaves observed failures unresolved, while broad host
+  adapters add unsupported authority and maintenance boundaries.
+revisit_triggers:
+  - A named host supplies a reproducible failure for a public Hengmu outcome that the portable contract cannot satisfy.
+  - A verified finding shows that per-run evidence or the full-matrix release dependency does not preserve source authority.
+  - Measured contributor or change coupling justifies an internal module-boundary decision.
+acceptance_evidence:
+  - The repository owner explicitly approved execution of the complete v1.0.3 release-integrity plan on 2026-08-09.
+  - The architecture-owner role accepts the bounded public-contract changes and retains the existing local-first product boundary.
+  - The accepted decision is bound to the independent V2 Review, which reports zero unresolved Findings and complete Rule Pack and critical-flow coverage.
+migration:
+  affected_paths:
+    - .codex-plugin/plugin.json
+    - plugin.json
+    - resources/scripts/architecture_tool.py
+    - resources/templates/knowledge-selection.yaml
+    - skills/ai-agent-architecture-audit/SKILL.md
+    - skills/architecture-solution-advisor/references/decision-artifact-workflow.md
+    - skills/mobile-architecture-audit/SKILL.md
+    - .github/workflows/ci.yml
+    - .github/workflows/release.yml
+    - scripts/smoke_test_package.py
+    - tests/test_package_plugin.py
+  slices:
+    - Reject raw unsafe ZIP entry names before extraction and protect the invariant with platform-independent tests.
+    - Make tag publication depend on the complete supported quality matrix and smoke-test both archive formats.
+    - Give specialist audit and solution inputs unique run identities while preserving explicit missing-Profile advisory behavior.
+    - Bind dated Codex host evidence and two-model behavior evidence without extending claims to unavailable hosts or workflows.
+  rollback: Revert the 1.0.3 compatibility changes as one patch while retaining the published 1.0.2 artifacts and their checksums; do not publish the 1.0.3 tag.
+  validation:
+    - Validate the exact Review, Decision, Knowledge selection, evidence, and Gate bindings.
+    - Pass repository, profile, history, Knowledge, 161-test, lint, formatting, dependency, license, package, checksum, SBOM, and smoke checks.
+    - Require the hosted six-job quality matrix before tag publication and verify both published attestations afterward.
