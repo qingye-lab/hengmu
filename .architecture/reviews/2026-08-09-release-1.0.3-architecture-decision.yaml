@@ -1,8 +1,8 @@
 schema_version: '1.2'
 decision:
   id: ADR-HENGMU-RELEASE-1.0.3-001
-  source_review: hengmu-20260809-release-1.0.3-verified
-  source_review_sha256: f37328e94006c01f179261cb564615bf94e6a035e0214f21d66dbf2fe169de47
+  source_review: hengmu-20260809-release-1.0.3-windows-followup-verified
+  source_review_sha256: 6a4b71bcf69561e50cd2106affea289fed30c26a7874a47b682d40acdba75676
   decided_at: '2026-08-09T10:15:44+08:00'
   decision_makers: [architecture-owner]
   status: accepted
@@ -27,7 +27,7 @@ problem:
     - GitHub Actions remains the hosted publication environment after local gates pass.
   known_facts:
     - The independent V2 Review reports zero confirmed, rejected, or needs-evidence Findings across 31 rules and six critical flows.
-    - A source-matched deterministic Evidence Provider run at 059f36e reports 161 passing tests.
+    - A source-matched deterministic Evidence Provider run at fba6b93 reports 161 passing tests after the Windows fixture and UTF-8 contract follow-up.
     - Version 1.0.2 was published even though Windows Python 3.11 and 3.13 CI rejected the backslash archive test.
     - The 1.0.3 implementation rejects raw backslashes and Windows drive forms before extraction and tests both package formats.
     - The tag release job now depends on the complete six-job Linux, macOS, and Windows quality matrix.
