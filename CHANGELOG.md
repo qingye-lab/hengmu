@@ -17,6 +17,8 @@ and this project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   AI-agent, mobile, and solution-decision workflows.
 - A canonical repository roadmap and a time-bound host compatibility evidence
   report for release validation.
+- Two-model, three-trial-per-case 1.0.3 behavior evidence with strict source,
+  runtime, execution-log, and fixture provenance.
 
 ### Changed
 
@@ -24,6 +26,8 @@ and this project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   quality matrix succeeds for the same workflow and commit.
 - Remediation routing cases now require an accepted Architecture Decision and
   preserve the separate authority for solution selection.
+- The full Solution Advisor benchmark treatment now supplies the declared
+  decision styles, guides, and case studies required by its decision corpus.
 
 ### Fixed
 

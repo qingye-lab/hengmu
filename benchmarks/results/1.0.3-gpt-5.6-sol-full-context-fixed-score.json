@@ -1,0 +1,116 @@
+{
+  "cases": 10,
+  "trials": 30,
+  "true_positive": 33,
+  "false_positive": 6,
+  "false_negative": 6,
+  "precision": 0.8461538461538461,
+  "recall": 0.8461538461538461,
+  "severity_agreement": 0.8181818181818182,
+  "evidence_validity": 1.0,
+  "forbidden_recommendation_hits": 0,
+  "finding_stability": 0.95,
+  "severity_stability": 0.8108108108108109,
+  "mean_duration_seconds": 57.81882380557557,
+  "usage_trials": 0,
+  "input_token_trials": 0,
+  "output_token_trials": 0,
+  "cost_trials": 0,
+  "tool_call_trials": 0,
+  "input_tokens": null,
+  "output_tokens": null,
+  "cost_usd": null,
+  "tool_calls": null,
+  "decision_trials": 12,
+  "recommendation_accuracy": 1.0,
+  "overdesign_rate": 0.0,
+  "tradeoff_coverage": 0.9444444444444444,
+  "knowledge_citation_validity": 1.0,
+  "required_knowledge_coverage": 0.9166666666666666,
+  "rejection_explanation_coverage": 1.0,
+  "migration_actionability": 1.0,
+  "decision_stability": 1.0,
+  "provenance": {
+    "valid": true,
+    "source_commit": "97e3d8ec65a87d8339e11afe5cdcd17731521308",
+    "source_dirty": false,
+    "execution_log_sha256": "366b35dfd9ce8e9256b9236182a2db0276b535722591f2533b6dd26ab51a2e45",
+    "execution_log_records": 30,
+    "environment": {
+      "os": "Darwin",
+      "os_release": "27.0.0",
+      "architecture": "arm64",
+      "python_implementation": "CPython",
+      "python_version": "3.13.0"
+    },
+    "runtime_executables": [
+      {
+        "id": "command-executable",
+        "role": "command",
+        "requested": ".venv/bin/python",
+        "resolved_name": "python3.13",
+        "resolved_path_sha256": "8221805af4e5bdefcc7d69093bd904cba19642372787acfe1a34390f0b03678f",
+        "executable_sha256": "76c73e25cdd69650a897648666e41c364940fbcff0d1176572a667d4d470ec9e",
+        "version_arguments": [
+          "--version"
+        ],
+        "version_output": "Python 3.13.0",
+        "version_output_sha256": "16a6debef74e616fddbc292531469a793f37a710a0a690090a984dc9598962ab"
+      },
+      {
+        "id": "model-runtime-1",
+        "role": "model",
+        "requested": "codex",
+        "resolved_name": "codex.js",
+        "resolved_path_sha256": "d851df4aaa65ea77c4b33e619ffddd89b86b976f8c329a67958bd67d5f785b2e",
+        "executable_sha256": "134063e133f0b4244fa3b251acf973d4fe4b4aeeacbdc135211bf480f59f1477",
+        "version_arguments": [
+          "--version"
+        ],
+        "version_output": "codex-cli 0.147.0",
+        "version_output_sha256": "7aa31f8b0864fa0a787657d21167487f49ed01497802a4e5955ef02db3e94272"
+      }
+    ],
+    "runtime_verification": {
+      "mode": "strict",
+      "current_host_match": true,
+      "checks": [
+        {
+          "id": "command-executable",
+          "current_host_match": true,
+          "reason": "matched"
+        },
+        {
+          "id": "model-runtime-1",
+          "current_host_match": true,
+          "reason": "matched"
+        }
+      ]
+    },
+    "archive_binding": null,
+    "context_budget_proxy": {
+      "metric_kind": "declared-context-proxy-v1",
+      "condition": "full",
+      "scope": "corpus",
+      "character_unit": "unicode_code_points",
+      "skill_metadata_chars": 2060,
+      "skill_body_chars": 31133,
+      "reference_chars": 37622,
+      "knowledge_chars": 74918,
+      "tool_description_chars": 469,
+      "artifact_input_bytes": 6621
+    }
+  },
+  "context_budget_proxy": {
+    "metric_kind": "declared-context-proxy-v1",
+    "condition": "full",
+    "scope": "corpus",
+    "character_unit": "unicode_code_points",
+    "skill_metadata_chars": 2060,
+    "skill_body_chars": 31133,
+    "reference_chars": 37622,
+    "knowledge_chars": 74918,
+    "tool_description_chars": 469,
+    "artifact_input_bytes": 6621
+  }
+}
