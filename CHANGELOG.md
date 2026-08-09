@@ -7,6 +7,35 @@ and this project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-08-09
+
+### Added
+
+- Extracted Knowledge Selection smoke tests for both the native Codex archive
+  and the portable Agent Plugins archive.
+- Per-run facts, Profile, Knowledge Selection, and compact-context paths for
+  AI-agent, mobile, and solution-decision workflows.
+- A canonical repository roadmap and a time-bound host compatibility evidence
+  report for release validation.
+- Two-model, three-trial-per-case 1.0.3 behavior evidence with strict source,
+  runtime, execution-log, and fixture provenance.
+
+### Changed
+
+- Tag publication now runs only after the complete Linux, macOS, and Windows
+  quality matrix succeeds for the same workflow and commit.
+- Remediation routing cases now require an accepted Architecture Decision and
+  preserve the separate authority for solution selection.
+- The full Solution Advisor benchmark treatment now supplies the declared
+  decision styles, guides, and case studies required by its decision corpus.
+
+### Fixed
+
+- ZIP smoke validation now checks original entry names before Windows path
+  normalization and rejects Windows drive-relative or drive-absolute entries.
+- Specialized audits now bootstrap missing project governance only when
+  persistence is allowed and preserve read-only requests without mutation.
+
 ## [1.0.2] - 2026-08-08
 
 ### Added

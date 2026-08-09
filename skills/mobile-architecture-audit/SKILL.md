@@ -21,17 +21,39 @@ Load the project profile, constraints, and critical flows. Pair with `project-ar
 
 ## Workflow
 
-1. Ensure `.architecture/repository-facts.yaml` exists by running
-   `architecture_tool.py inspect-repository`; detection is evidence about the
-   stack, not a conclusion about suitability.
-2. Run `architecture_tool.py select-knowledge` with
-   `--skill mobile-architecture-audit`, the exact task, facts, and Profile.
-   Persist `.architecture/knowledge-selection-mobile.yaml` and pass
-   `--context-output .architecture/knowledge-context-mobile.yaml`. Run
-   `architecture_tool.py validate-knowledge-context
-   .architecture/knowledge-context-mobile.yaml --selection
-   .architecture/knowledge-selection-mobile.yaml --facts
-   .architecture/repository-facts.yaml --profile .architecture/profile.yaml`.
+1. Require a valid project Profile before the specialized audit. When
+   `.architecture/profile.yaml` is missing and persistence is allowed, run
+   `architecture_tool.py prepare-project-audit --repo <repo>`, then validate
+   the project. When the user explicitly requests read-only work, do not create
+   governance; report the missing Profile and stop with a
+   `project-architecture-audit` bootstrap handoff.
+2. Set one stable `<run-id>` for the audit and preserve every generated input
+   under `.architecture/reviews/inputs/`; never reuse or overwrite a prior
+   Review's evidence chain. Inspect current facts, build a current Profile from
+   the declared Profile, then select Knowledge:
+
+   ```bash
+   python3 ../../resources/scripts/architecture_tool.py inspect-repository \
+     --repo <repo> \
+     --output <repo>/.architecture/reviews/inputs/<run-id>-repository-facts.yaml
+   python3 ../../resources/scripts/architecture_tool.py build-profile \
+     --facts <repo>/.architecture/reviews/inputs/<run-id>-repository-facts.yaml \
+     --declared <repo>/.architecture/profile.yaml \
+     --output <repo>/.architecture/reviews/inputs/<run-id>-profile.yaml
+   python3 ../../resources/scripts/architecture_tool.py select-knowledge \
+     --facts <repo>/.architecture/reviews/inputs/<run-id>-repository-facts.yaml \
+     --profile <repo>/.architecture/reviews/inputs/<run-id>-profile.yaml \
+     --task "<current mobile audit request>" \
+     --skill mobile-architecture-audit \
+     --output <repo>/.architecture/reviews/inputs/<run-id>-knowledge-selection.yaml \
+     --context-output <repo>/.architecture/reviews/inputs/<run-id>-knowledge-context.yaml
+   python3 ../../resources/scripts/architecture_tool.py validate-knowledge-context \
+     <repo>/.architecture/reviews/inputs/<run-id>-knowledge-context.yaml \
+     --selection <repo>/.architecture/reviews/inputs/<run-id>-knowledge-selection.yaml \
+     --facts <repo>/.architecture/reviews/inputs/<run-id>-repository-facts.yaml \
+     --profile <repo>/.architecture/reviews/inputs/<run-id>-profile.yaml
+   ```
+
    Read the compact context index and every Markdown path it selects only after
    validation succeeds; reserve the full exclusion ledger for scripts, Reviews,
    and Gates. Do not load unrelated packs.
@@ -58,9 +80,9 @@ Write persistent artifacts under `.architecture/reviews/` using kind `mobile`:
 
 Start machine-readable output from `../../resources/templates/review.yaml` and set `review.kind` to `mobile`.
 
-Use Review schema 1.2. Bind the exact repository-facts and mobile knowledge
-selection paths and hashes, preserve fact/inference boundaries, enumerate
-critical-flow coverage, and validate with:
+Use Review schema 1.2. Bind the exact per-run repository-facts, Profile, and
+mobile knowledge-selection paths and hashes, preserve fact/inference
+boundaries, enumerate critical-flow coverage, and validate with:
 
 ```bash
 python3 ../../resources/scripts/architecture_tool.py validate-review \

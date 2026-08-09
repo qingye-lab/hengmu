@@ -16,7 +16,7 @@
     <img alt="CI" src="https://github.com/qingye-lab/hengmu/actions/workflows/ci.yml/badge.svg?branch=main">
   </a>
   <a href="https://github.com/qingye-lab/hengmu/releases">
-    <img alt="Version 1.0.2" src="https://img.shields.io/badge/version-1.0.2-173FBE">
+    <img alt="Version 1.0.3" src="https://img.shields.io/badge/version-1.0.3-173FBE">
   </a>
   <img alt="Python 3.11–3.13" src="https://img.shields.io/badge/python-3.11%E2%80%933.13-161719">
   <a href="LICENSE">
@@ -241,7 +241,7 @@ python3 -m pip install --require-hashes -r requirements-runtime.lock
 python3 resources/scripts/architecture_tool.py --version
 ```
 
-The last command should print `architecture_tool.py 1.0.2`. On Windows
+The last command should print `architecture_tool.py 1.0.3`. On Windows
 PowerShell, activate with `.venv\Scripts\Activate.ps1`. Installation does not
 grant permissions or enable Hooks; review each host's agent permissions before
 allowing repository writes or shell execution.
@@ -650,6 +650,7 @@ invoked gate always evaluates its policy.
 | [Support and feedback](SUPPORT.md) | Reproducible defects, documentation gaps, and host compatibility reports. |
 | [1.0 migration](docs/migrating-to-1.0.md) | Open/constrained Brief/Decision/Plan artifacts, coexistence, and rollback. |
 | [Release verification](docs/releasing.md) | Deterministic ZIPs, checksums, SBOMs, and attestations. |
+| [Roadmap](docs/roadmap.md) | Canonical forward plan, evidence milestones, and conditional triggers. |
 | [Implementation matrix](docs/comprehensive-review-implementation.md) | How review recommendations map to executable capability and evidence. |
 | [Dogfood review history](.architecture/reviews/README.md) | How Hengmu governs its own repository. |
 | [Visual assets](docs/assets/brand/README.md) | Bilingual icon, banner, editorial character, and diagram source conventions. |
@@ -682,7 +683,11 @@ Build and verify both deterministic plugin archives:
 python3 scripts/package_plugin.py --format codex --output-dir dist
 python3 scripts/package_plugin.py --format agent-plugins --output-dir dist
 python3 scripts/smoke_test_package.py \
-  --archive "dist/hengmu-*-agent-plugins.zip"
+  --format codex \
+  --archive dist/hengmu-<version>.zip
+python3 scripts/smoke_test_package.py \
+  --format agent-plugins \
+  --archive dist/hengmu-<version>-agent-plugins.zip
 python3 scripts/verify_checksum.py dist/*.zip.sha256
 python3 scripts/generate_sbom.py \
   --archive dist/*.zip \

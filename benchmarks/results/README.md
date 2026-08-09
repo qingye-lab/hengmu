@@ -18,3 +18,6 @@ Do not hand-edit a run, log, or score to improve a metric. Rerun the complete co
 with a new output artifact when a model, Skill, adapter, fixture, schema, or
 Ground Truth contract changes. Model-visible fixtures must remain
 outcome-neutral.
+
+The current release-candidate interpretation is recorded in
+[`benchmarks/reports/1.0.3-model-behavior.md`](../reports/1.0.3-model-behavior.md).

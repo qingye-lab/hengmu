@@ -114,7 +114,7 @@ class BehaviorBenchmarkTests(unittest.TestCase):
                 corpus_path=corpus_path,
                 corpus=corpus,
                 command=[sys.executable, "-c", "pass"],
-                skill_version="1.0.2",
+                skill_version="1.0.3",
                 model="test-model",
                 surface=surface,
                 declared_runtimes=[sys.executable],
@@ -159,7 +159,7 @@ class BehaviorBenchmarkTests(unittest.TestCase):
                 output=output,
                 model="test-model",
                 surface=python_surface,
-                skill_version="1.0.2",
+                skill_version="1.0.3",
                 runtime_executables=[sys.executable],
                 timeout=10,
                 command=[
@@ -399,7 +399,7 @@ class BehaviorBenchmarkTests(unittest.TestCase):
                 surface=(
                     python_version.stdout.strip() or python_version.stderr.strip()
                 ),
-                skill_version="1.0.2",
+                skill_version="1.0.3",
                 runtime_executables=[sys.executable],
                 timeout=10,
                 repetitions=1,
@@ -454,7 +454,7 @@ class BehaviorBenchmarkTests(unittest.TestCase):
                 output=output,
                 model="test-model",
                 surface="test-surface",
-                skill_version="1.0.2",
+                skill_version="1.0.3",
                 runtime_executables=[],
                 timeout=10,
                 repetitions=1,
@@ -525,6 +525,38 @@ class BehaviorBenchmarkTests(unittest.TestCase):
             self.assertEqual(full["knowledge_basis"], "workflow-required")
             self.assertEqual(compressed["knowledge_basis"], "workflow-required")
             self.assertEqual(full["knowledge"], compressed["knowledge"])
+
+    def test_solution_treatment_contains_declared_required_knowledge(self) -> None:
+        _, manifest = run_behavior_benchmark.load_context_manifest(
+            ROOT,
+            ROOT / "benchmarks" / "ablation" / "context-manifest.yaml",
+        )
+        corpus = run_behavior_benchmark.load_yaml(
+            ROOT / "benchmarks" / "ground-truth.yaml"
+        )
+        treatment = run_behavior_benchmark.treatment_for(
+            manifest,
+            condition="full",
+            skill="architecture-solution-advisor",
+        )
+        supplied_ids = set()
+        for relative in treatment["knowledge"]:
+            payload = (ROOT / relative).read_text(encoding="utf-8")
+            supplied_ids.add(
+                next(
+                    line.split(":", 1)[1].strip()
+                    for line in payload.splitlines()
+                    if line.startswith("id:")
+                )
+            )
+        required_ids = {
+            knowledge_id
+            for case in corpus["cases"]
+            for knowledge_id in case.get("expected_decision", {}).get(
+                "required_knowledge_ids", []
+            )
+        }
+        self.assertLessEqual(required_ids, supplied_ids)
 
     def test_fixture_evidence_is_resolved_not_self_asserted(self) -> None:
         fixture = ROOT / "benchmarks" / "fixtures" / "account-balance-updates"

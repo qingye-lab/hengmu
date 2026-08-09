@@ -1,0 +1,2625 @@
+schema_version: '1.5'
+benchmark:
+  id: architecture-governance-core
+  version: 1.0.0
+  kind: run
+  model: gpt-5.6-sol
+  surface: codex-cli 0.147.0
+  skill_version: 1.0.3
+  condition: full
+  context_budget:
+    condition: full
+    metric_kind: declared-context-proxy-v1
+    scope: corpus
+    character_unit: unicode_code_points
+    manifest_path: benchmarks/ablation/context-manifest.yaml
+    manifest_sha256: 0405e6702261215549621fc6ff57e0e31aeb1e4577595d2ee9b83bb94c76baed
+    skill_metadata_chars: 2060
+    skill_body_chars: 31133
+    reference_chars: 37622
+    knowledge_chars: 74918
+    tool_description_chars: 469
+    artifact_input_bytes: 6621
+    inputs:
+    - role: skill-metadata
+      path: skills/ai-agent-architecture-audit/SKILL.md
+      sha256: d6d0817b462c13c6a72b46395eb16a078aa2fbf7e08c521e744e389c5c00d6f8
+      characters: 431
+    - role: skill-body
+      path: skills/ai-agent-architecture-audit/SKILL.md
+      sha256: d6d0817b462c13c6a72b46395eb16a078aa2fbf7e08c521e744e389c5c00d6f8
+      characters: 7388
+    - role: references
+      path: resources/references/review-contract.md
+      sha256: e86a62c637aa24a0b8b194916af1dac850346a7e10d8b7ae6b2c0e7ce1cc9a5b
+      characters: 9996
+    - role: references
+      path: resources/references/ai-agent-rules.md
+      sha256: 0e3330b1497bfe9bf46a710fc8387dff106c027b886979baf584c7aeabead771
+      characters: 6592
+    - role: references
+      path: resources/references/knowledge-contract.md
+      sha256: f14709b384b408c19bcf9371a00e168969703cfb21f6b7aa96495b8e2c9c6662
+      characters: 3041
+    - role: knowledge
+      path: resources/knowledge/foundations/evidence-reasoning.md
+      sha256: e3c370e04b8a9be5e64ea0d107281043652b1cdba3393fb61b57efd77262650f
+      characters: 2714
+    - role: knowledge
+      path: resources/knowledge/domains/ai-agent/overview.md
+      sha256: c9d283d3d804f06b66eb80520a6f09c5e0ddf95900958625b2e4101f975ad4dd
+      characters: 3906
+    - role: knowledge
+      path: resources/knowledge/decision-guides/workflow-vs-agent.md
+      sha256: f8fc79dfd6cbe7824c9bafe120e116dd1e7c681dd84f27806dbed4bf5bf9b36d
+      characters: 4577
+    - role: knowledge
+      path: resources/knowledge/decision-guides/single-agent-vs-multi-agent.md
+      sha256: c45be66e4d490f31c66e912f96d9b36f284cf6e91336ea462110beeabe4cefec
+      characters: 4614
+    - role: tool-descriptions
+      path: benchmarks/ablation/tool-description.md
+      sha256: 64d9684c2498a31bfd07ad247951a4462588d744b77dfc9458f46df8da209e15
+      characters: 469
+    - role: skill-metadata
+      path: skills/architecture-finding-verifier/SKILL.md
+      sha256: 628feec444ea65ba35a9e932f069163fbd19675ca0f8c8345c51868cf4ff345f
+      characters: 472
+    - role: skill-body
+      path: skills/architecture-finding-verifier/SKILL.md
+      sha256: 628feec444ea65ba35a9e932f069163fbd19675ca0f8c8345c51868cf4ff345f
+      characters: 5011
+    - role: references
+      path: resources/references/project-rules.md
+      sha256: d9b5526460544350361ef0ac36242a4a0aa954ad58171d53505a0479ae18e7cd
+      characters: 3655
+    - role: knowledge
+      path: resources/knowledge/foundations/quality-attributes.md
+      sha256: 50d92ab7563d70605408ba4592d9445f79f6eb0cecb50195471b56e42418b680
+      characters: 2816
+    - role: skill-metadata
+      path: skills/architecture-solution-advisor/SKILL.md
+      sha256: 6cff6ac9d8bfc7c3306bf6b1046edf215e0a5e11bfb2197d56f51cb3e8496827
+      characters: 523
+    - role: skill-body
+      path: skills/architecture-solution-advisor/SKILL.md
+      sha256: 6cff6ac9d8bfc7c3306bf6b1046edf215e0a5e11bfb2197d56f51cb3e8496827
+      characters: 6546
+    - role: references
+      path: skills/architecture-solution-advisor/references/decision-artifact-workflow.md
+      sha256: 939a3bb162550eaf98e8752288dd9e63225bdecd7faf1d131088b0c13649bbba
+      characters: 7632
+    - role: references
+      path: resources/references/solution-decision-contract.md
+      sha256: d7497c7253117d8bcfba247fcd6b1611b4fadca70c67a1806b732a097e38f609
+      characters: 6706
+    - role: knowledge
+      path: resources/knowledge/foundations/tradeoff-analysis.md
+      sha256: 058c9756ba4d9306f42e0fb49365aff3564f3545e103c05812040ce2c9f8b9d5
+      characters: 2779
+    - role: knowledge
+      path: resources/knowledge/foundations/proportional-design.md
+      sha256: ccfa63d523fab3503c47dbf73fc7a9ae85c7fc516856bcf422322c0d92a409df
+      characters: 2764
+    - role: knowledge
+      path: resources/knowledge/foundations/technology-selection.md
+      sha256: ce43c17d29cc79ad65c0f1a551a938f3fec642d1e75070b98d4aa3336ddf882d
+      characters: 3759
+    - role: knowledge
+      path: resources/knowledge/foundations/evolutionary-architecture.md
+      sha256: b9b125fa34bdeb346145f926210f7052d60d8f3b5f4e225cf1aa0fdb6a7888e5
+      characters: 3739
+    - role: knowledge
+      path: resources/knowledge/architecture-styles/web-queue-worker.md
+      sha256: 45ea90ec6cb781bb95a8ec0a746e7e71f171c89f32e90a0ac9a389fdd6971855
+      characters: 2257
+    - role: knowledge
+      path: resources/knowledge/architecture-styles/durable-workflow.md
+      sha256: ecf4dc9fb8529f4ab7950c6bca6043a16bbbc0af8937a08b33abdfb870e6be9d
+      characters: 3884
+    - role: knowledge
+      path: resources/knowledge/architecture-styles/modular-monolith.md
+      sha256: 3f97c548665d8e6c4159c5f6ecee4a5d099a2ac4def69fba2b0a5d6d6703c3c0
+      characters: 2235
+    - role: knowledge
+      path: resources/knowledge/architecture-styles/microservices.md
+      sha256: 0533dbcda24b99313c8fe8fccd64ea2ce08bd020e60571ad561c04a800ececf6
+      characters: 2244
+    - role: knowledge
+      path: resources/knowledge/decision-guides/request-vs-background-job.md
+      sha256: b54da8477e8dd3c64d074a728729ce169a7830bbac48b73491b5537e61a88a43
+      characters: 4088
+    - role: knowledge
+      path: resources/knowledge/decision-guides/local-first-vs-server-first.md
+      sha256: e240200929e13e48276dc33d036e5f2547c00911b712a9a45fe2f2a0012540c8
+      characters: 4552
+    - role: knowledge
+      path: resources/knowledge/decision-guides/monolith-vs-microservices.md
+      sha256: f1f4e093d5a2ca19780e296798fd3016bd1730b92a26c74339737999db8e1cb0
+      characters: 4734
+    - role: knowledge
+      path: resources/knowledge/decision-guides/agent-orchestration-selection.md
+      sha256: 7bb4341f473aab91178ea33a70ccf9a80d60bc25a6170cbd9494f54c92fbcad2
+      characters: 2763
+    - role: knowledge
+      path: resources/knowledge/case-studies/queue-worker-before-workflow.md
+      sha256: c136b2d15ee59068b4c14f3d8bbb5d044f01df369ed867f97f2b62266551bd30
+      characters: 2737
+    - role: knowledge
+      path: resources/knowledge/case-studies/server-cache-not-local-first.md
+      sha256: f9c07f51140357f40b9a973cc44f6f88bd5e328939d2f6473267c51372e6c951
+      characters: 2763
+    - role: knowledge
+      path: resources/knowledge/case-studies/small-team-modular-saas.md
+      sha256: 358980e0bdd5b0a88b2288bd0e0f7f121bcdfa8d94719cb3de6511c3f2f51e97
+      characters: 2817
+    - role: knowledge
+      path: resources/knowledge/case-studies/single-agent-is-sufficient.md
+      sha256: 5a6bfc949f2f2d91711dc86ec6abb911821fddf2a624ad40421ca9e6171622ac
+      characters: 2742
+    - role: skill-metadata
+      path: skills/project-architecture-audit/SKILL.md
+      sha256: 09bbbd1f685f34bc25378a9406513d054f05af8e51905cf715db17ecce826ee5
+      characters: 634
+    - role: skill-body
+      path: skills/project-architecture-audit/SKILL.md
+      sha256: 09bbbd1f685f34bc25378a9406513d054f05af8e51905cf715db17ecce826ee5
+      characters: 12188
+    - role: knowledge
+      path: resources/knowledge/foundations/system-boundaries.md
+      sha256: a326964ec74303e0f08f3e7207e4836a0ff04c93c7f8516e6190b47925ec06db
+      characters: 2758
+    - role: knowledge
+      path: resources/knowledge/foundations/data-ownership.md
+      sha256: 260f240ec9782f5a42a68481652912532cfcd6a0b07fdc5366d44388cc3d0204
+      characters: 2676
+    - role: artifact-input
+      path: benchmarks/fixtures/account-balance-updates
+      sha256: 3e4074c44181026dfa4f34b38b393600819e8fe75ef2002c53fd77678bceddbc
+      bytes: 760
+      file_count: 2
+    - role: artifact-input
+      path: benchmarks/fixtures/accounts-billing-application
+      sha256: 7f3bf588b94766f31c74b5ffaf6b7f7fd8551245a40a6d4645b0ec5237e5c922
+      bytes: 695
+      file_count: 3
+    - role: artifact-input
+      path: benchmarks/fixtures/desktop-sqlite-catalog
+      sha256: 7a497e318300a082ef9e05e7617e078666d331d112bc71a19724dfa40fed3108
+      bytes: 843
+      file_count: 2
+    - role: artifact-input
+      path: benchmarks/fixtures/mobile-record-editor
+      sha256: a0d1264b743dba60c055af0f42a826a688c41be2382ea7f2b08ed6868c4675ff
+      bytes: 590
+      file_count: 2
+    - role: artifact-input
+      path: benchmarks/fixtures/orders-billing-services
+      sha256: 1fef510445652ab5e32c8f69a8770361b9b17d94db6ba59f6ca33730177f2cf0
+      bytes: 1038
+      file_count: 3
+    - role: artifact-input
+      path: benchmarks/fixtures/payment-approval-process
+      sha256: 9ab6951d7a35318805942ff47a20f57bf5307314bca098ffd6a77ac35c408b0c
+      bytes: 651
+      file_count: 2
+    - role: artifact-input
+      path: benchmarks/fixtures/payment-design-runtime
+      sha256: 3bda8161cb56141b5cfb53295165d84c12ef096e4b4a322bd370ef180a7671e1
+      bytes: 650
+      file_count: 2
+    - role: artifact-input
+      path: benchmarks/fixtures/render-job-processing
+      sha256: a369e1bc461b34148cf2678b61b73fe49dc5997745f18210f64a4da1e2094f6b
+      bytes: 427
+      file_count: 2
+    - role: artifact-input
+      path: benchmarks/fixtures/research-assistant
+      sha256: d59efda087d610e4629918ea21913686e1e3a56811041adb86ad3fab50daedef
+      bytes: 431
+      file_count: 2
+    - role: artifact-input
+      path: benchmarks/fixtures/retrieval-payment-runtime
+      sha256: 247b2b3339882f7c325b904c9f73f34daf96b0e67e6970c883c131c430b836ae
+      bytes: 536
+      file_count: 2
+  run_at: '2026-08-09T01:11:27.505091+00:00'
+  repetitions: 3
+  provenance:
+    source:
+      repository: .
+      commit: 97e3d8ec65a87d8339e11afe5cdcd17731521308
+      dirty: false
+    environment:
+      os: Darwin
+      os_release: 27.0.0
+      architecture: arm64
+      python_implementation: CPython
+      python_version: 3.13.0
+    model_request: gpt-5.6-sol
+    command_template:
+    - .venv/bin/python
+    - scripts/codex_benchmark_adapter.py
+    - --model
+    - gpt-5.6-sol
+    - --skill
+    - '{skill}'
+    - --fixture
+    - '{fixture}'
+    - --prompt
+    - '{prompt}'
+    - --condition
+    - '{condition}'
+    - --context-manifest
+    - '{context_manifest}'
+    command_template_sha256: fcc7b8f3ce48b0739798ad4aaa1da906d545ff50c80175e5ed97e070c8ca8340
+    runtime_executables:
+    - id: command-executable
+      role: command
+      requested: .venv/bin/python
+      resolved_name: python3.13
+      resolved_path_sha256: 8221805af4e5bdefcc7d69093bd904cba19642372787acfe1a34390f0b03678f
+      executable_sha256: 76c73e25cdd69650a897648666e41c364940fbcff0d1176572a667d4d470ec9e
+      version_arguments:
+      - --version
+      version_output: Python 3.13.0
+      version_output_sha256: 16a6debef74e616fddbc292531469a793f37a710a0a690090a984dc9598962ab
+    - id: model-runtime-1
+      role: model
+      requested: codex
+      resolved_name: codex.js
+      resolved_path_sha256: d851df4aaa65ea77c4b33e619ffddd89b86b976f8c329a67958bd67d5f785b2e
+      executable_sha256: 134063e133f0b4244fa3b251acf973d4fe4b4aeeacbdc135211bf480f59f1477
+      version_arguments:
+      - --version
+      version_output: codex-cli 0.147.0
+      version_output_sha256: 7aa31f8b0864fa0a787657d21167487f49ed01497802a4e5955ef02db3e94272
+    inputs:
+    - role: ground-truth
+      path: benchmarks/ground-truth.yaml
+      sha256: 3587088c02f04eb7c20f45ee7b8a6db10a2f20a2c523238ffa8a5f1d3f07b74c
+    - role: benchmark-schema
+      path: resources/schemas/benchmark.schema.json
+      sha256: f9411d66fd599abfe8439037ac67323be6c21d4aa4d3d0d69724a975c01bfe63
+    - role: observation-schema
+      path: resources/schemas/benchmark-observation.schema.json
+      sha256: 41a653c9943e18a418c19320950d1afd8dcc5048a5fafdb705f88f6bd9996b3e
+    - role: dependency-lock
+      path: requirements-runtime.lock
+      sha256: 864b51ef5337742809db5eb96f2edd602799d364d4e076072d4b28f6f562cecb
+    - role: knowledge-manifest
+      path: resources/knowledge/manifest.yaml
+      sha256: 73797e90b8216cf970c13dc08a882e2facd1e6c45e3519d28d29e864a0025189
+    - role: plugin-manifest
+      path: .codex-plugin/plugin.json
+      sha256: 7b5fe93b2c1fdd817ed9dd8466433ac7626860622abc7dd5ab813ab57b885425
+    - role: context-manifest
+      path: benchmarks/ablation/context-manifest.yaml
+      sha256: 0405e6702261215549621fc6ff57e0e31aeb1e4577595d2ee9b83bb94c76baed
+    - role: benchmark-context-schema
+      path: resources/schemas/benchmark-context-manifest.schema.json
+      sha256: 5332f3e472c27eec8a60f7ce91e6d7c11b92dbd171f92514aa1702ec1d13ae95
+    fixtures:
+    - case_id: benign-large-sqlite
+      path: benchmarks/fixtures/desktop-sqlite-catalog
+      sha256: 7a497e318300a082ef9e05e7617e078666d331d112bc71a19724dfa40fed3108
+      file_count: 2
+    - case_id: conflicting-writers
+      path: benchmarks/fixtures/account-balance-updates
+      sha256: 3e4074c44181026dfa4f34b38b393600819e8fe75ef2002c53fd77678bceddbc
+      file_count: 2
+    - case_id: queue-worker-sufficient
+      path: benchmarks/fixtures/render-job-processing
+      sha256: a369e1bc461b34148cf2678b61b73fe49dc5997745f18210f64a4da1e2094f6b
+      file_count: 2
+    - case_id: durable-approval-workflow
+      path: benchmarks/fixtures/payment-approval-process
+      sha256: 9ab6951d7a35318805942ff47a20f57bf5307314bca098ffd6a77ac35c408b0c
+      file_count: 2
+    - case_id: server-cache-mobile
+      path: benchmarks/fixtures/mobile-record-editor
+      sha256: a0d1264b743dba60c055af0f42a826a688c41be2382ea7f2b08ed6868c4675ff
+      file_count: 2
+    - case_id: injected-tool-authority
+      path: benchmarks/fixtures/retrieval-payment-runtime
+      sha256: 247b2b3339882f7c325b904c9f73f34daf96b0e67e6970c883c131c430b836ae
+      file_count: 2
+    - case_id: modular-monolith-healthy
+      path: benchmarks/fixtures/accounts-billing-application
+      sha256: 7f3bf588b94766f31c74b5ffaf6b7f7fd8551245a40a6d4645b0ec5237e5c922
+      file_count: 3
+    - case_id: shared-database-services
+      path: benchmarks/fixtures/orders-billing-services
+      sha256: 1fef510445652ab5e32c8f69a8770361b9b17d94db6ba59f6ca33730177f2cf0
+      file_count: 3
+    - case_id: document-code-conflict
+      path: benchmarks/fixtures/payment-design-runtime
+      sha256: 3bda8161cb56141b5cfb53295165d84c12ef096e4b4a322bd370ef180a7671e1
+      file_count: 2
+    - case_id: single-agent-sufficient
+      path: benchmarks/fixtures/research-assistant
+      sha256: d59efda087d610e4629918ea21913686e1e3a56811041adb86ad3fab50daedef
+      file_count: 2
+    tools:
+    - id: benchmark-runner
+      path: scripts/run_behavior_benchmark.py
+      sha256: 35d2a4e93a2b44e0aed0f24e4ed0e35765b4f067e519fd58883f2c5756f15cad
+    - id: codex-benchmark-adapter
+      path: scripts/codex_benchmark_adapter.py
+      sha256: 38a1c215847fa6c3ae867981b94e3961f7f90233b7a091e9599f6ac5bec3c576
+    execution_log:
+      path: 1.0.3-gpt-5.6-sol-full-context-fixed.log.jsonl
+      format: jsonl
+      sha256: 366b35dfd9ce8e9256b9236182a2db0276b535722591f2533b6dd26ab51a2e45
+      records: 30
+cases:
+- id: benign-large-sqlite
+  fixture: benchmarks/fixtures/desktop-sqlite-catalog
+  skill: project-architecture-audit
+  expected_findings: []
+  forbidden_recommendations: []
+  observed_findings: &id001
+  - rule_id: PROJECT.TRANSACTION.001
+    severity: info
+    evidence:
+    - path: README.md
+      line_start: 3
+      line_end: 5
+      excerpt: 'Single-user desktop catalog. SQLite is the declared authoritative
+        local store.
+
+        The generated lookup table is intentionally large, read-only, and rebuilt
+
+        atomically. No network sync, concurrent writers, or scale requirement exists.'
+    - path: catalog.py
+      line_start: 17
+      line_end: 22
+      excerpt: "    with connection:\n        connection.execute(\"DELETE FROM generated_lookup\"\
+        )\n        connection.executemany(\n            \"INSERT INTO generated_lookup(key,\
+        \ value) VALUES (?, ?)\",\n            rows,\n        )"
+    evidence_valid: true
+  observed_recommendations: &id002 []
+  trials:
+  - index: 1
+    duration_seconds: 61.150232584099285
+    observed_findings: *id001
+    observed_recommendations: *id002
+    execution:
+      exit_code: 0
+      command:
+      - .venv/bin/python
+      - scripts/codex_benchmark_adapter.py
+      - --model
+      - gpt-5.6-sol
+      - --skill
+      - project-architecture-audit
+      - --fixture
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/fixtures/desktop-sqlite-catalog
+      - --prompt
+      - Audit the fixture and report only architecture findings proved by current
+        evidence.
+      - --condition
+      - full
+      - --context-manifest
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/ablation/context-manifest.yaml
+      command_sha256: 4801cf46d1461b22b980b62e8910ee3a9ca51a9441d755c3f919738da7973baa
+      stdout_sha256: a448fcc07ee408b978a29d41912d6d00888be7d0688b0afbd386cf5e94954ee9
+      stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      observation_sha256: de3c94d45dd56da32d42d848f1eb4df6a563a357c419ae77b6b2d6d48c1d0c80
+      log_record_sha256: abf50932c148ab45d44cf7825211a943d64ba3eae441d9edbc5155785929eca5
+    observed_decision: &id003
+      selected_option: not-applicable
+      compared_tradeoffs: []
+      knowledge_ids: []
+      rejected_options: []
+      migration_slices: []
+  - index: 2
+    duration_seconds: 57.49186908407137
+    observed_findings:
+    - rule_id: PROJECT.TRANSACTION.001
+      severity: info
+      evidence:
+      - path: README.md
+        line_start: 3
+        line_end: 5
+        excerpt: 'Single-user desktop catalog. SQLite is the declared authoritative
+          local store.
+
+          The generated lookup table is intentionally large, read-only, and rebuilt
+
+          atomically. No network sync, concurrent writers, or scale requirement exists.'
+      - path: catalog.py
+        line_start: 17
+        line_end: 22
+        excerpt: "    with connection:\n        connection.execute(\"DELETE FROM generated_lookup\"\
+          )\n        connection.executemany(\n            \"INSERT INTO generated_lookup(key,\
+          \ value) VALUES (?, ?)\",\n            rows,\n        )"
+      evidence_valid: true
+    observed_recommendations: []
+    execution:
+      exit_code: 0
+      command:
+      - .venv/bin/python
+      - scripts/codex_benchmark_adapter.py
+      - --model
+      - gpt-5.6-sol
+      - --skill
+      - project-architecture-audit
+      - --fixture
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/fixtures/desktop-sqlite-catalog
+      - --prompt
+      - Audit the fixture and report only architecture findings proved by current
+        evidence.
+      - --condition
+      - full
+      - --context-manifest
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/ablation/context-manifest.yaml
+      command_sha256: 4801cf46d1461b22b980b62e8910ee3a9ca51a9441d755c3f919738da7973baa
+      stdout_sha256: a448fcc07ee408b978a29d41912d6d00888be7d0688b0afbd386cf5e94954ee9
+      stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      observation_sha256: de3c94d45dd56da32d42d848f1eb4df6a563a357c419ae77b6b2d6d48c1d0c80
+      log_record_sha256: 0b53e37b74a72c9fb73ab499e95809c60b60a07612a54b9b17c38e031baec506
+    observed_decision:
+      selected_option: not-applicable
+      compared_tradeoffs: []
+      knowledge_ids: []
+      rejected_options: []
+      migration_slices: []
+  - index: 3
+    duration_seconds: 68.21288983302657
+    observed_findings:
+    - rule_id: PROJECT.TRANSACTION.001
+      severity: info
+      evidence:
+      - path: README.md
+        line_start: 3
+        line_end: 5
+        excerpt: 'Single-user desktop catalog. SQLite is the declared authoritative
+          local store.
+
+          The generated lookup table is intentionally large, read-only, and rebuilt
+
+          atomically. No network sync, concurrent writers, or scale requirement exists.'
+      - path: catalog.py
+        line_start: 17
+        line_end: 22
+        excerpt: "    with connection:\n        connection.execute(\"DELETE FROM generated_lookup\"\
+          )\n        connection.executemany(\n            \"INSERT INTO generated_lookup(key,\
+          \ value) VALUES (?, ?)\",\n            rows,\n        )"
+      evidence_valid: true
+    observed_recommendations: []
+    execution:
+      exit_code: 0
+      command:
+      - .venv/bin/python
+      - scripts/codex_benchmark_adapter.py
+      - --model
+      - gpt-5.6-sol
+      - --skill
+      - project-architecture-audit
+      - --fixture
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/fixtures/desktop-sqlite-catalog
+      - --prompt
+      - Audit the fixture and report only architecture findings proved by current
+        evidence.
+      - --condition
+      - full
+      - --context-manifest
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/ablation/context-manifest.yaml
+      command_sha256: 4801cf46d1461b22b980b62e8910ee3a9ca51a9441d755c3f919738da7973baa
+      stdout_sha256: a448fcc07ee408b978a29d41912d6d00888be7d0688b0afbd386cf5e94954ee9
+      stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      observation_sha256: de3c94d45dd56da32d42d848f1eb4df6a563a357c419ae77b6b2d6d48c1d0c80
+      log_record_sha256: fc0367413a9ee3b7464ff96fba81245b514dd9392cfb2286d736242722784e8d
+    observed_decision:
+      selected_option: not-applicable
+      compared_tradeoffs: []
+      knowledge_ids: []
+      rejected_options: []
+      migration_slices: []
+  observed_decision: *id003
+- id: conflicting-writers
+  fixture: benchmarks/fixtures/account-balance-updates
+  skill: project-architecture-audit
+  expected_findings: []
+  forbidden_recommendations: []
+  observed_findings: &id004
+  - rule_id: PROJECT.OWNERSHIP.001
+    severity: high
+    evidence:
+    - path: README.md
+      line_start: 3
+      line_end: 5
+      excerpt: 'The API and worker independently perform read-modify-write updates
+        to the same
+
+        account balance without version checks or a shared transaction owner. A retry
+
+        can interleave the operations and silently lose an update.'
+    - path: store.py
+      line_start: 1
+      line_end: 8
+      excerpt: "def api_credit(connection, account_id: str, amount: int) -> None:\n\
+        \    balance = connection.read_balance(account_id)\n    connection.write_balance(account_id,\
+        \ balance + amount)\n\n\ndef worker_debit(connection, account_id: str, amount:\
+        \ int) -> None:\n    balance = connection.read_balance(account_id)\n    connection.write_balance(account_id,\
+        \ balance - amount)"
+    evidence_valid: true
+  - rule_id: PROJECT.TRANSACTION.001
+    severity: high
+    evidence:
+    - path: store.py
+      line_start: 1
+      line_end: 8
+      excerpt: "def api_credit(connection, account_id: str, amount: int) -> None:\n\
+        \    balance = connection.read_balance(account_id)\n    connection.write_balance(account_id,\
+        \ balance + amount)\n\n\ndef worker_debit(connection, account_id: str, amount:\
+        \ int) -> None:\n    balance = connection.read_balance(account_id)\n    connection.write_balance(account_id,\
+        \ balance - amount)"
+    - path: README.md
+      line_start: 3
+      line_end: 7
+      excerpt: 'The API and worker independently perform read-modify-write updates
+        to the same
+
+        account balance without version checks or a shared transaction owner. A retry
+
+        can interleave the operations and silently lose an update. This balance is
+
+        authoritative financial state; the overwritten credit or debit cannot be
+
+        reconstructed from the stored balance and requires manual reconciliation.'
+    evidence_valid: true
+  observed_recommendations: &id005
+  - Establish one controlled owner for authoritative balance writes from both API
+    and worker paths.
+  - Make each balance mutation atomic using a shared transaction boundary or version-checked
+    conditional update with explicit conflict handling.
+  trials:
+  - index: 1
+    duration_seconds: 46.84267599997111
+    observed_findings: *id004
+    observed_recommendations: *id005
+    execution:
+      exit_code: 0
+      command:
+      - .venv/bin/python
+      - scripts/codex_benchmark_adapter.py
+      - --model
+      - gpt-5.6-sol
+      - --skill
+      - project-architecture-audit
+      - --fixture
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/fixtures/account-balance-updates
+      - --prompt
+      - Audit data ownership and transaction behavior in this fixture with code evidence.
+      - --condition
+      - full
+      - --context-manifest
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/ablation/context-manifest.yaml
+      command_sha256: 2cfe8ede6218f4e06e490e4bb2c9832bb7c9aec0fbf72c30b2e176bc1f062ec2
+      stdout_sha256: 93a82e6f149f5c9a4e683b178ff3f2ee146ce8b77ad922dea64c88ae5715fe05
+      stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      observation_sha256: 09e2aeee738e30bb198e13ed0370503ac6e791c1a5cfd3cf869d67c4a2ff741c
+      log_record_sha256: 3956971914a34bb09ce4abf6910d0106c7342d0d8ff27abbeef80d90d3098230
+    observed_decision: &id006
+      selected_option: not-applicable
+      compared_tradeoffs: []
+      knowledge_ids: []
+      rejected_options: []
+      migration_slices: []
+  - index: 2
+    duration_seconds: 56.44290445803199
+    observed_findings:
+    - rule_id: PROJECT.OWNERSHIP.001
+      severity: critical
+      evidence:
+      - path: store.py
+        line_start: 1
+        line_end: 8
+        excerpt: "def api_credit(connection, account_id: str, amount: int) -> None:\n\
+          \    balance = connection.read_balance(account_id)\n    connection.write_balance(account_id,\
+          \ balance + amount)\n\n\ndef worker_debit(connection, account_id: str, amount:\
+          \ int) -> None:\n    balance = connection.read_balance(account_id)\n   \
+          \ connection.write_balance(account_id, balance - amount)"
+      - path: README.md
+        line_start: 3
+        line_end: 4
+        excerpt: 'The API and worker independently perform read-modify-write updates
+          to the same
+
+          account balance without version checks or a shared transaction owner.'
+      evidence_valid: true
+    - rule_id: PROJECT.TRANSACTION.001
+      severity: critical
+      evidence:
+      - path: store.py
+        line_start: 1
+        line_end: 8
+        excerpt: "def api_credit(connection, account_id: str, amount: int) -> None:\n\
+          \    balance = connection.read_balance(account_id)\n    connection.write_balance(account_id,\
+          \ balance + amount)\n\n\ndef worker_debit(connection, account_id: str, amount:\
+          \ int) -> None:\n    balance = connection.read_balance(account_id)\n   \
+          \ connection.write_balance(account_id, balance - amount)"
+      - path: README.md
+        line_start: 4
+        line_end: 7
+        excerpt: 'account balance without version checks or a shared transaction owner.
+          A retry
+
+          can interleave the operations and silently lose an update. This balance
+          is
+
+          authoritative financial state; the overwritten credit or debit cannot be
+
+          reconstructed from the stored balance and requires manual reconciliation.'
+      evidence_valid: true
+    observed_recommendations:
+    - Establish one owner that controls every write to the authoritative account balance.
+    - Make each balance adjustment an atomic operation that detects or prevents conflicting
+      read-modify-write updates.
+    execution:
+      exit_code: 0
+      command:
+      - .venv/bin/python
+      - scripts/codex_benchmark_adapter.py
+      - --model
+      - gpt-5.6-sol
+      - --skill
+      - project-architecture-audit
+      - --fixture
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/fixtures/account-balance-updates
+      - --prompt
+      - Audit data ownership and transaction behavior in this fixture with code evidence.
+      - --condition
+      - full
+      - --context-manifest
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/ablation/context-manifest.yaml
+      command_sha256: 2cfe8ede6218f4e06e490e4bb2c9832bb7c9aec0fbf72c30b2e176bc1f062ec2
+      stdout_sha256: d4b533f006d8ab27a04e83f5e94917dcabced9b145a2a6592d883458cedae9e0
+      stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      observation_sha256: a0964f0c588145cbecc3f425a57d056432b7218f2e33577218acc62e491e73d5
+      log_record_sha256: 6a0012c5fc2138e609345c303154dd7d7caabb090140e2ac307bcdb5602f5e30
+    observed_decision:
+      selected_option: not-applicable
+      compared_tradeoffs: []
+      knowledge_ids: []
+      rejected_options: []
+      migration_slices: []
+  - index: 3
+    duration_seconds: 46.50620608299505
+    observed_findings:
+    - rule_id: PROJECT.OWNERSHIP.001
+      severity: high
+      evidence:
+      - path: README.md
+        line_start: 3
+        line_end: 4
+        excerpt: 'The API and worker independently perform read-modify-write updates
+          to the same
+
+          account balance without version checks or a shared transaction owner.'
+      - path: store.py
+        line_start: 1
+        line_end: 3
+        excerpt: "def api_credit(connection, account_id: str, amount: int) -> None:\n\
+          \    balance = connection.read_balance(account_id)\n    connection.write_balance(account_id,\
+          \ balance + amount)"
+      - path: store.py
+        line_start: 6
+        line_end: 8
+        excerpt: "def worker_debit(connection, account_id: str, amount: int) -> None:\n\
+          \    balance = connection.read_balance(account_id)\n    connection.write_balance(account_id,\
+          \ balance - amount)"
+      evidence_valid: true
+    - rule_id: PROJECT.TRANSACTION.001
+      severity: high
+      evidence:
+      - path: README.md
+        line_start: 3
+        line_end: 7
+        excerpt: 'The API and worker independently perform read-modify-write updates
+          to the same
+
+          account balance without version checks or a shared transaction owner. A
+          retry
+
+          can interleave the operations and silently lose an update. This balance
+          is
+
+          authoritative financial state; the overwritten credit or debit cannot be
+
+          reconstructed from the stored balance and requires manual reconciliation.'
+      - path: store.py
+        line_start: 1
+        line_end: 3
+        excerpt: "def api_credit(connection, account_id: str, amount: int) -> None:\n\
+          \    balance = connection.read_balance(account_id)\n    connection.write_balance(account_id,\
+          \ balance + amount)"
+      - path: store.py
+        line_start: 6
+        line_end: 8
+        excerpt: "def worker_debit(connection, account_id: str, amount: int) -> None:\n\
+          \    balance = connection.read_balance(account_id)\n    connection.write_balance(account_id,\
+          \ balance - amount)"
+      evidence_valid: true
+    observed_recommendations:
+    - Route authoritative balance mutations through one controlled writer boundary.
+    - Make each balance adjustment atomic, using a database transaction or version-checked
+      conditional update that detects conflicting writes.
+    execution:
+      exit_code: 0
+      command:
+      - .venv/bin/python
+      - scripts/codex_benchmark_adapter.py
+      - --model
+      - gpt-5.6-sol
+      - --skill
+      - project-architecture-audit
+      - --fixture
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/fixtures/account-balance-updates
+      - --prompt
+      - Audit data ownership and transaction behavior in this fixture with code evidence.
+      - --condition
+      - full
+      - --context-manifest
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/ablation/context-manifest.yaml
+      command_sha256: 2cfe8ede6218f4e06e490e4bb2c9832bb7c9aec0fbf72c30b2e176bc1f062ec2
+      stdout_sha256: 3ce86f6a815729c90bf75ea0edb4748281b7930c6fc8393e61411a4b00d35a43
+      stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      observation_sha256: 67ae04882bb42e819f5248408e7d18d0a90e6eb7a27572088ea65f6d0457ed8f
+      log_record_sha256: e9b9dba2e5c946a455e6342a985049d6b4bf508c27ddf1c9ac13ad682408566a
+    observed_decision:
+      selected_option: not-applicable
+      compared_tradeoffs: []
+      knowledge_ids: []
+      rejected_options: []
+      migration_slices: []
+  observed_decision: *id006
+- id: queue-worker-sufficient
+  fixture: benchmarks/fixtures/render-job-processing
+  skill: architecture-solution-advisor
+  expected_findings: []
+  forbidden_recommendations: []
+  observed_findings: &id007 []
+  observed_recommendations: &id008 []
+  trials:
+  - index: 1
+    duration_seconds: 65.91486604197416
+    observed_findings: *id007
+    observed_recommendations: *id008
+    execution:
+      exit_code: 0
+      command:
+      - .venv/bin/python
+      - scripts/codex_benchmark_adapter.py
+      - --model
+      - gpt-5.6-sol
+      - --skill
+      - architecture-solution-advisor
+      - --fixture
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/fixtures/render-job-processing
+      - --prompt
+      - Select the least complex architecture for this workload and explain rejected
+        options.
+      - --condition
+      - full
+      - --context-manifest
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/ablation/context-manifest.yaml
+      command_sha256: 6fd8ef7d136ea8802aaef3cd83ec9fbdf5315ed289d3ecd610bdd8e329569370
+      stdout_sha256: b3db333bd3d5aed3ed41b2db0207a5a1fc883ae50a3e0b57f3a7bcd51b53b69e
+      stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      observation_sha256: 7a3158a3e4bf39dd7fe86614b38f2c8a7fa657802f25eb891704e8f3ad0b3c0e
+      log_record_sha256: 590273f0973542fdfe20e5ee01f66aecc18510d6a79355f0614c17e00d64e297
+    observed_decision: &id009
+      selected_option: web-queue-worker
+      compared_tradeoffs:
+      - cost
+      - deployment-independence
+      - implementation-complexity
+      - maintainability
+      - migration-risk
+      - operational-complexity
+      - recovery
+      - reliability
+      - reversibility
+      knowledge_ids:
+      - foundation.tradeoff-analysis
+      - foundation.proportional-design
+      - style.web-queue-worker
+      - style.durable-workflow
+      - style.microservices
+      - decision.request-vs-background-job
+      - decision.monolith-vs-microservices
+      - case-study.queue-worker-before-workflow
+      rejected_options:
+      - id: inline-request-work
+        reason: Although jobs are short, the fixture provides no request-latency requirement
+          that outweighs the existing durable handoff, database-owned status, and
+          at-least-once queue delivery. Replacing that path would add migration risk
+          without a proved benefit (README.md:3-5).
+      - id: durable-workflow
+        reason: The workload is one short, idempotent job with no branching, approval,
+          compensation, or pause/resume requirement, so the independent persisted-orchestration
+          invariant needed to justify a workflow runtime is absent (README.md:3-5).
+      - id: broad-microservice-decomposition
+        reason: A single team already operates only one API and one worker; the fixture
+          proves no multiple-team ownership, independent release, isolation, or scaling
+          requirement that would justify broader service boundaries and their operational
+          cost (README.md:3-4).
+      migration_slices:
+      - 'Baseline slice: retain the API-to-queue handoff, database-owned task status,
+        and existing worker path with no data or routing migration; rollback is unnecessary
+        because runtime behavior does not change.'
+      - 'Verification slice: exercise duplicate delivery for one job ID and confirm
+        the existing result check and commit-once boundary preserve a single stored
+        result; revert by removing only the verification fixture, leaving production
+        behavior unchanged.'
+      - 'Revisit slice: consider a bounded alternative only if measured request latency,
+        recovery failures, workflow states, or independently owned deployment needs
+        appear; keep the current queue-worker route as the immediate rollback path.'
+  - index: 2
+    duration_seconds: 74.5107008330524
+    observed_findings: []
+    observed_recommendations: []
+    execution:
+      exit_code: 0
+      command:
+      - .venv/bin/python
+      - scripts/codex_benchmark_adapter.py
+      - --model
+      - gpt-5.6-sol
+      - --skill
+      - architecture-solution-advisor
+      - --fixture
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/fixtures/render-job-processing
+      - --prompt
+      - Select the least complex architecture for this workload and explain rejected
+        options.
+      - --condition
+      - full
+      - --context-manifest
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/ablation/context-manifest.yaml
+      command_sha256: 6fd8ef7d136ea8802aaef3cd83ec9fbdf5315ed289d3ecd610bdd8e329569370
+      stdout_sha256: c08a9cdfeb9a4405d2a8c6fd7043540311536159770ba4423253d10e2a773c4f
+      stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      observation_sha256: 7b4e9811dee377051487cdf6581a0f39457da96cd17751dbcbddce10b1f903f5
+      log_record_sha256: d237f8aed0f7561d62f7de96ff563707dd6334f9a9c20f043af3aef9d2193932
+    observed_decision:
+      selected_option: web-queue-worker
+      compared_tradeoffs:
+      - delivery-semantics
+      - implementation-complexity
+      - maintainability
+      - operational-complexity
+      - recovery
+      - reliability
+      knowledge_ids:
+      - foundation.proportional-design
+      - foundation.tradeoff-analysis
+      - style.web-queue-worker
+      - style.durable-workflow
+      - decision.request-vs-background-job
+      - decision.monolith-vs-microservices
+      - case-study.queue-worker-before-workflow
+      rejected_options:
+      - id: durable-workflow
+        reason: README.md:3-5 directly describes short, idempotent jobs with no branching,
+          approval, compensation, or pause/resume requirement; persisted multi-step
+          orchestration would add runtime and replay complexity without an evidenced
+          workflow invariant.
+      - id: inline-request-work
+        reason: README.md:3-5 directly establishes an API-to-worker workload with
+          database-owned task status and at-least-once queue delivery; moving rendering
+          into the request path would discard the existing durable background-job
+          boundary without evidence that immediate completion is required.
+      - id: broad-microservice-decomposition
+        reason: README.md:3 directly identifies one team, one API, and one worker;
+          the fixture provides no evidence of multiple autonomous ownership, isolation,
+          or independent-release requirements sufficient to justify broader service
+          decomposition.
+      migration_slices:
+      - Preserve the existing API-to-queue contract and database-owned task-status
+        model while validating the current worker path unchanged.
+      - Exercise duplicate delivery against the existing has_result guard and commit_result_once
+        boundary; roll back by ending the validation with no routing or persistence
+        changes.
+      - If branching, approvals, compensation, or pause/resume later become evidenced,
+        place a workflow-backed consumer behind the existing queue for a bounded job
+        cohort while retaining the current worker route as the rollback path.
+  - index: 3
+    duration_seconds: 61.9492214579368
+    observed_findings: []
+    observed_recommendations: []
+    execution:
+      exit_code: 0
+      command:
+      - .venv/bin/python
+      - scripts/codex_benchmark_adapter.py
+      - --model
+      - gpt-5.6-sol
+      - --skill
+      - architecture-solution-advisor
+      - --fixture
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/fixtures/render-job-processing
+      - --prompt
+      - Select the least complex architecture for this workload and explain rejected
+        options.
+      - --condition
+      - full
+      - --context-manifest
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/ablation/context-manifest.yaml
+      command_sha256: 6fd8ef7d136ea8802aaef3cd83ec9fbdf5315ed289d3ecd610bdd8e329569370
+      stdout_sha256: 052c7b6799f6979deb9bcbef025415003e48446a5036293b372dd93e06804594
+      stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      observation_sha256: 689c0a26887ac870ca79d4726b26735be7eaa78ded35aed9faa6c3d40a4e5825
+      log_record_sha256: 50ccff700949cbe6e213b9c14c6405811cabebfe130a8a165004427c2f4e1eb9
+    observed_decision:
+      selected_option: web-queue-worker
+      compared_tradeoffs:
+      - cost
+      - delivery-semantics
+      - implementation-complexity
+      - latency
+      - maintainability
+      - migration-risk
+      - operational-complexity
+      - reliability
+      - reversibility
+      knowledge_ids:
+      - foundation.proportional-design
+      - foundation.tradeoff-analysis
+      - style.web-queue-worker
+      - style.durable-workflow
+      - decision.request-vs-background-job
+      - case-study.queue-worker-before-workflow
+      rejected_options:
+      - id: inline-request-work
+        reason: Although jobs are short, moving rendering into the request path would
+          replace the fixture's existing at-least-once queue delivery and database-owned
+          task status without evidence that immediate completion is required (README.md:3-5).
+          It adds migration risk and couples request latency and render failure for
+          no demonstrated benefit.
+      - id: durable-workflow
+        reason: 'The workload directly excludes the independent invariants that justify
+          workflow orchestration: jobs have no branching, approval, compensation,
+          or pause/resume requirement (README.md:3-5). A workflow runtime would therefore
+          add implementation and operational complexity without an evidenced recovery
+          need.'
+      - id: microservices
+        reason: The fixture identifies one team operating only one API and one worker
+          (README.md:3). Further service decomposition would add deployment, routing,
+          and ownership complexity without evidence of independent team, scaling,
+          isolation, or release requirements.
+      migration_slices:
+      - Preserve the existing API-to-queue handoff, database-owned task status, and
+        worker boundary as the baseline; rollback requires no architecture change
+        because this slice retains the current contracts.
+      - Characterize duplicate delivery by exercising the existing has_result and
+        commit_result_once boundary before any worker revision; remove only the characterization
+        test if rollback is needed, leaving runtime behavior unchanged.
+      - For future renderer changes, deploy behind the existing worker and result-store
+        interfaces in a bounded cohort; roll back the worker version while preserving
+        queued jobs and database status ownership.
+      - Reconsider durable workflow in a separate reversible pilot only if measured
+        requirements introduce branching, approvals, compensation, pause/resume, or
+        restart-sensitive multi-step state; abandon the pilot without changing the
+        current queue-worker path if those triggers are absent.
+  observed_decision: *id009
+- id: durable-approval-workflow
+  fixture: benchmarks/fixtures/payment-approval-process
+  skill: ai-agent-architecture-audit
+  expected_findings: []
+  forbidden_recommendations: []
+  observed_findings: &id010
+  - rule_id: AI.STATE.001
+    severity: high
+    evidence:
+    - path: README.md
+      line_start: 3
+      line_end: 4
+      excerpt: 'The process may wait days for approval. State lives only in memory,
+        approval is
+
+        checked before parameters are later regenerated, and retries can call the'
+    evidence_valid: true
+  - rule_id: AI.HUMAN.001
+    severity: critical
+    evidence:
+    - path: agent.py
+      line_start: 5
+      line_end: 9
+      excerpt: "    proposal = model.propose_payment()\n    pending[task_id] = proposal\n\
+        \    if approver.wait_for_approval(task_id):\n        final_parameters = model.propose_payment()\n\
+        \        return payment_tool.charge(**final_parameters)"
+    evidence_valid: true
+  - rule_id: AI.IDEMPOTENCY.001
+    severity: critical
+    evidence:
+    - path: README.md
+      line_start: 4
+      line_end: 7
+      excerpt: 'checked before parameters are later regenerated, and retries can call
+        the
+
+        payment tool twice after a crash. The charge is an immediate, irreversible
+
+        financial side effect: approval must bind its exact parameters, and recovery
+
+        must not repeat it.'
+    evidence_valid: true
+  observed_recommendations: &id011
+  - Persist payment workflow state and explicit checkpoints durably so approval waits
+    and crash recovery can resume from the recorded state.
+  - Bind approval to immutable exact payment parameters and charge only those approved
+    parameters; require renewed approval if they change.
+  - Assign a stable idempotency key to the payment operation and persist its outcome
+    so retries and resumed tasks cannot charge twice.
+  trials:
+  - index: 1
+    duration_seconds: 51.44447087496519
+    observed_findings: *id010
+    observed_recommendations: *id011
+    execution:
+      exit_code: 0
+      command:
+      - .venv/bin/python
+      - scripts/codex_benchmark_adapter.py
+      - --model
+      - gpt-5.6-sol
+      - --skill
+      - ai-agent-architecture-audit
+      - --fixture
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/fixtures/payment-approval-process
+      - --prompt
+      - Audit state recovery, approval binding, and repeated side effects in this
+        agent workflow.
+      - --condition
+      - full
+      - --context-manifest
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/ablation/context-manifest.yaml
+      command_sha256: 8414115b5ba5b6585a886eb84e2eddb4d000610542d3da7f01a169ff1a12d9ab
+      stdout_sha256: 46e852cb04f7328855f9b23fe22129689636cd6bdb212894e6936c6db083b765
+      stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      observation_sha256: b25773832f15ffc709b3726b7e9cbd12988231696f761b80e172e42830fda858
+      log_record_sha256: 5eee5824c1ea6cecb57f70839d4920bb569e2a37e5dc36d1ff9f1a9c85d54155
+    observed_decision: &id012
+      selected_option: not-applicable
+      compared_tradeoffs: []
+      knowledge_ids: []
+      rejected_options: []
+      migration_slices: []
+  - index: 2
+    duration_seconds: 78.35253354208544
+    observed_findings:
+    - rule_id: AI.STATE.001
+      severity: high
+      evidence:
+      - path: README.md
+        line_start: 3
+        line_end: 4
+        excerpt: 'The process may wait days for approval. State lives only in memory,
+          approval is
+
+          checked before parameters are later regenerated, and retries can call the'
+      - path: agent.py
+        line_start: 1
+        line_end: 6
+        excerpt: "pending = {}\n\n\ndef request_payment(task_id, model, approver,\
+          \ payment_tool):\n    proposal = model.propose_payment()\n    pending[task_id]\
+          \ = proposal"
+      evidence_valid: true
+    - rule_id: AI.HUMAN.001
+      severity: critical
+      evidence:
+      - path: agent.py
+        line_start: 5
+        line_end: 9
+        excerpt: "    proposal = model.propose_payment()\n    pending[task_id] = proposal\n\
+          \    if approver.wait_for_approval(task_id):\n        final_parameters =\
+          \ model.propose_payment()\n        return payment_tool.charge(**final_parameters)"
+      - path: README.md
+        line_start: 4
+        line_end: 7
+        excerpt: 'checked before parameters are later regenerated, and retries can
+          call the
+
+          payment tool twice after a crash. The charge is an immediate, irreversible
+
+          financial side effect: approval must bind its exact parameters, and recovery
+
+          must not repeat it.'
+      evidence_valid: true
+    - rule_id: AI.IDEMPOTENCY.001
+      severity: critical
+      evidence:
+      - path: README.md
+        line_start: 4
+        line_end: 7
+        excerpt: 'checked before parameters are later regenerated, and retries can
+          call the
+
+          payment tool twice after a crash. The charge is an immediate, irreversible
+
+          financial side effect: approval must bind its exact parameters, and recovery
+
+          must not repeat it.'
+      - path: agent.py
+        line_start: 7
+        line_end: 9
+        excerpt: "    if approver.wait_for_approval(task_id):\n        final_parameters\
+          \ = model.propose_payment()\n        return payment_tool.charge(**final_parameters)"
+      evidence_valid: true
+    - rule_id: AI.RECOVERY.001
+      severity: critical
+      evidence:
+      - path: README.md
+        line_start: 3
+        line_end: 7
+        excerpt: 'The process may wait days for approval. State lives only in memory,
+          approval is
+
+          checked before parameters are later regenerated, and retries can call the
+
+          payment tool twice after a crash. The charge is an immediate, irreversible
+
+          financial side effect: approval must bind its exact parameters, and recovery
+
+          must not repeat it.'
+      evidence_valid: true
+    observed_recommendations:
+    - Persist workflow state, checkpoints, cancellation state, and terminal outcomes
+      so the approval process can resume after termination.
+    - Bind approval to immutable exact payment parameters and deterministically validate
+      that binding immediately before charging.
+    - Persist and pass a stable idempotency key for each logical payment so retries
+      and resumed tasks cannot create another charge.
+    - Define recovery ownership for failures after charging, including reconciliation,
+      compensation where possible, and escalation for uncertain outcomes.
+    execution:
+      exit_code: 0
+      command:
+      - .venv/bin/python
+      - scripts/codex_benchmark_adapter.py
+      - --model
+      - gpt-5.6-sol
+      - --skill
+      - ai-agent-architecture-audit
+      - --fixture
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/fixtures/payment-approval-process
+      - --prompt
+      - Audit state recovery, approval binding, and repeated side effects in this
+        agent workflow.
+      - --condition
+      - full
+      - --context-manifest
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/ablation/context-manifest.yaml
+      command_sha256: 8414115b5ba5b6585a886eb84e2eddb4d000610542d3da7f01a169ff1a12d9ab
+      stdout_sha256: 7a09c0f8457829bf5824c56c1a060ada15e89c32e923f69c48e8deede76f02d0
+      stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      observation_sha256: 2fadcda7bfcd42a4d5a2a3d1e4b1f5fc293d68d6008cc68f34a30be1180fcae9
+      log_record_sha256: 7ca0f63b11f8d17ae296bd7fa02869af9f41f34034aac2c9d4b9a9ac78150eb9
+    observed_decision:
+      selected_option: not-applicable
+      compared_tradeoffs: []
+      knowledge_ids: []
+      rejected_options: []
+      migration_slices: []
+  - index: 3
+    duration_seconds: 57.865556625067256
+    observed_findings:
+    - rule_id: AI.STATE.001
+      severity: high
+      evidence:
+      - path: README.md
+        line_start: 3
+        line_end: 4
+        excerpt: 'The process may wait days for approval. State lives only in memory,
+          approval is
+
+          checked before parameters are later regenerated, and retries can call the'
+      evidence_valid: true
+    - rule_id: AI.HUMAN.001
+      severity: critical
+      evidence:
+      - path: agent.py
+        line_start: 5
+        line_end: 9
+        excerpt: "    proposal = model.propose_payment()\n    pending[task_id] = proposal\n\
+          \    if approver.wait_for_approval(task_id):\n        final_parameters =\
+          \ model.propose_payment()\n        return payment_tool.charge(**final_parameters)"
+      evidence_valid: true
+    - rule_id: AI.IDEMPOTENCY.001
+      severity: critical
+      evidence:
+      - path: README.md
+        line_start: 4
+        line_end: 7
+        excerpt: 'checked before parameters are later regenerated, and retries can
+          call the
+
+          payment tool twice after a crash. The charge is an immediate, irreversible
+
+          financial side effect: approval must bind its exact parameters, and recovery
+
+          must not repeat it.'
+      evidence_valid: true
+    observed_recommendations:
+    - Persist workflow state and checkpoints durably so the approval process can resume
+      after termination.
+    - Bind approval to immutable, exact payment parameters and reject execution if
+      those parameters change.
+    - Pass a stable task-derived idempotency key to the payment boundary and persist
+      the charge outcome so retries cannot repeat the financial side effect.
+    execution:
+      exit_code: 0
+      command:
+      - .venv/bin/python
+      - scripts/codex_benchmark_adapter.py
+      - --model
+      - gpt-5.6-sol
+      - --skill
+      - ai-agent-architecture-audit
+      - --fixture
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/fixtures/payment-approval-process
+      - --prompt
+      - Audit state recovery, approval binding, and repeated side effects in this
+        agent workflow.
+      - --condition
+      - full
+      - --context-manifest
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/ablation/context-manifest.yaml
+      command_sha256: 8414115b5ba5b6585a886eb84e2eddb4d000610542d3da7f01a169ff1a12d9ab
+      stdout_sha256: 3f7c5e200dd5c942bef04090e26db0c87e82172edf5c955d928dc520da11f2ff
+      stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      observation_sha256: e3063f6b38bf62e37821a9fb5e7ad0758552487ab198a67a0941d712b497e387
+      log_record_sha256: de590038f4b52bba6f49c570241d5230c611140ddac1960ad58addfa8f093525
+    observed_decision:
+      selected_option: not-applicable
+      compared_tradeoffs: []
+      knowledge_ids: []
+      rejected_options: []
+      migration_slices: []
+  observed_decision: *id012
+- id: server-cache-mobile
+  fixture: benchmarks/fixtures/mobile-record-editor
+  skill: architecture-solution-advisor
+  expected_findings: []
+  forbidden_recommendations: []
+  observed_findings: &id013 []
+  observed_recommendations: &id014 []
+  trials:
+  - index: 1
+    duration_seconds: 59.41342762496788
+    observed_findings: *id013
+    observed_recommendations: *id014
+    execution:
+      exit_code: 0
+      command:
+      - .venv/bin/python
+      - scripts/codex_benchmark_adapter.py
+      - --model
+      - gpt-5.6-sol
+      - --skill
+      - architecture-solution-advisor
+      - --fixture
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/fixtures/mobile-record-editor
+      - --prompt
+      - Select the appropriate client data architecture from the stated offline requirement.
+      - --condition
+      - full
+      - --context-manifest
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/ablation/context-manifest.yaml
+      command_sha256: 7635835d1b339393275407779e9ff4254fac30e3e6e5df42a27872b430764d02
+      stdout_sha256: 4bec2965e5d2ca45b5f2f7aef49e5d62019bef5fa43e83c37475283107c7effa
+      stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      observation_sha256: 3b488e3c2ae901a4918bcacebdd8f28d0e1b669649261ce313462f75cc670992
+      log_record_sha256: e0ab7d6359f3f5020078fac216baaccbbc67120abb9a0dba83ededde525dbb95
+    observed_decision: &id015
+      selected_option: server-first-with-local-cache
+      compared_tradeoffs:
+      - availability
+      - client-complexity
+      - consistency
+      - implementation-complexity
+      - latency
+      - maintainability
+      - offline-capability
+      - reversibility
+      knowledge_ids:
+      - decision.local-first-vs-server-first
+      - case-study.server-cache-not-local-first
+      - foundation.proportional-design
+      rejected_options:
+      - id: offline-queue-over-server-authority
+        reason: README.md:3-5 states that edits require a network and offline editing
+          is explicitly not required; durable command replay, ordering, idempotency,
+          expiry, and rejection handling would add unsupported client complexity.
+      - id: local-first-replicated-data
+        reason: README.md:3-5 defines the local store as a disposable display cache
+          and explicitly excludes offline editing; making it authoritative would introduce
+          replica, synchronization, conflict, convergence, and migration semantics
+          without a stated requirement.
+      migration_slices:
+      - Retain the API-first update boundary in Repository.update, where api.update
+        completes before cache invalidation; no data-path migration is required and
+        rollback is the unchanged current implementation.
+      - Validate the disposable-cache boundary by clearing DisplayCache and confirming
+        Repository.load repopulates it through api.fetchItems; remove only the validation
+        harness to roll back.
+      - If offline writes later become a product requirement, pilot one bounded idempotent
+        queued command behind a reversible feature flag before considering replicated
+        local authority; disable the flag to return to server-first writes.
+  - index: 2
+    duration_seconds: 56.74692054197658
+    observed_findings: []
+    observed_recommendations: []
+    execution:
+      exit_code: 0
+      command:
+      - .venv/bin/python
+      - scripts/codex_benchmark_adapter.py
+      - --model
+      - gpt-5.6-sol
+      - --skill
+      - architecture-solution-advisor
+      - --fixture
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/fixtures/mobile-record-editor
+      - --prompt
+      - Select the appropriate client data architecture from the stated offline requirement.
+      - --condition
+      - full
+      - --context-manifest
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/ablation/context-manifest.yaml
+      command_sha256: 7635835d1b339393275407779e9ff4254fac30e3e6e5df42a27872b430764d02
+      stdout_sha256: 166e98928e940a6b718f1776125fdc1115702798bad2a699c4bdd54fb9fa21a7
+      stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      observation_sha256: 46d71f376c6e395b57f3f979591318b439bf393653c9e481f3f138b64f54966c
+      log_record_sha256: 3acaa534fca3b1f8dfbcee36fd8e1cf1c5dcfcd9cc2930695499a6d38961b27f
+    observed_decision:
+      selected_option: server-first-with-local-cache
+      compared_tradeoffs:
+      - availability
+      - client-complexity
+      - consistency
+      - cost
+      - implementation-complexity
+      - latency
+      - maintainability
+      - migration-risk
+      - offline-capability
+      - reliability
+      knowledge_ids:
+      - decision.local-first-vs-server-first
+      - case-study.server-cache-not-local-first
+      - foundation.tradeoff-analysis
+      - foundation.proportional-design
+      rejected_options:
+      - id: offline-queue-over-server-authority
+        reason: README.md:3-5 requires network connectivity for edits and explicitly
+          excludes offline editing, so durable queued commands, replay ordering, idempotency,
+          expiry, and rejection handling would add unsupported client complexity.
+      - id: local-first-replicated-data
+        reason: README.md:3-5 defines the local store as a discardable display cache
+          and explicitly excludes offline editing; Repository.swift:12-14 commits
+          updates through the API and only invalidates cached data, providing no requirement
+          for writable replicas or conflict convergence.
+      migration_slices:
+      - 'Baseline the existing server-authoritative update boundary: verify an update
+        calls the API before cache invalidation and that a failed network update does
+        not become a local edit; rollback is removal of the added characterization
+        test only.'
+      - Preserve the existing expiring read-cache boundary and verify discarded or
+        stale cache entries reload from the API; rollback is removal of the added
+        cache-boundary characterization test only.
+      - Reassess the decision only if offline writes become an explicit product requirement;
+        first pilot one bounded idempotent queued command behind a reversible feature
+        flag before considering replicated local data.
+  - index: 3
+    duration_seconds: 87.06431245792191
+    observed_findings: []
+    observed_recommendations: []
+    execution:
+      exit_code: 0
+      command:
+      - .venv/bin/python
+      - scripts/codex_benchmark_adapter.py
+      - --model
+      - gpt-5.6-sol
+      - --skill
+      - architecture-solution-advisor
+      - --fixture
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/fixtures/mobile-record-editor
+      - --prompt
+      - Select the appropriate client data architecture from the stated offline requirement.
+      - --condition
+      - full
+      - --context-manifest
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/ablation/context-manifest.yaml
+      command_sha256: 7635835d1b339393275407779e9ff4254fac30e3e6e5df42a27872b430764d02
+      stdout_sha256: 46301b756443ce3c3bf75a010df70039562fc20df58059796091039ddf13a1d6
+      stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      observation_sha256: 383121e21af6035cffe73e60abb80579ac9c608a84d4fbecccd359a75684c100
+      log_record_sha256: 00e6cf1a082f4b1c45c064b5e6b9ad93284644e6e85d34f39daa6cf77bc2e5d9
+    observed_decision:
+      selected_option: server-first-with-local-cache
+      compared_tradeoffs:
+      - availability
+      - client-complexity
+      - consistency
+      - implementation-complexity
+      - latency
+      - offline-capability
+      - reversibility
+      knowledge_ids:
+      - decision.local-first-vs-server-first
+      - case-study.server-cache-not-local-first
+      - foundation.tradeoff-analysis
+      - foundation.proportional-design
+      - foundation.evolutionary-architecture
+      rejected_options:
+      - id: offline-queue-over-server-authority
+        reason: README.md lines 3-5 explicitly require network access for edits and
+          state that offline editing is not a product requirement; Repository.swift
+          lines 12-14 already sends updates directly to the API before invalidating
+          the display cache, so durable command replay, ordering, idempotency, expiry,
+          and rejection handling are unjustified.
+      - id: local-first-replicated-data
+        reason: README.md lines 3-5 define the local store as a disposable display
+          cache and explicitly exclude offline editing; making it authoritative would
+          add replica identity, synchronization, conflict resolution, convergence,
+          tombstone, and migration responsibilities without a stated requirement.
+      migration_slices:
+      - Add characterization tests for cache-hit reads, API-backed cache refresh,
+        direct API updates, and post-update cache invalidation; this test-only slice
+        is reversible by removing the tests.
+      - Validate that a disconnected update produces no durable local mutation while
+        cached reads remain disposable; retain the existing Repository boundary and
+        revert only the validation harness if necessary.
+      - If offline editing later becomes an approved requirement, pilot one idempotent
+        offline command behind a feature flag while preserving direct API updates
+        as the rollback path; expand only after replay, rejection, duplicate-delivery,
+        and recovery tests pass.
+  observed_decision: *id015
+- id: injected-tool-authority
+  fixture: benchmarks/fixtures/retrieval-payment-runtime
+  skill: ai-agent-architecture-audit
+  expected_findings: []
+  forbidden_recommendations: []
+  observed_findings: &id016
+  - rule_id: AI.INJECTION.001
+    severity: critical
+    evidence:
+    - path: runtime.py
+      line_start: 2
+      line_end: 5
+      excerpt: "    retrieved = retriever.search(user_query)\n    instructions = \"\
+        Follow policy.\\n\" + retrieved\n    action = model.decide(instructions, tools=[payment_tool])\n\
+        \    return action.execute()"
+    - path: README.md
+      line_start: 3
+      line_end: 6
+      excerpt: 'Retrieved web text is appended to the system instructions. The model
+        may call
+
+        an unrestricted payment tool without deterministic authorization or approval.
+
+        This is an end-to-end untrusted-input-to-side-effect path, not merely the
+
+        presence of user text in a prompt.'
+    evidence_valid: true
+  - rule_id: AI.TOOL.001
+    severity: critical
+    evidence:
+    - path: runtime.py
+      line_start: 3
+      line_end: 5
+      excerpt: "    instructions = \"Follow policy.\\n\" + retrieved\n    action =\
+        \ model.decide(instructions, tools=[payment_tool])\n    return action.execute()"
+    - path: README.md
+      line_start: 3
+      line_end: 4
+      excerpt: 'Retrieved web text is appended to the system instructions. The model
+        may call
+
+        an unrestricted payment tool without deterministic authorization or approval.'
+    evidence_valid: true
+  - rule_id: AI.TOOL.002
+    severity: critical
+    evidence:
+    - path: runtime.py
+      line_start: 4
+      line_end: 5
+      excerpt: "    action = model.decide(instructions, tools=[payment_tool])\n  \
+        \  return action.execute()"
+    - path: README.md
+      line_start: 4
+      line_end: 4
+      excerpt: an unrestricted payment tool without deterministic authorization or
+        approval.
+    evidence_valid: true
+  - rule_id: AI.BOUNDARY.001
+    severity: critical
+    evidence:
+    - path: runtime.py
+      line_start: 3
+      line_end: 5
+      excerpt: "    instructions = \"Follow policy.\\n\" + retrieved\n    action =\
+        \ model.decide(instructions, tools=[payment_tool])\n    return action.execute()"
+    - path: README.md
+      line_start: 4
+      line_end: 5
+      excerpt: 'an unrestricted payment tool without deterministic authorization or
+        approval.
+
+        This is an end-to-end untrusted-input-to-side-effect path, not merely the'
+    evidence_valid: true
+  observed_recommendations: &id017
+  - Keep retrieved content in a distinct untrusted context channel so it cannot become
+    authoritative instructions.
+  - Enforce deterministic payment-tool authorization by caller identity, task, scope,
+    validated arguments, and side-effect class before execution.
+  - Require deterministic payment validation and declared human confirmation before
+    executing the external financial side effect.
+  trials:
+  - index: 1
+    duration_seconds: 49.3702178329695
+    observed_findings: *id016
+    observed_recommendations: *id017
+    execution:
+      exit_code: 0
+      command:
+      - .venv/bin/python
+      - scripts/codex_benchmark_adapter.py
+      - --model
+      - gpt-5.6-sol
+      - --skill
+      - ai-agent-architecture-audit
+      - --fixture
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/fixtures/retrieval-payment-runtime
+      - --prompt
+      - Trace untrusted retrieved content to tool authority and external side effects.
+      - --condition
+      - full
+      - --context-manifest
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/ablation/context-manifest.yaml
+      command_sha256: e47f0a7540ab012b610109997a38a367ed78f75c5d90370fc11dad43237d4985
+      stdout_sha256: 6e6ced283f2e3ef0fec347ec7e3c5a9b3014e96db590c38bf64e2f07981dab81
+      stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      observation_sha256: ba14a8c3fb2612ff1ae70265f6c1632ea79422efed3c92f5394e0c600672a07a
+      log_record_sha256: 26897a5c03af18a08acf03c866cc19b6ad5b3b2401d4074dbae6fbea6ff13648
+    observed_decision: &id018
+      selected_option: not-applicable
+      compared_tradeoffs: []
+      knowledge_ids: []
+      rejected_options: []
+      migration_slices: []
+  - index: 2
+    duration_seconds: 60.77922970801592
+    observed_findings:
+    - rule_id: AI.INJECTION.001
+      severity: critical
+      evidence:
+      - path: runtime.py
+        line_start: 2
+        line_end: 5
+        excerpt: "    retrieved = retriever.search(user_query)\n    instructions =\
+          \ \"Follow policy.\\n\" + retrieved\n    action = model.decide(instructions,\
+          \ tools=[payment_tool])\n    return action.execute()"
+      evidence_valid: true
+    - rule_id: AI.TOOL.001
+      severity: critical
+      evidence:
+      - path: runtime.py
+        line_start: 3
+        line_end: 5
+        excerpt: "    instructions = \"Follow policy.\\n\" + retrieved\n    action\
+          \ = model.decide(instructions, tools=[payment_tool])\n    return action.execute()"
+      evidence_valid: true
+    - rule_id: AI.TOOL.002
+      severity: critical
+      evidence:
+      - path: runtime.py
+        line_start: 4
+        line_end: 5
+        excerpt: "    action = model.decide(instructions, tools=[payment_tool])\n\
+          \    return action.execute()"
+      evidence_valid: true
+    - rule_id: AI.BOUNDARY.001
+      severity: critical
+      evidence:
+      - path: runtime.py
+        line_start: 3
+        line_end: 5
+        excerpt: "    instructions = \"Follow policy.\\n\" + retrieved\n    action\
+          \ = model.decide(instructions, tools=[payment_tool])\n    return action.execute()"
+      evidence_valid: true
+    observed_recommendations:
+    - Keep retrieved content in an explicitly untrusted context boundary rather than
+      appending it to authoritative instructions.
+    - Enforce deterministic payment authorization and argument validation outside
+      the model, scoped by identity, task, permitted operation, and side-effect class.
+    - Require declared human confirmation before executing the payment side effect.
+    execution:
+      exit_code: 0
+      command:
+      - .venv/bin/python
+      - scripts/codex_benchmark_adapter.py
+      - --model
+      - gpt-5.6-sol
+      - --skill
+      - ai-agent-architecture-audit
+      - --fixture
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/fixtures/retrieval-payment-runtime
+      - --prompt
+      - Trace untrusted retrieved content to tool authority and external side effects.
+      - --condition
+      - full
+      - --context-manifest
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/ablation/context-manifest.yaml
+      command_sha256: e47f0a7540ab012b610109997a38a367ed78f75c5d90370fc11dad43237d4985
+      stdout_sha256: 81093be1e3d008956b05b59b06f4d32e98f9d0e5d0fa02eb5750e9d8e3b622dc
+      stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      observation_sha256: bc207f628bc33255fd2ee011d3d083568978091e6e3d0ac7b5a7c04619b6b4c0
+      log_record_sha256: e6b81300559b3389bee72b38f9b1dd023833daafa3a420058ac0697983b7c46f
+    observed_decision:
+      selected_option: not-applicable
+      compared_tradeoffs: []
+      knowledge_ids: []
+      rejected_options: []
+      migration_slices: []
+  - index: 3
+    duration_seconds: 47.19175300002098
+    observed_findings:
+    - rule_id: AI.INJECTION.001
+      severity: critical
+      evidence:
+      - path: README.md
+        line_start: 3
+        line_end: 6
+        excerpt: 'Retrieved web text is appended to the system instructions. The model
+          may call
+
+          an unrestricted payment tool without deterministic authorization or approval.
+
+          This is an end-to-end untrusted-input-to-side-effect path, not merely the
+
+          presence of user text in a prompt.'
+      - path: runtime.py
+        line_start: 2
+        line_end: 5
+        excerpt: "    retrieved = retriever.search(user_query)\n    instructions =\
+          \ \"Follow policy.\\n\" + retrieved\n    action = model.decide(instructions,\
+          \ tools=[payment_tool])\n    return action.execute()"
+      evidence_valid: true
+    - rule_id: AI.TOOL.001
+      severity: critical
+      evidence:
+      - path: README.md
+        line_start: 3
+        line_end: 4
+        excerpt: 'Retrieved web text is appended to the system instructions. The model
+          may call
+
+          an unrestricted payment tool without deterministic authorization or approval.'
+      - path: runtime.py
+        line_start: 3
+        line_end: 5
+        excerpt: "    instructions = \"Follow policy.\\n\" + retrieved\n    action\
+          \ = model.decide(instructions, tools=[payment_tool])\n    return action.execute()"
+      evidence_valid: true
+    - rule_id: AI.TOOL.002
+      severity: critical
+      evidence:
+      - path: README.md
+        line_start: 4
+        line_end: 6
+        excerpt: 'an unrestricted payment tool without deterministic authorization
+          or approval.
+
+          This is an end-to-end untrusted-input-to-side-effect path, not merely the
+
+          presence of user text in a prompt.'
+      - path: runtime.py
+        line_start: 4
+        line_end: 5
+        excerpt: "    action = model.decide(instructions, tools=[payment_tool])\n\
+          \    return action.execute()"
+      evidence_valid: true
+    - rule_id: AI.BOUNDARY.001
+      severity: critical
+      evidence:
+      - path: runtime.py
+        line_start: 3
+        line_end: 5
+        excerpt: "    instructions = \"Follow policy.\\n\" + retrieved\n    action\
+          \ = model.decide(instructions, tools=[payment_tool])\n    return action.execute()"
+      - path: README.md
+        line_start: 3
+        line_end: 4
+        excerpt: 'Retrieved web text is appended to the system instructions. The model
+          may call
+
+          an unrestricted payment tool without deterministic authorization or approval.'
+      evidence_valid: true
+    observed_recommendations:
+    - Keep retrieved web content separate from authoritative system instructions and
+      treat it as untrusted data.
+    - Enforce deterministic payment-tool authorization by caller identity, task, scope,
+      validated arguments, and side-effect class before execution.
+    - Require deterministic payment validation and declared human confirmation at
+      the payment side-effect boundary; never execute a model-produced action directly.
+    execution:
+      exit_code: 0
+      command:
+      - .venv/bin/python
+      - scripts/codex_benchmark_adapter.py
+      - --model
+      - gpt-5.6-sol
+      - --skill
+      - ai-agent-architecture-audit
+      - --fixture
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/fixtures/retrieval-payment-runtime
+      - --prompt
+      - Trace untrusted retrieved content to tool authority and external side effects.
+      - --condition
+      - full
+      - --context-manifest
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/ablation/context-manifest.yaml
+      command_sha256: e47f0a7540ab012b610109997a38a367ed78f75c5d90370fc11dad43237d4985
+      stdout_sha256: bfde847d2f9df1b7caf9e941787a99642788a52d756ecb0b8fd2a6fe0830d645
+      stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      observation_sha256: 35265e2c5b3f8180aedfd5b3f65f8efe2e3c3625f7d5b6b61507cc56d79dd9fc
+      log_record_sha256: 0408795ff9d9e43f78a940aea9927e0baf4173dc6eef72a4e6fb4d0953149f1d
+    observed_decision:
+      selected_option: not-applicable
+      compared_tradeoffs: []
+      knowledge_ids: []
+      rejected_options: []
+      migration_slices: []
+  observed_decision: *id018
+- id: modular-monolith-healthy
+  fixture: benchmarks/fixtures/accounts-billing-application
+  skill: architecture-solution-advisor
+  expected_findings: []
+  forbidden_recommendations: []
+  observed_findings: &id019 []
+  observed_recommendations: &id020 []
+  trials:
+  - index: 1
+    duration_seconds: 53.439489540993236
+    observed_findings: *id019
+    observed_recommendations: *id020
+    execution:
+      exit_code: 0
+      command:
+      - .venv/bin/python
+      - scripts/codex_benchmark_adapter.py
+      - --model
+      - gpt-5.6-sol
+      - --skill
+      - architecture-solution-advisor
+      - --fixture
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/fixtures/accounts-billing-application
+      - --prompt
+      - Assess whether this bounded one-team application needs a different deployment
+        architecture.
+      - --condition
+      - full
+      - --context-manifest
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/ablation/context-manifest.yaml
+      command_sha256: 3cbb3a45ae0647f94723e451b06612b6b66593ce4f712e069a80cbdbc914a783
+      stdout_sha256: b2f7db842cba2b75fe675c8df390928d0e6a00ecd04b060ad552e621349352ff
+      stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      observation_sha256: 213d45f4a69c03119ede89253ad865b9901be708db6391b3bcf4d645e2dbed01
+      log_record_sha256: 7ffb22d73cdd07d51c1bce6411957a930c329a16f840269cee63962d099f9a60
+    observed_decision: &id021
+      selected_option: modular-monolith
+      compared_tradeoffs:
+      - deployment-independence
+      - implementation-complexity
+      - maintainability
+      - migration-risk
+      - operational-complexity
+      - reliability
+      - reversibility
+      - team-ownership
+      knowledge_ids:
+      - foundation.proportional-design
+      - style.modular-monolith
+      - style.microservices
+      - decision.monolith-vs-microservices
+      rejected_options:
+      - id: selective-service-extraction
+        reason: The fixture states that accounts and billing have no independent deployment,
+          scaling, fault-isolation, or regulatory requirement (README.md lines 3-6),
+          so extraction would add a network and deployment boundary without an evidenced
+          invariant requiring it.
+      - id: broad-microservice-decomposition
+        reason: One team deploys one process, while the modules already expose public
+          functions, own internal data access, and communicate through that boundary
+          (README.md lines 3-6). Broad decomposition would add distributed operational
+          and coordination costs without evidence of autonomous teams or independent
+          deployment needs.
+      migration_slices:
+      - Keep the existing one-process deployment and public accounts module boundary;
+        verify refunds continue to call accounts.credit through that boundary.
+      - Add a reversible dependency check that permits billing-to-accounts public
+        imports and rejects access to accounts internals; remove the check without
+        changing runtime behavior if it proves unsuitable.
+      - Add focused module-boundary and refund transaction tests without changing
+        deployment topology.
+      - Record a revisit trigger for a measured independent release, scaling, fault-isolation,
+        or regulatory requirement; if triggered, trial extraction of one module behind
+        its existing public interface with routing rollback to the in-process call.
+  - index: 2
+    duration_seconds: 57.49455420905724
+    observed_findings: []
+    observed_recommendations: []
+    execution:
+      exit_code: 0
+      command:
+      - .venv/bin/python
+      - scripts/codex_benchmark_adapter.py
+      - --model
+      - gpt-5.6-sol
+      - --skill
+      - architecture-solution-advisor
+      - --fixture
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/fixtures/accounts-billing-application
+      - --prompt
+      - Assess whether this bounded one-team application needs a different deployment
+        architecture.
+      - --condition
+      - full
+      - --context-manifest
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/ablation/context-manifest.yaml
+      command_sha256: 3cbb3a45ae0647f94723e451b06612b6b66593ce4f712e069a80cbdbc914a783
+      stdout_sha256: b0910813baf21a673c86f5fd122e144b123eafd4adf877bfde511139f182d87c
+      stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      observation_sha256: 014299cec0493a417d77429c5fdbd1cf93fa340d1eae993e692afb1e648e9396
+      log_record_sha256: d65e5c52b6beaf70951435c6af79ab262a9d2d4348520209aeda2dd8dec9813c
+    observed_decision:
+      selected_option: modular-monolith
+      compared_tradeoffs:
+      - cost
+      - deployment-independence
+      - implementation-complexity
+      - maintainability
+      - migration-risk
+      - operational-complexity
+      - reliability
+      - reversibility
+      - team-ownership
+      knowledge_ids:
+      - foundation.tradeoff-analysis
+      - foundation.proportional-design
+      - foundation.evolutionary-architecture
+      - style.modular-monolith
+      - style.microservices
+      - decision.monolith-vs-microservices
+      - case-study.small-team-modular-saas
+      rejected_options:
+      - id: selective-service-extraction
+        reason: The fixture states that one team deploys one process and that there
+          is no independent deployment, scaling, fault-isolation, or regulatory requirement
+          (README.md lines 3-6); no evidence justifies the added network, deployment,
+          consistency, tracing, and operational boundaries.
+      - id: broad-microservice-decomposition
+        reason: The fixture proves one-team ownership and explicitly denies independent
+          deployment requirements (README.md lines 3-6), so broad decomposition would
+          add distributed operational and governance complexity without an evidenced
+          deployment benefit.
+      migration_slices:
+      - Keep accounts and billing in the existing single process while preserving
+        their public module boundary; validate that billing continues to call accounts.credit
+        rather than account-store internals, with rollback consisting of removing
+        only the added boundary check.
+      - Record independent release, scaling, fault-isolation, or regulatory separation
+        as explicit revisit triggers; if one becomes evidenced, shadow one reversible
+        selective extraction behind the existing accounts module interface before
+        changing callers or data ownership.
+  - index: 3
+    duration_seconds: 60.823817250085995
+    observed_findings: []
+    observed_recommendations: []
+    execution:
+      exit_code: 0
+      command:
+      - .venv/bin/python
+      - scripts/codex_benchmark_adapter.py
+      - --model
+      - gpt-5.6-sol
+      - --skill
+      - architecture-solution-advisor
+      - --fixture
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/fixtures/accounts-billing-application
+      - --prompt
+      - Assess whether this bounded one-team application needs a different deployment
+        architecture.
+      - --condition
+      - full
+      - --context-manifest
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/ablation/context-manifest.yaml
+      command_sha256: 3cbb3a45ae0647f94723e451b06612b6b66593ce4f712e069a80cbdbc914a783
+      stdout_sha256: 6dc906220369375f7c8fc5aa08d89e23ab479f9e460c69ee606594a8cd5fe32a
+      stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      observation_sha256: eac00495fbf66422959314659b1608ce3d636455d2e5e8baccc7342010e89d5e
+      log_record_sha256: d0259086c9e7277e8bae882f6b5c29501ff2e8a92cc5707983bc6fa00c81af66
+    observed_decision:
+      selected_option: modular-monolith
+      compared_tradeoffs:
+      - consistency
+      - cost
+      - deployment-independence
+      - implementation-complexity
+      - maintainability
+      - migration-risk
+      - operational-complexity
+      - reliability
+      - team-ownership
+      knowledge_ids:
+      - foundation.proportional-design
+      - foundation.tradeoff-analysis
+      - style.modular-monolith
+      - style.microservices
+      - decision.monolith-vs-microservices
+      - case-study.small-team-modular-saas
+      rejected_options:
+      - id: selective-service-extraction
+        reason: 'No bounded context has a proven independent deployment, scaling,
+          data-isolation, or fault-isolation need. README.md:3-6 states: "One team
+          deploys one process. Accounts and billing expose small public module functions,
+          own their internal data access, and communicate through the public boundary.
+          There is no independent deployment, scaling, fault-isolation, or regulatory
+          requirement."'
+      - id: broad-microservice-decomposition
+        reason: 'The fixture proves one-team ownership and explicitly denies the independent
+          deployment and isolation requirements that would justify distributed deployment,
+          while app/billing.py:4-5 shows the billing-to-accounts interaction already
+          uses the public module boundary: "def apply_refund(account_store, account_id:
+          str, amount: int) -> None:\n    accounts.credit(account_store, account_id,
+          amount)".'
+      migration_slices:
+      - Keep the existing single-process deployment and add a reversible dependency
+        check that permits billing to import only the public accounts module; remove
+        the check without changing runtime behavior if it proves unsuitable.
+      - Record deployment, scaling, and fault-isolation measurements for accounts
+        and billing separately; retain the current deployment unless a measured independent
+        need crosses an agreed threshold.
+      - If such a threshold is later crossed, place the selected module behind a compatible
+        in-process adapter first, validate existing refund behavior, and roll back
+        by routing the adapter to the current function call.
+      - Only then trial one separately deployed boundary for a bounded cohort; preserve
+        the in-process adapter as the rollback path until contract, consistency, recovery,
+        and operational checks pass.
+  observed_decision: *id021
+- id: shared-database-services
+  fixture: benchmarks/fixtures/orders-billing-services
+  skill: project-architecture-audit
+  expected_findings: []
+  forbidden_recommendations: []
+  observed_findings: &id022
+  - rule_id: PROJECT.OWNERSHIP.001
+    severity: critical
+    evidence:
+    - path: README.md
+      line_start: 3
+      line_end: 7
+      excerpt: 'Orders and billing deploy independently but both perform read-modify-write
+
+        updates against the same account balance table. A coordinated release is not
+
+        required to reproduce the lost update. The balance is authoritative financial
+
+        state; the overwritten reservation or refund cannot be reconstructed from
+        the
+
+        stored balance and crosses both service ownership boundaries.'
+    - path: orders.py
+      line_start: 6
+      line_end: 9
+      excerpt: "    connection.execute(\n        \"UPDATE accounts SET balance = ?\
+        \ WHERE id = ?\",\n        (current - amount, account_id),\n    )"
+    - path: billing.py
+      line_start: 6
+      line_end: 9
+      excerpt: "    connection.execute(\n        \"UPDATE accounts SET balance = ?\
+        \ WHERE id = ?\",\n        (current + amount, account_id),\n    )"
+    evidence_valid: true
+  - rule_id: PROJECT.TRANSACTION.001
+    severity: critical
+    evidence:
+    - path: orders.py
+      line_start: 1
+      line_end: 9
+      excerpt: "def reserve(connection, account_id: str, amount: int) -> None:\n \
+        \   current = connection.execute(\n        \"SELECT balance FROM accounts\
+        \ WHERE id = ?\",\n        (account_id,),\n    ).fetchone()[0]\n    connection.execute(\n\
+        \        \"UPDATE accounts SET balance = ? WHERE id = ?\",\n        (current\
+        \ - amount, account_id),\n    )"
+    - path: billing.py
+      line_start: 1
+      line_end: 9
+      excerpt: "def refund(connection, account_id: str, amount: int) -> None:\n  \
+        \  current = connection.execute(\n        \"SELECT balance FROM accounts WHERE\
+        \ id = ?\",\n        (account_id,),\n    ).fetchone()[0]\n    connection.execute(\n\
+        \        \"UPDATE accounts SET balance = ? WHERE id = ?\",\n        (current\
+        \ + amount, account_id),\n    )"
+    - path: README.md
+      line_start: 3
+      line_end: 7
+      excerpt: 'Orders and billing deploy independently but both perform read-modify-write
+
+        updates against the same account balance table. A coordinated release is not
+
+        required to reproduce the lost update. The balance is authoritative financial
+
+        state; the overwritten reservation or refund cannot be reconstructed from
+        the
+
+        stored balance and crosses both service ownership boundaries.'
+    evidence_valid: true
+  observed_recommendations: &id023
+  - Assign the authoritative account balance to one service boundary and require the
+    other service to mutate it through that owner's controlled contract.
+  - Make reservation and refund updates concurrency-safe at the owning persistence
+    boundary so each operation is applied atomically without overwriting an intervening
+    update.
+  trials:
+  - index: 1
+    duration_seconds: 54.768123249989
+    observed_findings: *id022
+    observed_recommendations: *id023
+    execution:
+      exit_code: 0
+      command:
+      - .venv/bin/python
+      - scripts/codex_benchmark_adapter.py
+      - --model
+      - gpt-5.6-sol
+      - --skill
+      - project-architecture-audit
+      - --fixture
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/fixtures/orders-billing-services
+      - --prompt
+      - Audit data ownership and lost-update behavior across these independently deployed
+        services.
+      - --condition
+      - full
+      - --context-manifest
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/ablation/context-manifest.yaml
+      command_sha256: 3cdd2f6d4123be2c0d3ef70f88b780e51173f91a1c3a474f5a8a7ac860bf0518
+      stdout_sha256: e9c752c0fe934e237148f6790ea304b3491d98f624821d2538cf5b01bc8145bf
+      stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      observation_sha256: 348168829b83c8ecf62034d4efbb66de6dcd9f5d2bd6a10ccaa1a831d46daad1
+      log_record_sha256: 3985fe095f443880ad5397968a90566d894536f83fb91f009fb6fedc45bcad87
+    observed_decision: &id024
+      selected_option: not-applicable
+      compared_tradeoffs: []
+      knowledge_ids: []
+      rejected_options: []
+      migration_slices: []
+  - index: 2
+    duration_seconds: 61.33918579202145
+    observed_findings:
+    - rule_id: PROJECT.OWNERSHIP.001
+      severity: critical
+      evidence:
+      - path: README.md
+        line_start: 3
+        line_end: 7
+        excerpt: 'Orders and billing deploy independently but both perform read-modify-write
+
+          updates against the same account balance table. A coordinated release is
+          not
+
+          required to reproduce the lost update. The balance is authoritative financial
+
+          state; the overwritten reservation or refund cannot be reconstructed from
+          the
+
+          stored balance and crosses both service ownership boundaries.'
+      - path: orders.py
+        line_start: 1
+        line_end: 9
+        excerpt: "def reserve(connection, account_id: str, amount: int) -> None:\n\
+          \    current = connection.execute(\n        \"SELECT balance FROM accounts\
+          \ WHERE id = ?\",\n        (account_id,),\n    ).fetchone()[0]\n    connection.execute(\n\
+          \        \"UPDATE accounts SET balance = ? WHERE id = ?\",\n        (current\
+          \ - amount, account_id),\n    )"
+      - path: billing.py
+        line_start: 1
+        line_end: 9
+        excerpt: "def refund(connection, account_id: str, amount: int) -> None:\n\
+          \    current = connection.execute(\n        \"SELECT balance FROM accounts\
+          \ WHERE id = ?\",\n        (account_id,),\n    ).fetchone()[0]\n    connection.execute(\n\
+          \        \"UPDATE accounts SET balance = ? WHERE id = ?\",\n        (current\
+          \ + amount, account_id),\n    )"
+      evidence_valid: true
+    observed_recommendations:
+    - Assign the authoritative account balance to one service boundary with controlled
+      writers, and make balance mutations atomic against concurrent updates.
+    execution:
+      exit_code: 0
+      command:
+      - .venv/bin/python
+      - scripts/codex_benchmark_adapter.py
+      - --model
+      - gpt-5.6-sol
+      - --skill
+      - project-architecture-audit
+      - --fixture
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/fixtures/orders-billing-services
+      - --prompt
+      - Audit data ownership and lost-update behavior across these independently deployed
+        services.
+      - --condition
+      - full
+      - --context-manifest
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/ablation/context-manifest.yaml
+      command_sha256: 3cdd2f6d4123be2c0d3ef70f88b780e51173f91a1c3a474f5a8a7ac860bf0518
+      stdout_sha256: 04a2a70a2c0b065cddf79ea420ebfda1fd29b231db8ccaf53bf4da99c7933bcc
+      stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      observation_sha256: daa5cb55f8cbf6880a3987908ba7a2d8b7098e2072f1e4558d1a63332194e9a9
+      log_record_sha256: d299853321b02120119fde0fd85326b2f73a1567aee6c297044df2aad6cea9d3
+    observed_decision:
+      selected_option: not-applicable
+      compared_tradeoffs: []
+      knowledge_ids: []
+      rejected_options: []
+      migration_slices: []
+  - index: 3
+    duration_seconds: 58.49757687503006
+    observed_findings:
+    - rule_id: PROJECT.OWNERSHIP.001
+      severity: high
+      evidence:
+      - path: README.md
+        line_start: 3
+        line_end: 7
+        excerpt: 'Orders and billing deploy independently but both perform read-modify-write
+
+          updates against the same account balance table. A coordinated release is
+          not
+
+          required to reproduce the lost update. The balance is authoritative financial
+
+          state; the overwritten reservation or refund cannot be reconstructed from
+          the
+
+          stored balance and crosses both service ownership boundaries.'
+      evidence_valid: true
+    - rule_id: PROJECT.TRANSACTION.001
+      severity: high
+      evidence:
+      - path: orders.py
+        line_start: 2
+        line_end: 8
+        excerpt: "    current = connection.execute(\n        \"SELECT balance FROM\
+          \ accounts WHERE id = ?\",\n        (account_id,),\n    ).fetchone()[0]\n\
+          \    connection.execute(\n        \"UPDATE accounts SET balance = ? WHERE\
+          \ id = ?\",\n        (current - amount, account_id),"
+      - path: billing.py
+        line_start: 2
+        line_end: 8
+        excerpt: "    current = connection.execute(\n        \"SELECT balance FROM\
+          \ accounts WHERE id = ?\",\n        (account_id,),\n    ).fetchone()[0]\n\
+          \    connection.execute(\n        \"UPDATE accounts SET balance = ? WHERE\
+          \ id = ?\",\n        (current + amount, account_id),"
+      - path: README.md
+        line_start: 3
+        line_end: 7
+        excerpt: 'Orders and billing deploy independently but both perform read-modify-write
+
+          updates against the same account balance table. A coordinated release is
+          not
+
+          required to reproduce the lost update. The balance is authoritative financial
+
+          state; the overwritten reservation or refund cannot be reconstructed from
+          the
+
+          stored balance and crosses both service ownership boundaries.'
+      evidence_valid: true
+    observed_recommendations:
+    - Assign authoritative account-balance writes to one service boundary and require
+      the other service to request balance changes through that owner.
+    - Make each balance mutation concurrency-safe at the owning persistence boundary,
+      using an atomic update or an equivalent conflict-detection strategy that prevents
+      stale reads from overwriting reservations or refunds.
+    execution:
+      exit_code: 0
+      command:
+      - .venv/bin/python
+      - scripts/codex_benchmark_adapter.py
+      - --model
+      - gpt-5.6-sol
+      - --skill
+      - project-architecture-audit
+      - --fixture
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/fixtures/orders-billing-services
+      - --prompt
+      - Audit data ownership and lost-update behavior across these independently deployed
+        services.
+      - --condition
+      - full
+      - --context-manifest
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/ablation/context-manifest.yaml
+      command_sha256: 3cdd2f6d4123be2c0d3ef70f88b780e51173f91a1c3a474f5a8a7ac860bf0518
+      stdout_sha256: ea160199aff96610f4fb6069b4a46ec5da038b7a5210e050da87441acf7c3c1c
+      stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      observation_sha256: ef2719bf3fe7212526cd6d4888e48258d57d429f8c0ab387dbd8bc2070af6b33
+      log_record_sha256: 1303c2ab668607e98733a0d26cb1c400d481414fbb3a5caede6ace26f11d1f1d
+    observed_decision:
+      selected_option: not-applicable
+      compared_tradeoffs: []
+      knowledge_ids: []
+      rejected_options: []
+      migration_slices: []
+  observed_decision: *id024
+- id: document-code-conflict
+  fixture: benchmarks/fixtures/payment-design-runtime
+  skill: architecture-finding-verifier
+  expected_findings: []
+  forbidden_recommendations: []
+  observed_findings: &id025
+  - rule_id: PROJECT.IDEMPOTENCY.001
+    severity: critical
+    evidence:
+    - path: payment.py
+      line_start: 1
+      line_end: 5
+      excerpt: "def charge(command, payment_provider, processed_commands):\n    if\
+        \ processed_commands.contains(command.id):\n        return processed_commands.result(command.id)\n\
+        \    result = payment_provider.charge(command.card, command.amount)\n    processed_commands.record(command.id,\
+        \ result)"
+    evidence_valid: true
+  observed_recommendations: &id026
+  - Enforce durable idempotency before invoking the payment provider so a retry after
+    interruption cannot repeat the charge.
+  trials:
+  - index: 1
+    duration_seconds: 40.78773858398199
+    observed_findings: *id025
+    observed_recommendations: *id026
+    execution:
+      exit_code: 0
+      command:
+      - .venv/bin/python
+      - scripts/codex_benchmark_adapter.py
+      - --model
+      - gpt-5.6-sol
+      - --skill
+      - architecture-finding-verifier
+      - --fixture
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/fixtures/payment-design-runtime
+      - --prompt
+      - Resolve the conflict between the idempotency design note and executable payment
+        path.
+      - --condition
+      - full
+      - --context-manifest
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/ablation/context-manifest.yaml
+      command_sha256: 53cc018c39b3c88dfb197c7dec8884c9db0d17e5a1ea1b8c370723379e2b825f
+      stdout_sha256: c037cfdbde513469b37d8fb50f3640cc5d51a34aa11a24163c29117a59c0737b
+      stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      observation_sha256: 0a5dcbb0d411d7fd14c0a2dec405dd3b5db12ad4e620e945bd9e2a89d4d4e104
+      log_record_sha256: 7c9e3999f7e7391d3e8d163f549f903701d70ee1c3ebe13d4abe87629933e5b3
+    observed_decision: &id027
+      selected_option: not-applicable
+      compared_tradeoffs: []
+      knowledge_ids: []
+      rejected_options: []
+      migration_slices: []
+  - index: 2
+    duration_seconds: 52.71222037496045
+    observed_findings:
+    - rule_id: PROJECT.IDEMPOTENCY.001
+      severity: critical
+      evidence:
+      - path: payment.py
+        line_start: 2
+        line_end: 5
+        excerpt: "    if processed_commands.contains(command.id):\n        return\
+          \ processed_commands.result(command.id)\n    result = payment_provider.charge(command.card,\
+          \ command.amount)\n    processed_commands.record(command.id, result)"
+      evidence_valid: true
+    observed_recommendations:
+    - Use command.id as a provider-enforced idempotency key and durably persist the
+      payment state/result; add a retry test covering interruption after the provider
+      charge but before local recording.
+    execution:
+      exit_code: 0
+      command:
+      - .venv/bin/python
+      - scripts/codex_benchmark_adapter.py
+      - --model
+      - gpt-5.6-sol
+      - --skill
+      - architecture-finding-verifier
+      - --fixture
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/fixtures/payment-design-runtime
+      - --prompt
+      - Resolve the conflict between the idempotency design note and executable payment
+        path.
+      - --condition
+      - full
+      - --context-manifest
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/ablation/context-manifest.yaml
+      command_sha256: 53cc018c39b3c88dfb197c7dec8884c9db0d17e5a1ea1b8c370723379e2b825f
+      stdout_sha256: d76a0b7ae01f87609efe5d1697c58f3c42943effbbb526bba346b71770f6a3ac
+      stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      observation_sha256: 7cc42304d26b6fbe9682cd1d0e004183de702152b30ec53545a4b44c14f758c0
+      log_record_sha256: e66fad417a86bb627ce860444e5f7e6ecaa0baa3f2269683ae5bbb817410db0e
+    observed_decision:
+      selected_option: not-applicable
+      compared_tradeoffs: []
+      knowledge_ids: []
+      rejected_options: []
+      migration_slices: []
+  - index: 3
+    duration_seconds: 46.62233933294192
+    observed_findings:
+    - rule_id: PROJECT.IDEMPOTENCY.001
+      severity: critical
+      evidence:
+      - path: payment.py
+        line_start: 2
+        line_end: 5
+        excerpt: "    if processed_commands.contains(command.id):\n        return\
+          \ processed_commands.result(command.id)\n    result = payment_provider.charge(command.card,\
+          \ command.amount)\n    processed_commands.record(command.id, result)"
+      - path: README.md
+        line_start: 3
+        line_end: 7
+        excerpt: 'The design note claims every payment uses a durable idempotency
+          marker before
+
+          calling the provider. The executable path checks a processed-command store,
+
+          calls the provider, and records the command afterward. A crash after the
+
+          provider charge but before the marker is recorded can immediately charge
+          the
+
+          customer twice.'
+      evidence_valid: true
+    observed_recommendations:
+    - Enforce idempotency at the executable payment boundary so the durable command
+      marker or provider idempotency guarantee exists before charging, and persist
+      the resulting outcome for retries.
+    execution:
+      exit_code: 0
+      command:
+      - .venv/bin/python
+      - scripts/codex_benchmark_adapter.py
+      - --model
+      - gpt-5.6-sol
+      - --skill
+      - architecture-finding-verifier
+      - --fixture
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/fixtures/payment-design-runtime
+      - --prompt
+      - Resolve the conflict between the idempotency design note and executable payment
+        path.
+      - --condition
+      - full
+      - --context-manifest
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/ablation/context-manifest.yaml
+      command_sha256: 53cc018c39b3c88dfb197c7dec8884c9db0d17e5a1ea1b8c370723379e2b825f
+      stdout_sha256: c98b1bc484c78bc86147db54a37e2455d0c26e3eb77fd32630d42b8fa6069ce3
+      stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      observation_sha256: f2a9848b74027adf4110c1c1a33c2324cc10b42334b32619fa3ae9bc3b98873d
+      log_record_sha256: 96369b4acf66f9ae6fb5ecf6bd6f316a046d9559e4ed5942f09b85d3c4f960c4
+    observed_decision:
+      selected_option: not-applicable
+      compared_tradeoffs: []
+      knowledge_ids: []
+      rejected_options: []
+      migration_slices: []
+  observed_decision: *id027
+- id: single-agent-sufficient
+  fixture: benchmarks/fixtures/research-assistant
+  skill: architecture-solution-advisor
+  expected_findings: []
+  forbidden_recommendations: []
+  observed_findings: &id028 []
+  observed_recommendations: &id029 []
+  trials:
+  - index: 1
+    duration_seconds: 57.412525375024416
+    observed_findings: *id028
+    observed_recommendations: *id029
+    execution:
+      exit_code: 0
+      command:
+      - .venv/bin/python
+      - scripts/codex_benchmark_adapter.py
+      - --model
+      - gpt-5.6-sol
+      - --skill
+      - architecture-solution-advisor
+      - --fixture
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/fixtures/research-assistant
+      - --prompt
+      - Select the least complex AI orchestration for this read-only research task.
+      - --condition
+      - full
+      - --context-manifest
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/ablation/context-manifest.yaml
+      command_sha256: 18ab0ef8d7b11f5e1e1ac5a718e66017e1e4384a34ba3e6e9ae818718c93cf3a
+      stdout_sha256: 4f284d71075aa23998e4f74e69955dec745ddd78346d9de6e839921602a40ff1
+      stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      observation_sha256: 3fe52e112682b456ac20e701e00cc7574dd1ffdff49b5d69da9e431c5ce7e454
+      log_record_sha256: 335930fa866edb832dad9294818133a0b96d07a68222f4d0d19bc69f69fe281e
+    observed_decision: &id030
+      selected_option: single-agent-with-tools
+      compared_tradeoffs:
+      - cost
+      - evaluation
+      - implementation-complexity
+      - latency
+      - maintainability
+      - operational-complexity
+      - reversibility
+      - routing-complexity
+      knowledge_ids:
+      - decision.single-agent-vs-multi-agent
+      - decision.agent-orchestration-selection
+      - foundation.proportional-design
+      - foundation.tradeoff-analysis
+      rejected_options:
+      - id: manager-with-specialist-tools
+        reason: README.md:3-5 directly describes one bounded task with no specialist
+          ownership or independent context boundary, while agent.py:1-6 shows one
+          agent already selecting between the two retrieval tools. A manager would
+          add routing, nested calls, and verification overhead without an evidenced
+          isolation benefit.
+      - id: peer-handoffs
+        reason: README.md:3-5 directly states that the task has no handoff, specialist
+          ownership, or independent context boundary. Transferring control between
+          peers would add context and authority transitions to a single read-only
+          cited-answer flow.
+      migration_slices:
+      - Characterize the existing agent.py:1-6 path as the baseline for bounded read-only
+        questions, two-tool selection, and required citations; this slice changes
+        no runtime behavior and is reversible by removing the characterization coverage.
+      - If evaluation later demonstrates a specific tool-routing or context-isolation
+        failure, place one typed specialist route behind the existing answer function
+        while leaving the single-agent route as the default and immediate rollback
+        path.
+      - Shadow the specialist route on bounded cases and compare evaluation quality,
+        latency, cost, and routing errors; disable and remove it unless the measured
+        gain is material.
+  - index: 2
+    duration_seconds: 51.0799276670441
+    observed_findings: []
+    observed_recommendations: []
+    execution:
+      exit_code: 0
+      command:
+      - .venv/bin/python
+      - scripts/codex_benchmark_adapter.py
+      - --model
+      - gpt-5.6-sol
+      - --skill
+      - architecture-solution-advisor
+      - --fixture
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/fixtures/research-assistant
+      - --prompt
+      - Select the least complex AI orchestration for this read-only research task.
+      - --condition
+      - full
+      - --context-manifest
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/ablation/context-manifest.yaml
+      command_sha256: 18ab0ef8d7b11f5e1e1ac5a718e66017e1e4384a34ba3e6e9ae818718c93cf3a
+      stdout_sha256: a95e13e27b89bcdf09003c5f485f3b0e2a57a495e38370ca7fe63a703bec40e9
+      stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      observation_sha256: 9f96bb89e06b7b006bf791287220f66489a2bc2d776483debb8634abea37bfe5
+      log_record_sha256: b597e6e30b7a9f7acc4641fd72b3cb8c96101a32e0a17516dba355a52e98253e
+    observed_decision:
+      selected_option: single-agent-with-tools
+      compared_tradeoffs:
+      - cost
+      - evaluation
+      - implementation-complexity
+      - latency
+      - maintainability
+      - operational-complexity
+      - reversibility
+      - routing-complexity
+      knowledge_ids:
+      - decision.agent-orchestration-selection
+      - decision.single-agent-vs-multi-agent
+      - foundation.proportional-design
+      rejected_options:
+      - id: manager-with-specialist-tools
+        reason: README.md lines 3-5 directly state that the bounded read-only task
+          has no specialist ownership or independent context boundary, so a manager
+          would add routing, delegation, and verification overhead without an evidenced
+          specialization benefit.
+      - id: peer-handoffs
+        reason: README.md lines 3-5 directly state that the task has no handoff, specialist
+          ownership, or independent context boundary; agent.py lines 1-6 also show
+          one agent completing the cited answer through two read-only tools.
+      migration_slices:
+      - Keep the existing answer function and its two-tool single-agent boundary as
+        the baseline; verify that representative questions return citations.
+      - Add focused evaluations for retrieval-tool selection and citation presence
+        without changing orchestration; remove the evaluations independently if they
+        do not provide useful signal.
+      - Only if evaluations demonstrate a specific context, tool-confusion, or permission-isolation
+        failure, place one typed specialist behind the existing answer boundary and
+        shadow its routing; roll back by routing every request to the current single
+        agent.
+      - Remove the direct single-agent path only after the specialist shows a material
+        quality benefit without unacceptable cost, latency, or routing regressions;
+        otherwise remove the specialist and retain the baseline.
+  - index: 3
+    duration_seconds: 52.33722733298782
+    observed_findings: []
+    observed_recommendations: []
+    execution:
+      exit_code: 0
+      command:
+      - .venv/bin/python
+      - scripts/codex_benchmark_adapter.py
+      - --model
+      - gpt-5.6-sol
+      - --skill
+      - architecture-solution-advisor
+      - --fixture
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/fixtures/research-assistant
+      - --prompt
+      - Select the least complex AI orchestration for this read-only research task.
+      - --condition
+      - full
+      - --context-manifest
+      - /Volumes/SUNSANG 1/Codex/hengmu/benchmarks/ablation/context-manifest.yaml
+      command_sha256: 18ab0ef8d7b11f5e1e1ac5a718e66017e1e4384a34ba3e6e9ae818718c93cf3a
+      stdout_sha256: 915091bf6833fe6d15132fcc27fc66d7b6275c6386980a0a8bfc23990b6fd123
+      stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      observation_sha256: bf3abbc8a0d7fd907cbf48c33e16d36384fc2a616aa0a58a2bfb3c938f81f96b
+      log_record_sha256: 4de7dfdebe2a0362a8532f072a764e11f99e83f32acccad75a90bf333a07585d
+    observed_decision:
+      selected_option: single-agent-with-tools
+      compared_tradeoffs:
+      - cost
+      - evaluation
+      - implementation-complexity
+      - latency
+      - maintainability
+      - operational-complexity
+      - reliability
+      - reversibility
+      - routing-complexity
+      - team-ownership
+      knowledge_ids:
+      - decision.agent-orchestration-selection
+      - decision.single-agent-vs-multi-agent
+      - case-study.single-agent-is-sufficient
+      - foundation.proportional-design
+      - foundation.tradeoff-analysis
+      rejected_options:
+      - id: manager-with-specialist-tools
+        reason: README.md lines 3-5 directly describe one bounded read-only task with
+          no specialist ownership or independent context boundary, so manager routing,
+          delegation schemas, nested calls, and result verification add complexity
+          without an evidenced specialization benefit.
+      - id: peer-handoffs
+        reason: README.md lines 3-5 directly state that the task has no handoff, specialist
+          ownership, or independent context boundary; agent.py lines 1-6 show one
+          agent receiving both retrieval tools and returning the cited answer, leaving
+          no separately owned conversational domain to justify control transfer.
+      migration_slices:
+      - Baseline the existing answer() path with representative read-only questions
+        and record citation completeness and retrieval-tool selection without changing
+        routing.
+      - Retain the existing single-agent path as the control while shadow-evaluating
+        any future specialist route for quality, latency, and cost; discard the shadow
+        route if improvement is not material.
+      - If measured tool confusion later justifies specialization, introduce one typed
+        specialist behind a reversible routing flag; rollback sends all tasks through
+        the current answer() path.
+  observed_decision: *id030

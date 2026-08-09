@@ -9,6 +9,8 @@ import unittest
 import zipfile
 from pathlib import Path
 
+import yaml
+
 sys.dont_write_bytecode = True
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -81,6 +83,42 @@ class SupplyChainTests(unittest.TestCase):
         self.assertIn('"${CODEX_SBOM_PATH}"', workflow)
         self.assertIn('"${AGENT_PLUGINS_SBOM_PATH}"', workflow)
         self.assertNotIn("sbom-path: dist/*.spdx.json", workflow)
+
+    def test_release_requires_complete_quality_matrix(self) -> None:
+        ci_path = ROOT / ".github" / "workflows" / "ci.yml"
+        release_path = ROOT / ".github" / "workflows" / "release.yml"
+        ci = yaml.load(ci_path.read_text(encoding="utf-8"), Loader=yaml.BaseLoader)
+        release = yaml.load(
+            release_path.read_text(encoding="utf-8"),
+            Loader=yaml.BaseLoader,
+        )
+
+        quality = ci["jobs"]["quality"]
+        self.assertEqual(
+            quality["strategy"]["matrix"]["os"],
+            ["ubuntu-latest", "macos-latest", "windows-latest"],
+        )
+        self.assertEqual(
+            quality["strategy"]["matrix"]["python-version"],
+            ["3.11", "3.13"],
+        )
+
+        publish = ci["jobs"]["release"]
+        self.assertEqual(publish["needs"], ["quality"])
+        self.assertEqual(
+            publish["if"],
+            "startsWith(github.ref, 'refs/tags/v')",
+        )
+        self.assertEqual(publish["uses"], "./.github/workflows/release.yml")
+        self.assertEqual(
+            publish["permissions"],
+            {
+                "attestations": "write",
+                "contents": "write",
+                "id-token": "write",
+            },
+        )
+        self.assertEqual(set(release["on"]), {"workflow_call"})
 
     def test_checksum_and_sbom_cover_archive(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

@@ -21,18 +21,39 @@ Load the project's profile, constraints, and critical flows. Use `project-archit
 
 ## Workflow
 
-1. Ensure `.architecture/repository-facts.yaml` exists by running
-   `architecture_tool.py inspect-repository`; never infer a risk directly from
-   a detected framework or dependency.
-2. Run `architecture_tool.py select-knowledge` with
-   `--skill ai-agent-architecture-audit`, the exact task, repository facts, and
-   Profile. Persist the full lock as
-   `.architecture/knowledge-selection-ai-agent.yaml` and pass
-   `--context-output .architecture/knowledge-context-ai-agent.yaml`. Run
-   `architecture_tool.py validate-knowledge-context
-   .architecture/knowledge-context-ai-agent.yaml --selection
-   .architecture/knowledge-selection-ai-agent.yaml --facts
-   .architecture/repository-facts.yaml --profile .architecture/profile.yaml`.
+1. Require a valid project Profile before the specialized audit. When
+   `.architecture/profile.yaml` is missing and persistence is allowed, run
+   `architecture_tool.py prepare-project-audit --repo <repo>`, then validate
+   the project. When the user explicitly requests read-only work, do not create
+   governance; report the missing Profile and stop with a
+   `project-architecture-audit` bootstrap handoff.
+2. Set one stable `<run-id>` for the audit and preserve every generated input
+   under `.architecture/reviews/inputs/`; never reuse or overwrite a prior
+   Review's evidence chain. Inspect current facts, build a current Profile from
+   the declared Profile, then select Knowledge:
+
+   ```bash
+   python3 ../../resources/scripts/architecture_tool.py inspect-repository \
+     --repo <repo> \
+     --output <repo>/.architecture/reviews/inputs/<run-id>-repository-facts.yaml
+   python3 ../../resources/scripts/architecture_tool.py build-profile \
+     --facts <repo>/.architecture/reviews/inputs/<run-id>-repository-facts.yaml \
+     --declared <repo>/.architecture/profile.yaml \
+     --output <repo>/.architecture/reviews/inputs/<run-id>-profile.yaml
+   python3 ../../resources/scripts/architecture_tool.py select-knowledge \
+     --facts <repo>/.architecture/reviews/inputs/<run-id>-repository-facts.yaml \
+     --profile <repo>/.architecture/reviews/inputs/<run-id>-profile.yaml \
+     --task "<current AI-agent audit request>" \
+     --skill ai-agent-architecture-audit \
+     --output <repo>/.architecture/reviews/inputs/<run-id>-knowledge-selection.yaml \
+     --context-output <repo>/.architecture/reviews/inputs/<run-id>-knowledge-context.yaml
+   python3 ../../resources/scripts/architecture_tool.py validate-knowledge-context \
+     <repo>/.architecture/reviews/inputs/<run-id>-knowledge-context.yaml \
+     --selection <repo>/.architecture/reviews/inputs/<run-id>-knowledge-selection.yaml \
+     --facts <repo>/.architecture/reviews/inputs/<run-id>-repository-facts.yaml \
+     --profile <repo>/.architecture/reviews/inputs/<run-id>-profile.yaml
+   ```
+
    Read the compact context projection only after validation succeeds; reserve
    the full exclusion ledger for scripts, Reviews, and Gates. Do not load every
    selected Markdown entry by default. Open a complete selected entry only
@@ -70,9 +91,9 @@ Write persistent artifacts under `.architecture/reviews/` using kind `ai-agent`:
 
 Start machine-readable output from `../../resources/templates/review.yaml` and set `review.kind` to `ai-agent`.
 
-Use Review schema 1.2. Bind the exact repository-facts and AI knowledge
-selection paths and hashes, preserve fact/inference boundaries, enumerate
-critical-flow coverage, and validate with:
+Use Review schema 1.2. Bind the exact per-run repository-facts, Profile, and AI
+knowledge-selection paths and hashes, preserve fact/inference boundaries,
+enumerate critical-flow coverage, and validate with:
 
 ```bash
 python3 ../../resources/scripts/architecture_tool.py validate-review \

@@ -110,24 +110,24 @@ cases:
   - id: remediation-direct
     skill: architecture-remediation-planner
     kind: direct
-    prompt: "Create a remediation plan for the confirmed architecture findings."
+    prompt: "Create a remediation plan from this accepted architecture decision and its confirmed architecture findings."
     expected:
       activates: true
       outcome: "Produces options, sequencing, protection, rollback, and acceptance criteria."
   - id: remediation-indirect
     skill: architecture-remediation-planner
     kind: indirect
-    prompt: "Turn the verified ownership risks into a safe migration roadmap."
+    prompt: "Turn the accepted decision for these verified ownership risks into a safe migration roadmap."
     expected:
       activates: true
       outcome: "Groups findings by invariant and orders reversible migration slices."
   - id: remediation-incomplete
     skill: architecture-remediation-planner
     kind: incomplete
-    prompt: "Plan a fix from this candidate review; none of its findings are verified."
+    prompt: "Plan a fix for these verified findings, but no architecture decision has been accepted."
     expected:
       activates: true
-      outcome: "Stops before planning and requests a verified review."
+      outcome: "Stops before planning and requests an accepted architecture decision."
   - id: remediation-negative
     skill: architecture-remediation-planner
     kind: negative
@@ -138,10 +138,10 @@ cases:
   - id: remediation-edge
     skill: architecture-remediation-planner
     kind: edge
-    prompt: "Two products duplicate notification code; decide whether to share a service."
+    prompt: "Turn this accepted constrained Greenfield target into an implementation roadmap; it has no Review or Findings."
     expected:
       activates: true
-      outcome: "Requires stable shared semantics before recommending consolidation."
+      outcome: "Uses Greenfield Plan 1.3, binds the Brief and accepted Decision, and creates no synthetic Findings."
 
   - id: ai-agent-direct
     skill: ai-agent-architecture-audit

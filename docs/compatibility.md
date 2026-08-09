@@ -48,7 +48,7 @@ for the precise capability and lifecycle boundary.
 
 | Host or surface | Package to use | Evidence status | Boundary |
 | --- | --- | --- | --- |
-| Codex | `codex` | Native manifest, Codex UI metadata, Skill/repository validation, deterministic packaging, and CI/release workflow are covered by this repository | A current installed Codex UI/CLI smoke test is release-time evidence and is not represented as a permanent universal guarantee |
+| Codex | `codex` | Native manifest, Codex UI metadata, Skill/repository validation, deterministic packaging, extracted Knowledge Selection, and CI/release workflow are covered by this repository | A current installed Codex UI/CLI smoke test is release-time evidence and is not represented as a permanent universal guarantee |
 | Cursor | `agent-plugins` | Cursor documents that conformant Agent Plugins load without changes; Hengmu's portable manifest/layout and archive tests are covered | No Hengmu-specific installed Cursor smoke test is currently recorded; Cursor-specific rules, agents, commands, hooks, variables, and marketplace behavior are not included |
 | VS Code / GitHub Copilot CLI | `agent-plugins` | Both clients document Agent Plugins 1.0 discovery, direct Git or local-path installation, and Skill invocation; Hengmu's portable manifest/layout and archive tests are covered | No Hengmu-specific installed VS Code or Copilot CLI smoke test is currently recorded; client-specific agents, hooks, commands, and marketplace policy are not included |
 | Kiro | Agent Skills projection from `agent-plugins` | Kiro documents workspace Skills under `.kiro/skills/`; Hengmu's package contains conformant Skills | Kiro does not consume Hengmu's root manifest on this path. Install all nine Skills together with shared `resources/`; no Hengmu-specific installed Kiro smoke test is currently recorded |
@@ -66,6 +66,8 @@ When adding a host-specific claim, record the client version, operating system,
 package format, installation path, Skill/prompt, observed result, and date in
 release evidence or a sanitized compatibility report. Treat that evidence as
 time-bound: host updates can change behavior without changing Hengmu's package.
+The current release-time observation is recorded in
+[Hengmu 1.0.3 host compatibility evidence](compatibility-evidence/2026-08-09-hengmu-1.0.3.md).
 
 Automated CI cannot launch every Codex desktop, CLI, or ChatGPT plugin surface.
 Before a release, maintainers should install the built ZIP or local marketplace

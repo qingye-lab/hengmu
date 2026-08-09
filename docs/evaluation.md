@@ -229,6 +229,7 @@ A deterministic release report may cover repository contracts, selector cases,
 and artifact tamper tests without claiming model behavior. A model-quality
 report still requires an actual external run.
 
-Version 0.4.0 satisfies that evidence condition with two models, three trials
+Version 1.0.3 satisfies that evidence condition with two models, three trials
 per case, preserved run/score artifacts, and an explicit limitations section
-in `benchmarks/reports/0.4.0-model-behavior.md`.
+in `benchmarks/reports/1.0.3-model-behavior.md`. The historical 0.4.0 report
+remains available at `benchmarks/reports/0.4.0-model-behavior.md`.
