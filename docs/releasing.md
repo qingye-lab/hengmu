@@ -46,11 +46,15 @@
    unzip -l dist/hengmu-<version>-agent-plugins.zip
    ```
 
-10. Exercise the extracted portable runtime through Knowledge Selection:
+10. Exercise both extracted runtimes through Knowledge Selection:
 
    ```bash
    python3 scripts/smoke_test_package.py \
-     --archive "dist/hengmu-*-agent-plugins.zip"
+     --format codex \
+     --archive dist/hengmu-<version>.zip
+   python3 scripts/smoke_test_package.py \
+     --format agent-plugins \
+     --archive dist/hengmu-<version>-agent-plugins.zip
    ```
 
 11. Verify the checksums on any supported platform:

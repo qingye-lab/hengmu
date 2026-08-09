@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 import hashlib
 import importlib.util
 import json
@@ -10,6 +11,7 @@ import unittest
 import warnings
 import zipfile
 from pathlib import Path
+from unittest import mock
 
 sys.dont_write_bytecode = True
 ROOT = Path(__file__).resolve().parent.parent
@@ -68,6 +70,7 @@ class PackagePluginTests(unittest.TestCase):
             self.assertFalse(any(name.startswith("tests/") for name in names))
             self.assertFalse(any("__pycache__" in name for name in names))
             self.assertFalse(any(name.endswith(".pyc") for name in names))
+            smoke_test_package.smoke_test(first, "codex")
 
     def test_agent_plugins_archive_is_portable_and_reproducible(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -89,7 +92,7 @@ class PackagePluginTests(unittest.TestCase):
                 first_checksum.read_text(encoding="utf-8"),
                 f"{digest}  {first.name}\n",
             )
-            self.assertEqual(first.name, "hengmu-1.0.2-agent-plugins.zip")
+            self.assertEqual(first.name, "hengmu-1.0.3-agent-plugins.zip")
 
             with zipfile.ZipFile(first) as archive:
                 names = archive.namelist()
@@ -146,6 +149,8 @@ class PackagePluginTests(unittest.TestCase):
         cases: tuple[tuple[str, zipfile.ZipInfo | str, str], ...] = (
             ("duplicate", "plugin.json", "duplicate entry names"),
             ("backslash", r"unsafe\entry", "uses a backslash"),
+            ("windows-drive-relative", "C:unsafe", "Unsafe archive entry"),
+            ("windows-drive-absolute", "C:/unsafe", "Unsafe archive entry"),
             ("absolute", "/unsafe", "Unsafe archive entry"),
             ("traversal", "../unsafe", "Unsafe archive entry"),
             (
@@ -169,9 +174,17 @@ class PackagePluginTests(unittest.TestCase):
                         archive.writestr(unsafe_entry, b"target")
                     destination = temp_root / f"extract-{name}"
                     destination.mkdir()
-                    with self.assertRaisesRegex(
-                        smoke_test_package.SmokeTestError,
-                        expected,
+                    windows_normalization = (
+                        mock.patch.object(zipfile.os, "sep", "\\")
+                        if name == "backslash"
+                        else contextlib.nullcontext()
+                    )
+                    with (
+                        windows_normalization,
+                        self.assertRaisesRegex(
+                            smoke_test_package.SmokeTestError,
+                            expected,
+                        ),
                     ):
                         smoke_test_package.safe_extract(archive_path, destination)
 

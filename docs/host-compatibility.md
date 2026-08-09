@@ -9,8 +9,8 @@ and lifecycle events remain properties of each agent client.
 
 | Host family | Distribution | Automated evidence | Host evidence required before a support claim |
 | --- | --- | --- | --- |
-| Codex | `hengmu-<version>.zip` with `.codex-plugin/plugin.json` | deterministic inventory, unit tests, checksum, and SBOM | install and route a current Codex surface |
-| Agent Plugins clients | `hengmu-<version>-agent-plugins.zip` with root `plugin.json` | schema-aligned source validation plus an extracted audit-path smoke test | install, route, and run the workflow in each named client/version |
+| Codex | `hengmu-<version>.zip` with `.codex-plugin/plugin.json` | deterministic inventory plus an extracted Knowledge Selection smoke test, checksum, and SBOM | install and route a current Codex surface |
+| Agent Plugins clients | `hengmu-<version>-agent-plugins.zip` with root `plugin.json` | schema-aligned source validation plus the same extracted Knowledge Selection smoke test | install, route, and run the workflow in each named client/version |
 | Agent Skills-only clients | Complete `skills/` plus sibling `resources/` projection | Skill contracts and the same extracted runtime smoke test | confirm the host's discovery location, route all nine Skills, and run one deterministic helper |
 | Repository/source consumers | repository root `plugin.json`, `skills/`, and `resources/` | the same source and packaging tests | client-specific source-install test |
 

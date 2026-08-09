@@ -1,9 +1,7 @@
 name: Release
 
 on:
-  push:
-    tags:
-      - "v*"
+  workflow_call:
 
 permissions:
   attestations: write
@@ -92,9 +90,16 @@ jobs:
           --format agent-plugins
           --output-dir dist
 
+      - name: Smoke test Codex archive
+        run: >-
+          python scripts/smoke_test_package.py
+          --format codex
+          --archive "dist/hengmu-*.zip"
+
       - name: Smoke test Agent Plugins archive
         run: >-
           python scripts/smoke_test_package.py
+          --format agent-plugins
           --archive "dist/hengmu-*-agent-plugins.zip"
 
       - name: Verify archive checksum

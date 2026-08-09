@@ -7,6 +7,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+import yaml
+
 sys.dont_write_bytecode = True
 ROOT = Path(__file__).resolve().parent.parent
 SCRIPT_PATH = ROOT / "scripts" / "validate_repository.py"
@@ -64,6 +66,60 @@ class RepositoryContractTests(unittest.TestCase):
         self.assertIn("Keep all eight focused Skill names directly invocable", entry)
         self.assertIn("explicitly invokes a focused Skill", entry)
         self.assertIn("activate this router", entry)
+
+    def test_specialist_workflows_preserve_per_run_inputs(self) -> None:
+        for relative in (
+            "skills/ai-agent-architecture-audit/SKILL.md",
+            "skills/mobile-architecture-audit/SKILL.md",
+        ):
+            workflow = (ROOT / relative).read_text(encoding="utf-8")
+            self.assertIn("prepare-project-audit --repo <repo>", workflow)
+            self.assertIn("explicitly requests read-only", workflow)
+            self.assertIn("Set one stable `<run-id>`", workflow)
+            self.assertIn(
+                ".architecture/reviews/inputs/<run-id>-profile.yaml", workflow
+            )
+            self.assertIn(
+                ".architecture/reviews/inputs/<run-id>-knowledge-selection.yaml",
+                workflow,
+            )
+            self.assertIn("never reuse or overwrite", workflow)
+
+        decision = (
+            ROOT
+            / "skills"
+            / "architecture-solution-advisor"
+            / "references"
+            / "decision-artifact-workflow.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("Set one stable `<run-id>`", decision)
+        self.assertIn(
+            ".architecture/reviews/inputs/<run-id>-decision-knowledge-selection.yaml",
+            decision,
+        )
+        self.assertIn("Never reuse or overwrite", decision)
+
+    def test_remediation_evals_require_an_accepted_decision(self) -> None:
+        payload = yaml.safe_load((ROOT / "evals" / "cases.yaml").read_text())
+        cases = {case["id"]: case for case in payload["cases"]}
+
+        for case_id in ("remediation-direct", "remediation-indirect"):
+            self.assertIn("accepted", cases[case_id]["prompt"].lower())
+        self.assertIn(
+            "no architecture decision has been accepted",
+            cases["remediation-incomplete"]["prompt"],
+        )
+        self.assertIn(
+            "accepted architecture decision",
+            cases["remediation-incomplete"]["expected"]["outcome"],
+        )
+        self.assertIn(
+            "accepted constrained Greenfield", cases["remediation-edge"]["prompt"]
+        )
+        self.assertIn(
+            "no synthetic Findings",
+            cases["remediation-edge"]["expected"]["outcome"],
+        )
 
     def test_readmes_document_each_supported_host_installation(self) -> None:
         expectations = {

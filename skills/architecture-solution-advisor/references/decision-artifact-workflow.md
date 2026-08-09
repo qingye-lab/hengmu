@@ -32,8 +32,10 @@ inputs, not independent proof.
 
 ## 2. Select and bind Knowledge
 
-Create a bounded selection for the decision and validate its compact context
-before reading selected Markdown entries:
+Set one stable `<run-id>` for the decision. Create a bounded selection under
+the configured review input directory and validate its compact context before
+reading selected Markdown entries. Never reuse or overwrite selection bytes
+bound to an earlier Decision:
 
 ```bash
 python3 ../../resources/scripts/architecture_tool.py select-knowledge \
@@ -41,12 +43,12 @@ python3 ../../resources/scripts/architecture_tool.py select-knowledge \
   --profile <profile.yaml> \
   --task "<decision problem>" \
   --skill architecture-solution-advisor \
-  --output <repo>/.architecture/decision-knowledge-selection.yaml \
-  --context-output <repo>/.architecture/decision-knowledge-context.yaml
+  --output <repo>/.architecture/reviews/inputs/<run-id>-decision-knowledge-selection.yaml \
+  --context-output <repo>/.architecture/reviews/inputs/<run-id>-decision-knowledge-context.yaml
 
 python3 ../../resources/scripts/architecture_tool.py validate-knowledge-context \
-  <repo>/.architecture/decision-knowledge-context.yaml \
-  --selection <repo>/.architecture/decision-knowledge-selection.yaml \
+  <repo>/.architecture/reviews/inputs/<run-id>-decision-knowledge-context.yaml \
+  --selection <repo>/.architecture/reviews/inputs/<run-id>-decision-knowledge-selection.yaml \
   --facts <repository-facts.yaml> \
   --profile <profile.yaml>
 ```

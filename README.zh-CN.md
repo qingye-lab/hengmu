@@ -16,7 +16,7 @@
     <img alt="CI" src="https://github.com/qingye-lab/hengmu/actions/workflows/ci.yml/badge.svg?branch=main">
   </a>
   <a href="https://github.com/qingye-lab/hengmu/releases">
-    <img alt="版本 1.0.2" src="https://img.shields.io/badge/version-1.0.2-173FBE">
+    <img alt="版本 1.0.3" src="https://img.shields.io/badge/version-1.0.3-173FBE">
   </a>
   <img alt="Python 3.11–3.13" src="https://img.shields.io/badge/python-3.11%E2%80%933.13-161719">
   <a href="LICENSE">
@@ -217,7 +217,7 @@ python3 -m pip install --require-hashes -r requirements-runtime.lock
 python3 resources/scripts/architecture_tool.py --version
 ```
 
-最后一条命令应输出 `architecture_tool.py 1.0.2`。Windows PowerShell 使用
+最后一条命令应输出 `architecture_tool.py 1.0.3`。Windows PowerShell 使用
 `.venv\Scripts\Activate.ps1` 激活。安装不会授予权限或启用 Hook；在允许仓库写入
 或 Shell 执行前，请检查对应宿主的 Agent 权限。
 
@@ -591,6 +591,7 @@ python3 resources/scripts/architecture_tool.py validate-knowledge-context \
 | [支持与反馈](SUPPORT.md) | 可复现缺陷、文档缺口和宿主兼容性报告。 |
 | [迁移到 1.0](docs/migrating-to-1.0.md) | 开放/受约束 Brief/Decision/Plan 产物、共存和回滚。 |
 | [发布验证](docs/releasing.md) | 确定性 ZIP、校验和、SBOM 和 Attestation。 |
+| [路线图](docs/roadmap.md) | 唯一后续计划、证据里程碑和条件触发项。 |
 | [实施矩阵](docs/comprehensive-review-implementation.md) | 审核建议如何映射为可执行能力与证据。 |
 | [自审历史](.architecture/reviews/README.md) | 衡木如何治理自身仓库。 |
 | [视觉资产](docs/assets/brand/README.md) | 双语 Icon、Banner、青野角色和流程图源文件规范。 |
@@ -623,7 +624,11 @@ python3 scripts/audit_licenses.py
 python3 scripts/package_plugin.py --format codex --output-dir dist
 python3 scripts/package_plugin.py --format agent-plugins --output-dir dist
 python3 scripts/smoke_test_package.py \
-  --archive "dist/hengmu-*-agent-plugins.zip"
+  --format codex \
+  --archive dist/hengmu-<version>.zip
+python3 scripts/smoke_test_package.py \
+  --format agent-plugins \
+  --archive dist/hengmu-<version>-agent-plugins.zip
 python3 scripts/verify_checksum.py dist/*.zip.sha256
 python3 scripts/generate_sbom.py \
   --archive dist/*.zip \

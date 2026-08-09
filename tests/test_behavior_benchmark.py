@@ -114,7 +114,7 @@ class BehaviorBenchmarkTests(unittest.TestCase):
                 corpus_path=corpus_path,
                 corpus=corpus,
                 command=[sys.executable, "-c", "pass"],
-                skill_version="1.0.2",
+                skill_version="1.0.3",
                 model="test-model",
                 surface=surface,
                 declared_runtimes=[sys.executable],
@@ -159,7 +159,7 @@ class BehaviorBenchmarkTests(unittest.TestCase):
                 output=output,
                 model="test-model",
                 surface=python_surface,
-                skill_version="1.0.2",
+                skill_version="1.0.3",
                 runtime_executables=[sys.executable],
                 timeout=10,
                 command=[
@@ -399,7 +399,7 @@ class BehaviorBenchmarkTests(unittest.TestCase):
                 surface=(
                     python_version.stdout.strip() or python_version.stderr.strip()
                 ),
-                skill_version="1.0.2",
+                skill_version="1.0.3",
                 runtime_executables=[sys.executable],
                 timeout=10,
                 repetitions=1,
@@ -454,7 +454,7 @@ class BehaviorBenchmarkTests(unittest.TestCase):
                 output=output,
                 model="test-model",
                 surface="test-surface",
-                skill_version="1.0.2",
+                skill_version="1.0.3",
                 runtime_executables=[],
                 timeout=10,
                 repetitions=1,
