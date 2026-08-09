@@ -6,7 +6,14 @@ GitHub Issues may track execution only when they link back to this file.
 
 ## v1.0.3 release integrity
 
-Status: in progress.
+Status: complete. Released as
+[v1.0.3](https://github.com/qingye-lab/hengmu/releases/tag/v1.0.3) on
+2026-08-09.
+
+Completion evidence: [PR #21](https://github.com/qingye-lab/hengmu/pull/21),
+[main CI](https://github.com/qingye-lab/hengmu/actions/runs/31291961006), and
+[tag CI and release](https://github.com/qingye-lab/hengmu/actions/runs/31292016934)
+all bind to merge commit `cfd041d`.
 
 Required outcomes:
 
