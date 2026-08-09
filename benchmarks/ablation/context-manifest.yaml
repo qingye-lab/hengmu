@@ -53,6 +53,19 @@ treatments:
       - resources/knowledge/foundations/proportional-design.md
       - resources/knowledge/foundations/technology-selection.md
       - resources/knowledge/foundations/evolutionary-architecture.md
+      - resources/knowledge/architecture-styles/web-queue-worker.md
+      - resources/knowledge/architecture-styles/durable-workflow.md
+      - resources/knowledge/architecture-styles/modular-monolith.md
+      - resources/knowledge/architecture-styles/microservices.md
+      - resources/knowledge/decision-guides/request-vs-background-job.md
+      - resources/knowledge/decision-guides/local-first-vs-server-first.md
+      - resources/knowledge/decision-guides/monolith-vs-microservices.md
+      - resources/knowledge/decision-guides/agent-orchestration-selection.md
+      - resources/knowledge/decision-guides/single-agent-vs-multi-agent.md
+      - resources/knowledge/case-studies/queue-worker-before-workflow.md
+      - resources/knowledge/case-studies/server-cache-not-local-first.md
+      - resources/knowledge/case-studies/small-team-modular-saas.md
+      - resources/knowledge/case-studies/single-agent-is-sufficient.md
   - <<: *full_project
     skill: ai-agent-architecture-audit
     skill_metadata: [skills/ai-agent-architecture-audit/SKILL.md]
