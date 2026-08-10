@@ -7,16 +7,16 @@ review:
     id: hengmu
     name: Hengmu
     repository: .
-  performed_at: '2026-08-10T11:29:45+00:00'
+  performed_at: '2026-08-10T11:49:33+00:00'
   commit: 538886f05c1066d04bfff1f286c3e6eb692e6d1f
   scope: ['.']
   verification_state: verified
   reviewers: [architecture-verifier]
   verification_run:
-    id: hengmu-release-1-0-4-anchored-verifier-20260810-112945
+    id: hengmu-release-1-0-4-anchored-verifier-20260810-114933
     surface: codex-desktop
     started_at: '2026-08-10T11:27:00+00:00'
-    completed_at: '2026-08-10T11:29:45+00:00'
+    completed_at: '2026-08-10T11:49:33+00:00'
   source_candidate:
     path: .architecture/reviews/2026-08-10-release-1.0.4-anchored-project-candidates.yaml
     review_id: hengmu-20260810-release-1-0-4-anchored-project-candidates
@@ -158,6 +158,10 @@ limitations:
   - The branch and tag GitHub quality matrices remain external evidence until their workflows finish; local macOS package and host observations are bound separately.
   - Codex CLI 0.147.0 on the recorded macOS host is the only installed-host observation; Cursor, VS Code, GitHub Copilot CLI, Kiro, and ChatGPT plugin activation remain unverified.
 coverage_complete: true
+tool_evidence:
+  - provider_id: test-results
+    run_path: .architecture/evidence/test-results-20260810t114352085909z-538886f05c10.yaml
+    run_sha256: 0a68cffd6c8acefb097d9c59514b475831d8c53880529f7c787143929b656e01
 repository_facts:
   path: .architecture/reviews/inputs/2026-08-10-release-1.0.4-anchored-repository-facts.yaml
   sha256: 7edef3c2cbe3fc030e27c20921052ecfad1c633f8141aa796a4938d07fa2b1bb

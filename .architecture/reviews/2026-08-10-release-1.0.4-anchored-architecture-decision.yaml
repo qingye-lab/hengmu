@@ -2,8 +2,8 @@ schema_version: '1.2'
 decision:
   id: ADR-HENGMU-RELEASE-1.0.4-001
   source_review: hengmu-20260810-release-1-0-4-anchored-project-verified
-  source_review_sha256: 427d06d92e4064baeaea4ccd98dec12f0260e95c2342494d61b7a9b6c290c4f5
-  decided_at: '2026-08-10T19:37:46+08:00'
+  source_review_sha256: ff3f5bcc3fb4ae00c3247471b0b83ec22ec927bc1de39075e74fbfe4f8dfc8ae
+  decided_at: '2026-08-10T19:49:34+08:00'
   decision_makers: [architecture-owner]
   status: accepted
   supersedes: ADR-HENGMU-RELEASE-1.0.3-001
@@ -27,7 +27,7 @@ problem:
     - GitHub Actions remains the hosted publication environment after local gates pass.
   known_facts:
     - The independent V2 Review reports zero confirmed, rejected, or needs-evidence Findings across 31 rules, six critical flows, and eight selected Knowledge entries.
-    - A source-matched deterministic Evidence Provider run at 298ca2e reports 161 passing tests.
+    - A source-matched deterministic Evidence Provider run at 538886f reports 161 passing tests.
     - Both version 1.0.4 archives were byte-identical across two independent builds, and their checksums, smoke tests, and SPDX SBOM generation passed.
     - A real Codex CLI 0.147.0 macOS installation routed the packaged plugin to hengmu:project-architecture-audit.
     - The Selector source binds commit 45c427396a7eb5fc500ed2ab4b6375720bfc310c, whose plugin manifest declares version 1.0.4.
