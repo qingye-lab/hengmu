@@ -1,0 +1,179 @@
+schema_version: '1.2'
+decision:
+  id: ADR-HENGMU-RELEASE-1.0.4-001
+  source_review: hengmu-20260810-release-1-0-4-anchored-project-verified
+  source_review_sha256: ff3f5bcc3fb4ae00c3247471b0b83ec22ec927bc1de39075e74fbfe4f8dfc8ae
+  decided_at: '2026-08-10T19:49:34+08:00'
+  decision_makers: [architecture-owner]
+  status: accepted
+  supersedes: ADR-HENGMU-RELEASE-1.0.3-001
+  knowledge_selection_path: .architecture/reviews/inputs/2026-08-10-release-1.0.4-anchored-decision-current-knowledge-selection.yaml
+  knowledge_selection_sha256: 3947d070349e2c875a7da791aaeb828dd80ab597dadfea41c9fe7b1c99a14a79
+problem:
+  quality_attributes:
+    - compatibility
+    - deterministic-enforcement
+    - safety
+    - traceability
+  constraints:
+    - Preserve the local-first plugin, public Skill names, artifact schemas, and deterministic Python CLI product boundary.
+    - Keep the plugin manifests, CLI version, template version, documentation, and release tag aligned.
+    - Require the Selector source anchor to be reachable from the reviewed commit and to expose the same manifest version.
+    - Do not publish a tag until the complete six-job hosted quality matrix passes.
+    - Publish an immutable new tag and never replace the version 1.0.3 release assets.
+  finding_ids: []
+  assumptions:
+    - Version 1.0.4 is a compatible patch release with no public runtime or artifact-schema change.
+    - GitHub Actions remains the hosted publication environment after local gates pass.
+  known_facts:
+    - The independent V2 Review reports zero confirmed, rejected, or needs-evidence Findings across 31 rules, six critical flows, and eight selected Knowledge entries.
+    - A source-matched deterministic Evidence Provider run at 538886f reports 161 passing tests.
+    - Both version 1.0.4 archives were byte-identical across two independent builds, and their checksums, smoke tests, and SPDX SBOM generation passed.
+    - A real Codex CLI 0.147.0 macOS installation routed the packaged plugin to hengmu:project-architecture-audit.
+    - The Selector source binds commit 45c427396a7eb5fc500ed2ab4b6375720bfc310c, whose plugin manifest declares version 1.0.4.
+    - The release workflow uses the verified immutable actions/attest version 4.2.2 commit pin for provenance and both package SBOM attestations.
+    - Branch and tag hosted workflows remain pending external evidence until publication runs.
+  unknowns:
+    - The tag-triggered actions/attest version 4.2.2 execution and published attestation verification remain unobserved until the release workflow finishes.
+    - Cursor, VS Code Copilot, and Kiro activation remain unverified for Hengmu 1.0.4.
+knowledge_snapshot:
+  - {id: domain.plugin-platform, version: 1.0.0, sha256: b72a0e3b6959464b32c9a4d44b50baa40b4baf13b5b14f65f99d094f301bf58c}
+  - {id: foundation.evolutionary-architecture, version: 1.0.0, sha256: b9b125fa34bdeb346145f926210f7052d60d8f3b5f4e225cf1aa0fdb6a7888e5}
+  - {id: foundation.proportional-design, version: 1.0.0, sha256: ccfa63d523fab3503c47dbf73fc7a9ae85c7fc516856bcf422322c0d92a409df}
+  - {id: foundation.quality-attributes, version: 1.0.0, sha256: 50d92ab7563d70605408ba4592d9445f79f6eb0cecb50195471b56e42418b680}
+  - {id: foundation.technology-selection, version: 1.0.0, sha256: ce43c17d29cc79ad65c0f1a551a938f3fec642d1e75070b98d4aa3336ddf882d}
+  - {id: foundation.tradeoff-analysis, version: 1.0.0, sha256: 058c9756ba4d9306f42e0fb49365aff3564f3545e103c05812040ce2c9f8b9d5}
+  - {id: domain.test-automation-platform, version: 1.0.0, sha256: 7ce2621239bad831f4a6689a1718b5dd1cdbbf1d6d2e3bb9a6d043457a70e016}
+options:
+  - id: keep-current
+    title: Publish version 1.0.4 as a compatible provenance patch
+    complexity_tier: keep-current
+    architecture_styles: []
+    patterns: []
+    technologies: []
+    benefits:
+      - Exercises and verifies the actions/attest version 4.2.2 release path end to end.
+      - Preserves public Skills, artifact schemas, local execution, and both package projections.
+      - Publishes an immutable version with independently reviewed source and deterministic package evidence.
+    liabilities:
+      - Adds another patch release and its permanent governance history.
+      - Each unverified host still requires its own dated compatibility evidence.
+    assumptions:
+      - A patch release can change release provenance tooling without changing public runtime behavior.
+    quality_attribute_effects:
+      - {attribute: compatibility, effect: neutral, rationale: 'Public Skill identities, schemas, runtime contents, and portable boundaries remain stable.'}
+      - {attribute: deterministic-enforcement, effect: improves, rationale: The tag workflow applies one verified immutable attest action pin to provenance and both SBOM attestations.}
+      - {attribute: safety, effect: improves, rationale: 'The new release proves its source, packages, checksums, SBOMs, and attestations without mutating prior release assets.'}
+      - {attribute: traceability, effect: improves, rationale: 'The release binds a reachable Selector anchor, independent V2 Review, accepted decision, package hashes, tag, and attestations.'}
+    business_fit: Completes the explicitly authorized release using the smallest compatible versioned change.
+    team_fit: Uses the existing Python, GitHub Actions, Skill, schema, evidence, and release boundaries owned by the maintainers.
+    evolution_fit: Keeps host adapters and public contract changes conditional on measured evidence.
+    implementation_complexity: low
+    operational_complexity: low
+    migration_risk: low
+    reversibility: easy
+    cost: low
+    technical_maturity: mature
+    lock_in: none
+    tradeoff_scores: {business_fit: 2, quality_fit: 2, team_fit: 2, implementation: 2, operations: 2, migration: 2, reversibility: 2, cost: 2, maturity: 2, lock_in: 2, evolution: 2}
+    rejected_reasons: []
+  - id: defer-publication
+    title: Keep the version 1.0.4 changes unreleased
+    complexity_tier: low
+    architecture_styles: []
+    patterns: []
+    technologies: []
+    benefits:
+      - Avoids creating a new tag and permanent release assets immediately.
+    liabilities:
+      - Leaves the actions/attest version 4.2.2 tag path unproved.
+      - Does not complete the repository owner's explicit publication request.
+    assumptions:
+      - A later release can safely validate the same provenance change.
+    quality_attribute_effects:
+      - {attribute: compatibility, effect: neutral, rationale: No public package would change because no package would be published.}
+      - {attribute: deterministic-enforcement, effect: degrades, rationale: Local evidence cannot prove the tag-only release and attestation path.}
+      - {attribute: safety, effect: neutral, rationale: Existing release assets remain intact but no new verified artifact is produced.}
+      - {attribute: traceability, effect: degrades, rationale: The reviewed release chain would end before an immutable tag and public attestations exist.}
+    business_fit: Avoids short-term publication but leaves the authorized release incomplete.
+    team_fit: Requires maintainers to repeat the same release preparation later.
+    evolution_fit: Defers rather than removes the same bounded validation obligation.
+    implementation_complexity: low
+    operational_complexity: low
+    migration_risk: low
+    reversibility: easy
+    cost: medium
+    technical_maturity: mature
+    lock_in: none
+    tradeoff_scores: {business_fit: -2, quality_fit: -1, team_fit: -1, implementation: 2, operations: 1, migration: 2, reversibility: 2, cost: 0, maturity: 2, lock_in: 2, evolution: -1}
+    rejected_reasons:
+      - It leaves the tag-triggered provenance path unverified and the explicit publication request incomplete.
+  - id: replace-existing-release
+    title: Replace version 1.0.3 assets or reuse its tag
+    complexity_tier: low
+    architecture_styles: []
+    patterns: []
+    technologies: []
+    benefits:
+      - Avoids adding a visible patch-version entry.
+    liabilities:
+      - Breaks the immutable version-to-source and version-to-artifact identity contract.
+      - Invalidates existing checksums, SBOMs, attestations, caches, and consumer expectations for version 1.0.3.
+    assumptions:
+      - Consumers do not depend on stable Git tags or release assets.
+    quality_attribute_effects:
+      - {attribute: compatibility, effect: degrades, rationale: The same version would resolve to different source and archive bytes.}
+      - {attribute: deterministic-enforcement, effect: degrades, rationale: Historical verification could no longer reproduce the published artifact identity.}
+      - {attribute: safety, effect: degrades, rationale: Replacing trusted assets makes prior integrity metadata misleading.}
+      - {attribute: traceability, effect: degrades, rationale: 'Existing tag, checksum, SBOM, and attestation bindings would no longer describe the release.'}
+    business_fit: Saves one version number at the cost of release trust.
+    team_fit: Contradicts the repository's documented immutable release workflow.
+    evolution_fit: Makes future incident analysis and rollback ambiguous.
+    implementation_complexity: low
+    operational_complexity: high
+    migration_risk: high
+    reversibility: difficult
+    cost: high
+    technical_maturity: experimental
+    lock_in: high
+    tradeoff_scores: {business_fit: -2, quality_fit: -2, team_fit: -2, implementation: 2, operations: -2, migration: -2, reversibility: -2, cost: -2, maturity: -2, lock_in: -2, evolution: -2}
+    rejected_reasons:
+      - It violates the immutable versioned-release contract and would invalidate existing integrity evidence.
+selected_option: keep-current
+rationale: >-
+  Publishing an immutable version 1.0.4 is the smallest compatible response to
+  the explicitly authorized release request and the only option that exercises
+  the tag-only actions/attest version 4.2.2 path. Deferral leaves the release
+  path unproved, while replacing version 1.0.3 assets violates the release
+  identity contract and invalidates existing integrity evidence.
+revisit_triggers:
+  - The tagged workflow or any version 4.2.2 provenance or SBOM attestation fails.
+  - A published archive checksum, source anchor, SBOM, or attestation does not match the reviewed release identity.
+  - A reproducible host failure demonstrates that the portable contract cannot provide a public Hengmu outcome.
+acceptance_evidence:
+  - The repository owner explicitly instructed publication of version 1.0.4 and authorized merge to main and release on 2026-08-10.
+  - The architecture-owner role accepts the bounded patch release with no public runtime or artifact-schema change.
+  - The accepted decision is bound to the independent V2 Review and the deterministic Evidence Provider run reporting 161 passing tests.
+migration:
+  affected_paths:
+    - .codex-plugin/plugin.json
+    - plugin.json
+    - resources/scripts/architecture_tool.py
+    - resources/templates/knowledge-selection.yaml
+    - resources/selector-source.json
+    - CHANGELOG.md
+    - README.md
+    - README.zh-CN.md
+    - .github/workflows/release.yml
+    - docs/compatibility-evidence/2026-08-10-hengmu-1.0.4.md
+    - tests/
+  slices:
+    - Align the versioned manifests, deterministic tool outputs, templates, documentation, tests, and reachable Selector source anchor.
+    - Preserve the exact verified actions/attest version 4.2.2 commit pin for provenance and both package SBOM attestations.
+    - Bind deterministic two-build package evidence and a real Codex host-routing observation.
+    - Pass the release gate and full hosted matrix before immutable tag publication, then verify downloaded assets and attestations.
+  rollback: Before tag publication, revert the branch or merge commit; after publication, never replace the version 1.0.4 assets and instead mark the release appropriately and publish a corrective version 1.0.5 patch.
+  validation:
+    - Validate the exact Review, Decision, Knowledge selection, Evidence Provider run, and release Gate bindings.
+    - Pass repository, profile, history, Knowledge, 161-test, lint, formatting, dependency, license, package, checksum, SBOM, and smoke checks.
+    - Require the hosted six-job quality matrix before tag publication and verify downloaded checksums and published attestations afterward.

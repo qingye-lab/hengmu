@@ -7,6 +7,13 @@ and this project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.0.4] - 2026-08-10
+
+### Changed
+
+- Release provenance, Codex package SBOM, and Agent Plugins package SBOM
+  attestations now use the verified `actions/attest` 4.2.2 commit pin.
+
 ## [1.0.3] - 2026-08-09
 
 ### Added
