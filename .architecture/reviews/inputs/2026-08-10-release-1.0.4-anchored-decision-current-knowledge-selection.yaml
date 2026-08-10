@@ -471,13 +471,13 @@ inputs:
   skill: architecture-solution-advisor
   task: Decide whether to publish anchored Hengmu v1.0.4 as a compatible provenance-only
     patch release or defer publication
-  facts_sha256: 7edef3c2cbe3fc030e27c20921052ecfad1c633f8141aa796a4938d07fa2b1bb
+  facts_sha256: f5e15ff2a292ddadf54d923bf682936779fa5922b10a64155a7ca7ecd1eaed64
   maintainer_mode: false
   includes: []
   excludes: []
   decision_intents: []
-  project_commit: 538886f05c1066d04bfff1f286c3e6eb692e6d1f
-  profile_sha256: c4a77c53d487f3d3902c131f65d389464d2fd873a2f06baa9b00abc135ff742f
+  project_commit: a64b1c389ffdd83b03f059037b58aa72de6bec7a
+  profile_sha256: 2f7e56a30557476a74042a33e1944b26be68d2858cc7de3985ff8938fcb80959
 budget:
   maximum_entries: 24
   selected_entries: 7
@@ -547,4 +547,4 @@ selector:
   knowledge_tree_sha256: bab501b2017e889fd61471a0fcc2ba868e56f31cc2738c2efd67f2bdf4660696
   selection_policy_version: '1.0'
   replay_mode: creation-time-lock
-result_sha256: f2c8cb5cbf772958637772568ef9f9472623e70ee28c142e100c9fa12e4e186d
+result_sha256: 48dae4dae162b65ee605bd14ffffda9691c130d9468518497e3efd894d92e888

@@ -1,6 +1,6 @@
 schema_version: '1.1'
-selection_lock_sha256: 6abeddc557087fcf4b8ee3cb871a71269953e1b14a577e0e278c8d798e730815
-selection_result_sha256: f2c8cb5cbf772958637772568ef9f9472623e70ee28c142e100c9fa12e4e186d
+selection_lock_sha256: 3947d070349e2c875a7da791aaeb828dd80ab597dadfea41c9fe7b1c99a14a79
+selection_result_sha256: 48dae4dae162b65ee605bd14ffffda9691c130d9468518497e3efd894d92e888
 disclosure:
   order:
   - operational-kernel
