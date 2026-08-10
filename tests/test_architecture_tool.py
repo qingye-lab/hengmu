@@ -3325,7 +3325,7 @@ class ArchitectureToolTests(unittest.TestCase):
             check=False,
         )
         self.assertEqual(process.returncode, 0, process.stderr)
-        self.assertEqual(process.stdout.strip(), "architecture_tool.py 1.0.3")
+        self.assertEqual(process.stdout.strip(), "architecture_tool.py 1.0.4")
 
     def test_benchmark_score_cli_can_preserve_json_output(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
