@@ -1,0 +1,60 @@
+{
+  "schema_version": "1.0",
+  "kind": "banner",
+  "project": "Hengmu",
+  "locales": [
+    "en",
+    "zh-CN"
+  ],
+  "canvas": {
+    "width": 1600,
+    "height": 900
+  },
+  "deliverables": [
+    {
+      "stem": "hengmu-cover",
+      "formats": [
+        "svg",
+        "png"
+      ]
+    }
+  ],
+  "brand": {
+    "source_repository": "liyanqing90/qingye-brand",
+    "offline_snapshot": "docs/assets/brand",
+    "baseline": "v1.1 Refined",
+    "wordmark": "docs/assets/brand/qingye-wordmark-blue.svg"
+  },
+  "design_philosophy": "docs/assets/brand/design-philosophy.md",
+  "message": "Candidate evidence must cross independent verification before it can support a trusted architecture decision.",
+  "target": {
+    "platform": "Cola Skill cover",
+    "aspect_ratio": "16:9",
+    "display_reference": "approximately 552x310 CSS pixels"
+  },
+  "source_copy": {
+    "en": {
+      "title": "HENGMU",
+      "proposition": "EVIDENCE-BOUND ARCHITECTURE DECISIONS"
+    },
+    "zh-CN": {
+      "title": "衡木",
+      "proposition": "受证据约束的架构决策"
+    }
+  },
+  "generated_layer": {
+    "tool": "built-in imagegen",
+    "role": "language-neutral non-text evidence and verification linework",
+    "prompt": "source/illustration-prompt.md",
+    "original": "source/illustration-layer-original.png",
+    "edit_prompt": "source/illustration-edit-prompt.md",
+    "edited_original": "source/illustration-layer-edited-original.png",
+    "normalized": "source/illustration-layer.png",
+    "critical_identity_excluded": true
+  },
+  "visual_inspection": {
+    "rendered": true,
+    "locale_pairs_compared": true,
+    "target_crop_checked": true
+  }
+}

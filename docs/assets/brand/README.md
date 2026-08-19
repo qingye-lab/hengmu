@@ -86,6 +86,10 @@ Illustrations Skill; Xiaohei itself is not used as Hengmu's public character.
 
 - Use `hengmu-icon.png` for square repository, release, or package surfaces.
 - Use `hengmu-banner.png` for GitHub social preview and announcement covers.
+- Treat `hengmu-banner` and `assets/hengmu-cola-cover/hengmu-cover` as one
+  project-cover family. They share the same evidence-to-verification visual
+  layer, Qingye identity, project copy, and Measured Horizon gesture; adapt the
+  composition to 3:1 or 16:9 instead of cropping one output into the other.
 - Prefer the locale matching the surrounding copy.
 - Do not recolor individual elements, add gradients, or place the mark on a
   low-contrast photographic background.
