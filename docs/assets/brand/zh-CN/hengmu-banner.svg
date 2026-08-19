@@ -3,13 +3,12 @@
   <desc id="desc">衡木是受证据约束的架构设计与决策系统，使用青野官方字标。</desc>
   <rect width="2172" height="724" fill="#F4F2EC"/>
 
+  <image href="../../../../assets/hengmu-cola-cover/source/illustration-layer.png" x="500" y="0" width="1287" height="724" preserveAspectRatio="none"/>
+  <path d="M1554 351 1689 0H2172V145Z" fill="#173FBE"/>
+
   <image href="../qingye-wordmark-blue.png" x="154" y="56" width="158" height="71" preserveAspectRatio="xMinYMid meet"/>
 
   <text x="600" y="438" text-anchor="middle" fill="#161719" font-family="PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif" font-size="174" font-weight="600" letter-spacing="20">衡木</text>
   <text x="600" y="505" text-anchor="middle" fill="#6D7078" font-family="PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif" font-size="29" font-weight="400" letter-spacing="7">受证据约束的架构决策</text>
-
-  <path d="M1168 574 1964 0H2172V310Z" fill="#173FBE"/>
-  <path d="M954 574h780M1168 574v150" fill="none" stroke="#D9D9D2" stroke-width="2"/>
-  <path d="M1153 574h30M1168 559v30" fill="none" stroke="#6D7078" stroke-width="2"/>
 
 </svg>

@@ -2,6 +2,7 @@
   "schema_version": "1.0",
   "kind": "banner",
   "project": "Hengmu",
+  "message": "Candidate evidence must cross independent verification before it can support a trusted architecture decision.",
   "locales": ["en", "zh-CN"],
   "canvas": {
     "width": 2172,
@@ -12,5 +13,21 @@
       "stem": "hengmu-banner",
       "formats": ["svg", "png"]
     }
-  ]
+  ],
+  "cover_family": {
+    "master_layer": "../../../assets/hengmu-cola-cover/source/illustration-layer.png",
+    "related_16_9_set": "../../../assets/hengmu-cola-cover/visual-set.json",
+    "adaptation": "platform-specific reflow; never center-crop the 3:1 banner into 16:9"
+  },
+  "brand": {
+    "source_repository": "liyanqing90/qingye-brand",
+    "offline_snapshot": "docs/assets/brand",
+    "baseline": "v1.1 Refined",
+    "wordmark": "docs/assets/brand/qingye-wordmark-blue.svg"
+  },
+  "visual_inspection": {
+    "rendered": true,
+    "locale_pairs_compared": true,
+    "target_crop_checked": true
+  }
 }
