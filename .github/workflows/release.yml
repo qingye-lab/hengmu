@@ -63,10 +63,16 @@ jobs:
       - name: Run tests with branch coverage
         run: >-
           python -m pytest
-          --cov=resources/scripts
+          --cov
           --cov-branch
           --cov-report=term-missing:skip-covered
           --cov-report=xml
+
+      - name: Enforce runtime branch coverage
+        run: >-
+          python -m coverage report
+          --include="resources/scripts/*"
+          --fail-under=68.0
 
       - name: Run strict type checking
         run: python -m mypy resources/scripts scripts

@@ -21,7 +21,8 @@ Status: in implementation.
 Required outcomes:
 
 - maintain at least 68% branch-aware coverage of `resources/scripts`, plus 90%
-  coverage of non-deleted Python lines changed by a pull request;
+  coverage of non-deleted Python lines changed under `resources/scripts` and
+  maintainer `scripts` by a pull request;
 - run strict mypy checking for `resources/scripts` and `scripts` without broad
   suppressions while retaining JSON Schema as the runtime authority;
 - support CPython 3.11 through 3.14 with eight hosted endpoint/intermediate

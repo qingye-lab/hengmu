@@ -4,6 +4,7 @@ import importlib.util
 import shutil
 import sys
 import tempfile
+import tomllib
 import unittest
 from pathlib import Path
 
@@ -22,6 +23,30 @@ class RepositoryContractTests(unittest.TestCase):
     def test_repository_contract(self) -> None:
         errors = validate_repository.validate_repository(ROOT)
         self.assertEqual(errors, [], "\n".join(errors))
+
+    def test_dogfood_python_contract_covers_supported_endpoints(self) -> None:
+        profile = (ROOT / ".architecture" / "profile.yaml").read_text(encoding="utf-8")
+        constraints = (ROOT / ".architecture" / "constraints.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("Python 3.11 through 3.14", profile)
+        self.assertIn("Python 3.11 through 3.14", constraints)
+        self.assertNotIn("Python 3.11 through 3.13", profile)
+        self.assertNotIn("Python 3.11 through 3.13", constraints)
+
+    def test_coverage_collects_both_trees_without_a_combined_floor(self) -> None:
+        configuration = tomllib.loads(
+            (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+        )
+        run = configuration["tool"]["coverage"]["run"]
+        report = configuration["tool"]["coverage"]["report"]
+        self.assertEqual(run["source"], ["."])
+        self.assertTrue(run["relative_files"])
+        self.assertEqual(
+            report["include"],
+            ["resources/scripts/*", "scripts/*"],
+        )
+        self.assertNotIn("fail_under", report)
 
     def test_floating_github_action_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

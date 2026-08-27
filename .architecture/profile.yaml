@@ -101,7 +101,7 @@ project:
     budget: constrained
     deadlines: Release only after all local and CI contracts pass.
     required_stack:
-    - Python 3.11 through 3.13
+    - Python 3.11 through 3.14
     - Codex plugin and Agent Plugins Skill formats
     prohibited_services:
     - Required hosted runtime

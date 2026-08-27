@@ -19,7 +19,7 @@ Maintainers review them with every release that changes a public contract.
 
 ## Platform and compatibility
 
-- Runtime scripts support Python 3.11 through 3.13 with only PyYAML and
+- Runtime scripts support Python 3.11 through 3.14 with only PyYAML and
   jsonschema. Owner: maintainers. Source: CI boundary matrix and requirements.
   Review each minor release.
 - The plugin keeps Skills as direct children of `skills/` and shared runtime

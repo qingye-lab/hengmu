@@ -66,10 +66,17 @@ jobs:
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.13'
         run: >-
           python -m pytest
-          --cov=resources/scripts
+          --cov
           --cov-branch
           --cov-report=term-missing:skip-covered
           --cov-report=xml
+
+      - name: Enforce runtime branch coverage
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.13'
+        run: >-
+          python -m coverage report
+          --include="resources/scripts/*"
+          --fail-under=68.0
 
       - name: Run tests
         if: matrix.os != 'ubuntu-latest' || matrix.python-version != '3.13'

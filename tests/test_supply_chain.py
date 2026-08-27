@@ -132,6 +132,13 @@ class SupplyChainTests(unittest.TestCase):
                 {"os": "ubuntu-latest", "python-version": "3.13"},
             ],
         )
+        quality_steps = {step["name"]: step for step in quality["steps"]}
+        coverage_command = quality_steps["Run tests with branch coverage"]["run"]
+        self.assertRegex(coverage_command, r"(?:^|\s)--cov(?:\s|$)")
+        self.assertNotIn("--cov=", coverage_command)
+        runtime_command = quality_steps["Enforce runtime branch coverage"]["run"]
+        self.assertIn('--include="resources/scripts/*"', runtime_command)
+        self.assertIn("--fail-under=68.0", runtime_command)
 
         publish = ci["jobs"]["release"]
         self.assertEqual(publish["needs"], ["quality-gate"])
@@ -149,6 +156,17 @@ class SupplyChainTests(unittest.TestCase):
             },
         )
         self.assertEqual(set(release["on"]), {"workflow_call"})
+        release_steps = {
+            step["name"]: step for step in release["jobs"]["release"]["steps"]
+        }
+        self.assertRegex(
+            release_steps["Run tests with branch coverage"]["run"],
+            r"(?:^|\s)--cov(?:\s|$)",
+        )
+        self.assertIn(
+            "--fail-under=68.0",
+            release_steps["Enforce runtime branch coverage"]["run"],
+        )
 
     def test_checksum_and_sbom_cover_archive(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

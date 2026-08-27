@@ -9,9 +9,14 @@ import re
 import shutil
 import subprocess
 import sys
+import xml.etree.ElementTree as ElementTree
 from pathlib import Path
 
 COMMIT_RE = re.compile(r"^[0-9a-fA-F]{40}$")
+SCOPED_PATHS = (
+    ":(glob)resources/scripts/**/*.py",
+    ":(glob)scripts/**/*.py",
+)
 
 
 class ChangedCoverageError(RuntimeError):
@@ -44,9 +49,45 @@ def changed_python_paths(root: Path, merge_base: str) -> tuple[str, ...]:
         "--diff-filter=ACMR",
         f"{merge_base}...HEAD",
         "--",
-        "*.py",
+        *SCOPED_PATHS,
     )
     return tuple(line for line in output.splitlines() if line.endswith(".py"))
+
+
+def coverage_xml_paths(root: Path, coverage_xml: Path) -> set[str]:
+    try:
+        document = ElementTree.parse(coverage_xml)
+    except ElementTree.ParseError as exc:
+        raise ChangedCoverageError(f"Coverage XML is malformed: {exc}") from exc
+    paths: set[str] = set()
+    for record in document.findall(".//class"):
+        filename = record.get("filename")
+        if not filename:
+            raise ChangedCoverageError("Coverage XML contains a class without a file")
+        normalized = filename.replace("\\", "/")
+        candidate = Path(normalized)
+        if candidate.is_absolute():
+            try:
+                normalized = candidate.resolve().relative_to(root).as_posix()
+            except ValueError:
+                continue
+        else:
+            normalized = candidate.as_posix().removeprefix("./")
+        paths.add(normalized)
+    return paths
+
+
+def require_changed_paths_in_coverage(
+    root: Path,
+    coverage_xml: Path,
+    changed_paths: tuple[str, ...],
+) -> None:
+    covered = coverage_xml_paths(root, coverage_xml)
+    missing = sorted(set(changed_paths) - covered)
+    if missing:
+        raise ChangedCoverageError(
+            "Changed Python paths are missing from coverage XML: " + ", ".join(missing)
+        )
 
 
 def run_diff_cover(
@@ -101,6 +142,7 @@ def main() -> int:
         if not paths:
             print("Changed-line coverage skipped: no non-deleted Python changes.")
             return 0
+        require_changed_paths_in_coverage(root, coverage_xml, paths)
         run_diff_cover(
             root,
             coverage_xml,

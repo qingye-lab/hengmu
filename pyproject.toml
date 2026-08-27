@@ -4,12 +4,13 @@ testpaths = ["tests"]
 
 [tool.coverage.run]
 branch = true
-source = ["resources/scripts"]
+source = ["."]
+relative_files = true
 omit = ["*/hengmu-package-smoke-*/*"]
 patch = ["subprocess"]
 
 [tool.coverage.report]
-fail_under = 68.0
+include = ["resources/scripts/*", "scripts/*"]
 show_missing = true
 skip_covered = true
 
