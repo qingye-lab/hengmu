@@ -239,7 +239,12 @@ class GhReleaseClient:
 
     def require_immutable_releases(self, repository: str) -> None:
         process = self._run(
-            ["api", f"repos/{repository}/immutable-releases"],
+            [
+                "api",
+                "-H",
+                "X-GitHub-Api-Version: 2026-03-10",
+                f"repos/{repository}/immutable-releases",
+            ],
             allow_failure=True,
         )
         if process.returncode != 0:

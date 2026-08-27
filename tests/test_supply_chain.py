@@ -111,10 +111,8 @@ class SupplyChainTests(unittest.TestCase):
         self,
     ) -> None:
         script = (ROOT / "scripts" / "publish_release.py").read_text(encoding="utf-8")
-        self.assertIn(
-            '["api", f"repos/{repository}/immutable-releases"]',
-            script,
-        )
+        self.assertIn('"X-GitHub-Api-Version: 2026-03-10",', script)
+        self.assertIn('f"repos/{repository}/immutable-releases",', script)
         self.assertNotRegex(
             script,
             re.compile(

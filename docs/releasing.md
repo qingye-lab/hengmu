@@ -88,7 +88,9 @@
     endpoint and require `enabled: true`:
 
     ```bash
-    gh api repos/qingye-lab/hengmu/immutable-releases
+    gh api \
+      -H "X-GitHub-Api-Version: 2026-03-10" \
+      repos/qingye-lab/hengmu/immutable-releases
     ```
 
     The publication script performs this same read-only preflight before any

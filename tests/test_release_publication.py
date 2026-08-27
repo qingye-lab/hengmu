@@ -271,7 +271,12 @@ class ReleasePublicationTests(unittest.TestCase):
         with patch.object(client, "_run", return_value=enabled) as run:
             client.require_immutable_releases("owner/repo")
         run.assert_called_once_with(
-            ["api", "repos/owner/repo/immutable-releases"],
+            [
+                "api",
+                "-H",
+                "X-GitHub-Api-Version: 2026-03-10",
+                "repos/owner/repo/immutable-releases",
+            ],
             allow_failure=True,
         )
 
