@@ -93,19 +93,36 @@
       repos/qingye-lab/hengmu/immutable-releases
     ```
 
-    The publication script performs this same read-only preflight before any
-    Release lookup or mutation. A disabled setting (including `404`), malformed
-    response, or authentication/API/CLI error blocks publication. The workflow
-    never enables the setting itself; retain the administrator action and GET
-    readback as release evidence. See GitHub's
+    The publication script's `publish` mode performs this same read-only
+    preflight as its first remote administration check. A disabled setting
+    (including `404`), malformed response, or authentication/API/CLI error
+    blocks publication with no Release mutation. Neither mode enables the
+    setting; retain the administrator action and GET readback as release
+    evidence. See GitHub's
     [immutable-release repository endpoints](https://docs.github.com/en/rest/repos/repos#check-if-immutable-releases-are-enabled-for-a-repository).
 18. Create a signed or annotated `v<version>` tag.
 19. Push the tag. The release workflow re-runs validation, tests, lint,
    formatting, dependency audit, deterministic packaging, checksum, and SBOM
    generation. It creates GitHub provenance and SBOM attestations, creates or
    resumes a draft containing exactly the two ZIPs, two checksums, and two SPDX
-   SBOMs, verifies their remote digests, and then publishes. A repeated run
-   verifies an existing published Release without modifying it.
+   SBOMs, and verifies their remote digests. This `prepare` phase does not check
+   the repository administration setting and does not publish.
+20. From an authenticated administrator environment, with the same six verified
+    files in `dist`, run the separate publication phase:
+
+    ```bash
+    python3 scripts/publish_release.py publish \
+      --repository qingye-lab/hengmu \
+      --tag v<version> \
+      --dist dist
+    ```
+
+    The command first reads back immutable-release enablement, then accepts only
+    a complete exact draft. It never creates, uploads, or replaces an asset. It
+    publishes once, requires the resulting Release to report `draft: false` and
+    `immutable: true` with the exact inventory, and verifies the Release and all
+    six assets with at most five attempts separated by ten seconds. Repeating
+    `publish` against an immutable published Release is read-only.
 
 After publication, verify both artifact digest and attestation:
 

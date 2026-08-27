@@ -103,6 +103,7 @@ class SupplyChainTests(unittest.TestCase):
         self.assertIn("sbom-path: ${{ env.CODEX_SBOM_PATH }}", workflow)
         self.assertIn("sbom-path: ${{ env.AGENT_PLUGINS_SBOM_PATH }}", workflow)
         self.assertIn("python scripts/publish_release.py", workflow)
+        self.assertIn("          prepare\n", workflow)
         self.assertIn('--repository "${GITHUB_REPOSITORY}"', workflow)
         self.assertIn('--tag "${GITHUB_REF_NAME}"', workflow)
         self.assertNotIn("sbom-path: dist/*.spdx.json", workflow)
@@ -128,6 +129,13 @@ class SupplyChainTests(unittest.TestCase):
         )
         lookup = script.index("client.get_release(repository, tag)", publication)
         self.assertLess(preflight, lookup)
+        preparation = script[script.index("def prepare_release(") : publication]
+        self.assertNotIn("require_immutable_releases", preparation)
+        self.assertNotIn("client.publish(", preparation)
+        publication_body = script[publication : script.index("class GhReleaseClient:")]
+        self.assertNotIn("client.create_draft(", publication_body)
+        self.assertNotIn("client.upload_asset(", publication_body)
+        self.assertIn("immutable: bool", script)
 
     def test_release_requires_complete_quality_matrix(self) -> None:
         ci_path = ROOT / ".github" / "workflows" / "ci.yml"
@@ -163,6 +171,7 @@ class SupplyChainTests(unittest.TestCase):
         self.assertIn("--fail-under=68.0", runtime_command)
 
         publish = ci["jobs"]["release"]
+        self.assertEqual(publish["name"], "Prepare verified tag draft")
         self.assertEqual(publish["needs"], ["quality-gate"])
         self.assertEqual(
             publish["if"],
@@ -181,6 +190,11 @@ class SupplyChainTests(unittest.TestCase):
         release_steps = {
             step["name"]: step for step in release["jobs"]["release"]["steps"]
         }
+        self.assertIn("Prepare exact GitHub release draft", release_steps)
+        prepare_command = release_steps["Prepare exact GitHub release draft"]["run"]
+        self.assertIn("scripts/publish_release.py prepare", prepare_command)
+        self.assertNotIn("scripts/publish_release.py publish", prepare_command)
+        self.assertFalse(any("Publish" in name for name in release_steps))
         self.assertRegex(
             release_steps["Run tests with branch coverage"]["run"],
             r"(?:^|\s)--cov(?:\s|$)",

@@ -153,11 +153,12 @@ jobs:
           subject-path: ${{ env.AGENT_PLUGINS_ARCHIVE }}
           sbom-path: ${{ env.AGENT_PLUGINS_SBOM_PATH }}
 
-      - name: Publish or verify immutable GitHub release
+      - name: Prepare exact GitHub release draft
         env:
           GH_TOKEN: ${{ github.token }}
         run: >-
           python scripts/publish_release.py
+          prepare
           --repository "${GITHUB_REPOSITORY}"
           --tag "${GITHUB_REF_NAME}"
           --dist dist

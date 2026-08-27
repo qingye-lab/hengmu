@@ -42,7 +42,7 @@ class ReviewArtifact(TypedDict):
     summary: dict[str, Any]
     coverage: list[dict[str, Any]]
     findings: list[Finding]
-    evidence_sources: list[dict[str, Any]]
+    evidence_sources: list[str]
     limitations: list[str]
     coverage_complete: NotRequired[bool]
     selected_knowledge: NotRequired[list[dict[str, Any]]]

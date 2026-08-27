@@ -156,7 +156,7 @@ REFERENCE_REF_RE = re.compile(
     r"`(?P<target>\.\./(?:schemas|scripts|templates)/[^`\s]+)`"
 )
 GITHUB_ACTION_USE_RE = re.compile(
-    r"^\s*(?:-\s*)?uses:\s*(?P<action>[^@\s#]+)@(?P<ref>[^\s#]+)",
+    r"^\s*(?:-\s*)?uses\s*:\s*(?P<value>.*)$",
     re.MULTILINE,
 )
 HTML_RESOURCE_RE = re.compile(
@@ -964,11 +964,29 @@ def validate_github_action_pins(root: Path, errors: list[str]) -> None:
     for path in paths:
         text = path.read_text(encoding="utf-8")
         for match in GITHUB_ACTION_USE_RE.finditer(text):
-            action = match.group("action")
-            action_ref = match.group("ref")
-            if action.startswith("./") or action.startswith("docker://"):
+            raw_value = match.group("value")
+            try:
+                parsed = yaml.safe_load(f"uses: {raw_value}\n")
+            except yaml.YAMLError:
+                parsed = None
+            value = parsed.get("uses") if isinstance(parsed, dict) else None
+            if not isinstance(value, str) or not value:
+                errors.append(f"{path} has an unparseable uses value: {raw_value!r}")
                 continue
-            if action.split("/", 1)[0] not in {"actions", "github"}:
+            if value.startswith("./"):
+                continue
+            if value.startswith("docker://"):
+                errors.append(f"{path} must not use a Docker action; found {value}")
+                continue
+            action, separator, action_ref = value.rpartition("@")
+            if not separator or not action or not action_ref:
+                errors.append(f"{path} has an unparseable remote action: {value!r}")
+                continue
+            action_parts = action.split("/")
+            if len(action_parts) < 2 or any(not part for part in action_parts):
+                errors.append(f"{path} has an unparseable remote action: {value!r}")
+                continue
+            if action_parts[0] not in {"actions", "github"}:
                 errors.append(f"{path} must use a GitHub-owned action; found {action}")
             if COMMIT_SHA_RE.fullmatch(action_ref) is None:
                 errors.append(

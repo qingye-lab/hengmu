@@ -1,14 +1,17 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import shutil
 import sys
 import tempfile
 import tomllib
 import unittest
 from pathlib import Path
+from typing import get_type_hints
 
 import yaml
+from jsonschema import Draft202012Validator
 
 sys.dont_write_bytecode = True
 ROOT = Path(__file__).resolve().parent.parent
@@ -48,33 +51,119 @@ class RepositoryContractTests(unittest.TestCase):
         )
         self.assertNotIn("fail_under", report)
 
-    def test_floating_github_action_is_rejected(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary:
-            root = Path(temporary)
-            workflow_root = root / ".github" / "workflows"
-            workflow_root.mkdir(parents=True)
-            (workflow_root / "ci.yml").write_text(
-                "steps:\n  - uses: actions/checkout@v6\n",
-                encoding="utf-8",
-            )
-            errors: list[str] = []
-            validate_repository.validate_github_action_pins(root, errors)
-            self.assertEqual(len(errors), 1)
-            self.assertIn("40-character commit SHA", errors[0])
+    def test_github_action_scalar_forms_are_parsed_and_pinned(self) -> None:
+        commit = "a" * 40
+        accepted = (
+            f"uses: actions/checkout@{commit}",
+            f"uses: 'actions/checkout@{commit}'",
+            f'uses: "github/codeql-action/init@{commit}" # pinned',
+            "uses: ./local/action # repository action",
+        )
+        for scalar in accepted:
+            with (
+                self.subTest(scalar=scalar),
+                tempfile.TemporaryDirectory() as temporary,
+            ):
+                root = Path(temporary)
+                workflow_root = root / ".github" / "workflows"
+                workflow_root.mkdir(parents=True)
+                (workflow_root / "ci.yml").write_text(
+                    f"steps:\n  - {scalar}\n",
+                    encoding="utf-8",
+                )
+                errors: list[str] = []
+                validate_repository.validate_github_action_pins(root, errors)
+                self.assertEqual(errors, [])
 
-    def test_non_github_owned_action_is_rejected(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary:
-            root = Path(temporary)
-            workflow_root = root / ".github" / "workflows"
-            workflow_root.mkdir(parents=True)
-            (workflow_root / "ci.yml").write_text(
-                "steps:\n  - uses: third-party/example@" + "a" * 40 + "\n",
-                encoding="utf-8",
+    def test_unsafe_or_unparseable_github_action_scalar_is_rejected(self) -> None:
+        commit = "a" * 40
+        rejected = (
+            ("uses: actions/checkout@v6", "40-character commit SHA"),
+            (
+                f"uses: third-party/example@{commit}",
+                "must use a GitHub-owned action",
+            ),
+            ("uses: docker://alpine:3.22", "must not use a Docker action"),
+            (
+                "uses: 'docker://alpine@sha256:" + "b" * 64 + "'",
+                "must not use a Docker action",
+            ),
+            ("uses: ../local/action", "unparseable remote action"),
+            (f"uses: actions@{commit}", "unparseable remote action"),
+            (f'uses: "actions/checkout@{commit}', "unparseable uses value"),
+            (f"uses: [actions/checkout@{commit}]", "unparseable uses value"),
+            ("uses:", "unparseable uses value"),
+        )
+        for scalar, message in rejected:
+            with (
+                self.subTest(scalar=scalar),
+                tempfile.TemporaryDirectory() as temporary,
+            ):
+                root = Path(temporary)
+                workflow_root = root / ".github" / "workflows"
+                workflow_root.mkdir(parents=True)
+                (workflow_root / "ci.yml").write_text(
+                    f"steps:\n  - {scalar}\n",
+                    encoding="utf-8",
+                )
+                errors: list[str] = []
+                validate_repository.validate_github_action_pins(root, errors)
+                self.assertEqual(len(errors), 1)
+                self.assertIn(message, errors[0])
+
+    def test_review_evidence_source_type_matches_schema(self) -> None:
+        artifact_types_path = ROOT / "resources" / "scripts" / "artifact_types.py"
+        spec = importlib.util.spec_from_file_location(
+            "artifact_types_contract",
+            artifact_types_path,
+        )
+        assert spec and spec.loader
+        artifact_types = importlib.util.module_from_spec(spec)
+        sys.modules[spec.name] = artifact_types
+        spec.loader.exec_module(artifact_types)
+        hints = get_type_hints(artifact_types.ReviewArtifact)
+        self.assertEqual(hints["evidence_sources"], list[str])
+
+        schema = json.loads(
+            (ROOT / "resources" / "schemas" / "review.schema.json").read_text(
+                encoding="utf-8"
             )
-            errors: list[str] = []
-            validate_repository.validate_github_action_pins(root, errors)
-            self.assertEqual(len(errors), 1)
-            self.assertIn("must use a GitHub-owned action", errors[0])
+        )
+        evidence_sources = schema["properties"]["evidence_sources"]
+        self.assertEqual(evidence_sources["type"], "array")
+        self.assertEqual(evidence_sources["items"]["type"], "string")
+
+    def test_knowledge_selection_template_matches_plugin_and_selector(self) -> None:
+        template = yaml.safe_load(
+            (ROOT / "resources" / "templates" / "knowledge-selection.yaml").read_text(
+                encoding="utf-8"
+            )
+        )
+        native = json.loads(
+            (ROOT / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8")
+        )
+        portable = json.loads((ROOT / "plugin.json").read_text(encoding="utf-8"))
+        selector = json.loads(
+            (ROOT / "resources" / "selector-source.json").read_text(encoding="utf-8")
+        )
+        versions = {
+            native["version"],
+            portable["version"],
+            selector["plugin_version"],
+            template["selector"]["source"]["plugin_version"],
+        }
+        self.assertEqual(versions, {"1.1.0"})
+
+        schema = json.loads(
+            (
+                ROOT / "resources" / "schemas" / "knowledge-selection.schema.json"
+            ).read_text(encoding="utf-8")
+        )
+        errors = sorted(
+            Draft202012Validator(schema).iter_errors(template),
+            key=lambda error: list(error.path),
+        )
+        self.assertEqual(errors, [], "\n".join(error.message for error in errors))
 
     def test_duplicate_json_key_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

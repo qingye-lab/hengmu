@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Publish or verify one immutable GitHub Release with six exact assets."""
+"""Prepare or publish one immutable GitHub Release with six exact assets."""
 
 from __future__ import annotations
 
@@ -37,6 +37,7 @@ class RemoteAsset:
 @dataclass(frozen=True)
 class ReleaseState:
     draft: bool
+    immutable: bool
     assets: tuple[RemoteAsset, ...]
 
 
@@ -149,35 +150,38 @@ def verify_with_retry(
     )
 
 
-def publish_release(
+def require_published_state(
+    state: ReleaseState | None,
+    assets: Sequence[LocalAsset],
+) -> ReleaseState:
+    if state is None or state.draft:
+        raise ReleaseError(
+            "Release is not a complete draft; run the prepare phase first"
+        )
+    if not state.immutable:
+        raise ReleaseError("Published Release is not immutable")
+    validate_inventory(state, assets)
+    return state
+
+
+def prepare_release(
     repository: str,
     tag: str,
     dist: Path,
     *,
     client: ReleaseClient,
-    sleep: Callable[[float], None] = time.sleep,
-    attempts: int = 5,
-    delay_seconds: float = 10.0,
 ) -> str:
     assets = expected_assets(dist.resolve(), tag)
-    client.require_immutable_releases(repository)
     state = client.get_release(repository, tag)
     if state is not None and not state.draft:
-        validate_inventory(state, assets)
-        verify_with_retry(
-            client,
-            repository,
-            tag,
-            assets,
-            sleep=sleep,
-            attempts=attempts,
-            delay_seconds=delay_seconds,
-        )
-        return "verified-existing"
+        require_published_state(state, assets)
+        return "already-published"
 
     if state is None:
         client.create_draft(repository, tag, f"Hengmu {tag}")
-        state = ReleaseState(draft=True, assets=())
+        state = ReleaseState(draft=True, immutable=False, assets=())
+    if len({asset.name for asset in state.assets}) != len(state.assets):
+        raise ReleaseError("Draft Release contains duplicate asset names")
     expected_names = {asset.name for asset in assets}
     unexpected = sorted(
         asset.name for asset in state.assets if asset.name not in expected_names
@@ -202,9 +206,42 @@ def publish_release(
 
     ready = client.get_release(repository, tag)
     if ready is None or not ready.draft:
-        raise ReleaseError("Release changed state before publish preflight")
+        raise ReleaseError("Release changed state before draft validation")
     validate_inventory(ready, assets)
+    return "draft-prepared"
+
+
+def publish_release(
+    repository: str,
+    tag: str,
+    dist: Path,
+    *,
+    client: ReleaseClient,
+    sleep: Callable[[float], None] = time.sleep,
+    attempts: int = 5,
+    delay_seconds: float = 10.0,
+) -> str:
+    assets = expected_assets(dist.resolve(), tag)
+    client.require_immutable_releases(repository)
+    state = client.get_release(repository, tag)
+    if state is not None and not state.draft:
+        require_published_state(state, assets)
+        verify_with_retry(
+            client,
+            repository,
+            tag,
+            assets,
+            sleep=sleep,
+            attempts=attempts,
+            delay_seconds=delay_seconds,
+        )
+        return "verified-existing"
+    if state is None:
+        raise ReleaseError("Release draft is absent; run the prepare phase first")
+    validate_inventory(state, assets)
     client.publish(repository, tag)
+    published = client.get_release(repository, tag)
+    require_published_state(published, assets)
     verify_with_retry(
         client,
         repository,
@@ -275,15 +312,27 @@ class GhReleaseClient:
 
     def get_release(self, repository: str, tag: str) -> ReleaseState | None:
         process = self._run(
-            ["api", f"repos/{repository}/releases/tags/{tag}"],
+            [
+                "api",
+                "-H",
+                "X-GitHub-Api-Version: 2026-03-10",
+                f"repos/{repository}/releases/tags/{tag}",
+            ],
             allow_failure=True,
         )
         if process.returncode != 0:
             if "(HTTP 404)" in process.stderr:
                 return None
             raise ReleaseError(process.stderr.strip() or "GitHub Release lookup failed")
-        payload: Any = json.loads(process.stdout)
-        if not isinstance(payload, dict) or not isinstance(payload.get("draft"), bool):
+        try:
+            payload: Any = json.loads(process.stdout)
+        except json.JSONDecodeError as exc:
+            raise ReleaseError("GitHub Release response is malformed") from exc
+        if (
+            not isinstance(payload, dict)
+            or not isinstance(payload.get("draft"), bool)
+            or not isinstance(payload.get("immutable"), bool)
+        ):
             raise ReleaseError("GitHub Release response is malformed")
         raw_assets = payload.get("assets")
         if not isinstance(raw_assets, list):
@@ -300,7 +349,11 @@ class GhReleaseClient:
             if digest is not None and not isinstance(digest, str):
                 raise ReleaseError("GitHub Release asset digest is malformed")
             assets.append(RemoteAsset(name=name, size=size, digest=digest))
-        return ReleaseState(draft=payload["draft"], assets=tuple(assets))
+        return ReleaseState(
+            draft=payload["draft"],
+            immutable=payload["immutable"],
+            assets=tuple(assets),
+        )
 
     def create_draft(self, repository: str, tag: str, title: str) -> None:
         self._run(
@@ -361,21 +414,31 @@ class GhReleaseClient:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("mode", choices=("prepare", "publish"))
     parser.add_argument("--repository", required=True)
     parser.add_argument("--tag", required=True)
     parser.add_argument("--dist", type=Path, default=Path("dist"))
     args = parser.parse_args()
     try:
-        outcome = publish_release(
-            args.repository,
-            args.tag,
-            args.dist,
-            client=GhReleaseClient(),
-        )
+        client = GhReleaseClient()
+        if args.mode == "prepare":
+            outcome = prepare_release(
+                args.repository,
+                args.tag,
+                args.dist,
+                client=client,
+            )
+        else:
+            outcome = publish_release(
+                args.repository,
+                args.tag,
+                args.dist,
+                client=client,
+            )
     except (ReleaseError, OSError, json.JSONDecodeError) as exc:
         print(f"Release publication failed: {exc}", file=sys.stderr)
         return 2
-    print(f"Release publication state: {outcome}")
+    print(f"Release {args.mode} state: {outcome}")
     return 0
 
 

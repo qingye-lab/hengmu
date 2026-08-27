@@ -45,7 +45,11 @@ class FakeReleaseClient:
 
     def create_draft(self, repository: str, tag: str, title: str) -> None:
         self.calls.append(("create", tag, title))
-        self.state = publish_release.ReleaseState(draft=True, assets=())
+        self.state = publish_release.ReleaseState(
+            draft=True,
+            immutable=False,
+            assets=(),
+        )
 
     def upload_asset(
         self,
@@ -67,6 +71,7 @@ class FakeReleaseClient:
         )
         self.state = publish_release.ReleaseState(
             draft=True,
+            immutable=False,
             assets=(*retained, remote(local)),
         )
 
@@ -74,6 +79,7 @@ class FakeReleaseClient:
         self.calls.append(("publish", tag))
         self.state = publish_release.ReleaseState(
             draft=False,
+            immutable=True,
             assets=self.state.assets,
         )
 
@@ -115,24 +121,25 @@ class ReleasePublicationTests(unittest.TestCase):
     def tearDown(self) -> None:
         self.temporary.cleanup()
 
-    def test_absent_release_creates_draft_uploads_exact_assets_and_publishes(
+    def test_prepare_absent_release_creates_draft_and_uploads_exact_assets(
         self,
     ) -> None:
         client = FakeReleaseClient()
-        outcome = publish_release.publish_release(
+        outcome = publish_release.prepare_release(
             "owner/repo",
             "v1.1.0",
             self.dist,
             client=client,
-            sleep=lambda _: None,
         )
-        self.assertEqual(outcome, "published")
-        self.assertEqual(client.calls[0], ("immutable", "owner/repo"))
+        self.assertEqual(outcome, "draft-prepared")
+        self.assertEqual(client.calls[0], ("get", "owner/repo", "v1.1.0"))
         self.assertEqual(sum(call[0] == "create" for call in client.calls), 1)
         uploads = [call for call in client.calls if call[0] == "upload"]
         self.assertEqual(len(uploads), 6)
         self.assertTrue(all(call[2] is False for call in uploads))
-        self.assertEqual(sum(call[0] == "publish" for call in client.calls), 1)
+        self.assertFalse(
+            any(call[0] in {"immutable", "publish"} for call in client.calls)
+        )
 
     def test_partial_draft_resumes_and_clobbers_only_mismatched_expected_asset(
         self,
@@ -146,15 +153,15 @@ class ReleasePublicationTests(unittest.TestCase):
         client = FakeReleaseClient(
             publish_release.ReleaseState(
                 draft=True,
+                immutable=False,
                 assets=(matching, mismatched),
             )
         )
-        publish_release.publish_release(
+        publish_release.prepare_release(
             "owner/repo",
             "v1.1.0",
             self.dist,
             client=client,
-            sleep=lambda _: None,
         )
         uploads = [call for call in client.calls if call[0] == "upload"]
         self.assertNotIn(("upload", self.assets[0].name, False), uploads)
@@ -164,6 +171,7 @@ class ReleasePublicationTests(unittest.TestCase):
     def test_unexpected_draft_asset_fails_without_mutation(self) -> None:
         state = publish_release.ReleaseState(
             draft=True,
+            immutable=False,
             assets=(
                 publish_release.RemoteAsset(
                     name="unexpected.txt",
@@ -174,18 +182,116 @@ class ReleasePublicationTests(unittest.TestCase):
         )
         client = FakeReleaseClient(state)
         with self.assertRaisesRegex(publish_release.ReleaseError, "unexpected"):
-            publish_release.publish_release(
+            publish_release.prepare_release(
                 "owner/repo",
                 "v1.1.0",
                 self.dist,
                 client=client,
-                sleep=lambda _: None,
             )
-        self.assertFalse(any(call[0] in {"upload", "publish"} for call in client.calls))
+        self.assertFalse(
+            any(call[0] in {"immutable", "upload", "publish"} for call in client.calls)
+        )
 
     def test_published_release_is_read_only_and_idempotent(self) -> None:
         state = publish_release.ReleaseState(
             draft=False,
+            immutable=True,
+            assets=tuple(remote(asset) for asset in self.assets),
+        )
+        client = FakeReleaseClient(state)
+        outcome = publish_release.prepare_release(
+            "owner/repo",
+            "v1.1.0",
+            self.dist,
+            client=client,
+        )
+        self.assertEqual(outcome, "already-published")
+        self.assertFalse(
+            any(
+                call[0] in {"immutable", "create", "upload", "publish"}
+                for call in client.calls
+            )
+        )
+
+    def test_prepare_rejects_mutable_published_release_without_mutation(self) -> None:
+        state = publish_release.ReleaseState(
+            draft=False,
+            immutable=False,
+            assets=tuple(remote(asset) for asset in self.assets),
+        )
+        client = FakeReleaseClient(state)
+        with self.assertRaisesRegex(publish_release.ReleaseError, "not immutable"):
+            publish_release.prepare_release(
+                "owner/repo",
+                "v1.1.0",
+                self.dist,
+                client=client,
+            )
+        self.assertEqual(client.calls, [("get", "owner/repo", "v1.1.0")])
+
+    def test_publish_accepts_only_a_complete_exact_draft(self) -> None:
+        unsafe_states = (
+            (
+                None,
+                "absent",
+            ),
+            (
+                publish_release.ReleaseState(
+                    draft=True,
+                    immutable=False,
+                    assets=tuple(remote(asset) for asset in self.assets[:-1]),
+                ),
+                "missing",
+            ),
+            (
+                publish_release.ReleaseState(
+                    draft=True,
+                    immutable=False,
+                    assets=(
+                        *(remote(asset) for asset in self.assets),
+                        publish_release.RemoteAsset(
+                            name="unexpected.txt",
+                            size=1,
+                            digest="sha256:" + "0" * 64,
+                        ),
+                    ),
+                ),
+                "unexpected",
+            ),
+            (
+                publish_release.ReleaseState(
+                    draft=True,
+                    immutable=False,
+                    assets=(remote(self.assets[0]), remote(self.assets[0])),
+                ),
+                "duplicate",
+            ),
+        )
+        for state, message in unsafe_states:
+            with self.subTest(message=message):
+                client = FakeReleaseClient(state)
+                with self.assertRaisesRegex(publish_release.ReleaseError, message):
+                    publish_release.publish_release(
+                        "owner/repo",
+                        "v1.1.0",
+                        self.dist,
+                        client=client,
+                    )
+                self.assertEqual(
+                    client.calls[:2],
+                    [("immutable", "owner/repo"), ("get", "owner/repo", "v1.1.0")],
+                )
+                self.assertFalse(
+                    any(
+                        call[0] in {"create", "upload", "publish"}
+                        for call in client.calls
+                    )
+                )
+
+    def test_publish_complete_draft_publishes_once_then_verifies(self) -> None:
+        state = publish_release.ReleaseState(
+            draft=True,
+            immutable=False,
             assets=tuple(remote(asset) for asset in self.assets),
         )
         client = FakeReleaseClient(state)
@@ -194,17 +300,62 @@ class ReleasePublicationTests(unittest.TestCase):
             "v1.1.0",
             self.dist,
             client=client,
-            sleep=lambda _: None,
         )
-        self.assertEqual(outcome, "verified-existing")
-        self.assertFalse(
-            any(call[0] in {"create", "upload", "publish"} for call in client.calls)
+        self.assertEqual(outcome, "published")
+        self.assertEqual(
+            client.calls[:4],
+            [
+                ("immutable", "owner/repo"),
+                ("get", "owner/repo", "v1.1.0"),
+                ("publish", "v1.1.0"),
+                ("get", "owner/repo", "v1.1.0"),
+            ],
         )
+        self.assertEqual(sum(call[0] == "publish" for call in client.calls), 1)
+        self.assertEqual(sum(call[0] == "verify-release" for call in client.calls), 1)
+        self.assertEqual(sum(call[0] == "verify-asset" for call in client.calls), 6)
+
+    def test_publish_existing_release_is_read_only_and_requires_immutable(self) -> None:
+        for immutable, message in ((True, None), (False, "not immutable")):
+            with self.subTest(immutable=immutable):
+                state = publish_release.ReleaseState(
+                    draft=False,
+                    immutable=immutable,
+                    assets=tuple(remote(asset) for asset in self.assets),
+                )
+                client = FakeReleaseClient(state)
+                if message is None:
+                    outcome = publish_release.publish_release(
+                        "owner/repo",
+                        "v1.1.0",
+                        self.dist,
+                        client=client,
+                    )
+                    self.assertEqual(outcome, "verified-existing")
+                else:
+                    with self.assertRaisesRegex(publish_release.ReleaseError, message):
+                        publish_release.publish_release(
+                            "owner/repo",
+                            "v1.1.0",
+                            self.dist,
+                            client=client,
+                        )
+                self.assertFalse(
+                    any(
+                        call[0] in {"create", "upload", "publish"}
+                        for call in client.calls
+                    )
+                )
 
     def test_post_publish_verification_retries_five_times_then_requires_patch(
         self,
     ) -> None:
-        client = FakeReleaseClient(verify_results=[False] * 5)
+        state = publish_release.ReleaseState(
+            draft=True,
+            immutable=False,
+            assets=tuple(remote(asset) for asset in self.assets),
+        )
+        client = FakeReleaseClient(state, verify_results=[False] * 5)
         sleeps: list[float] = []
         with self.assertRaisesRegex(publish_release.ReleaseError, "patch release"):
             publish_release.publish_release(
@@ -221,11 +372,39 @@ class ReleasePublicationTests(unittest.TestCase):
         )
         self.assertEqual(sum(call[0] == "publish" for call in client.calls), 1)
 
+    def test_post_publish_readback_must_report_immutable_before_verification(
+        self,
+    ) -> None:
+        class MutableAfterPublishClient(FakeReleaseClient):
+            def publish(self, repository: str, tag: str) -> None:
+                self.calls.append(("publish", tag))
+                self.state = publish_release.ReleaseState(
+                    draft=False,
+                    immutable=False,
+                    assets=self.state.assets,
+                )
+
+        state = publish_release.ReleaseState(
+            draft=True,
+            immutable=False,
+            assets=tuple(remote(asset) for asset in self.assets),
+        )
+        client = MutableAfterPublishClient(state)
+        with self.assertRaisesRegex(publish_release.ReleaseError, "not immutable"):
+            publish_release.publish_release(
+                "owner/repo",
+                "v1.1.0",
+                self.dist,
+                client=client,
+            )
+        self.assertEqual(sum(call[0] == "publish" for call in client.calls), 1)
+        self.assertFalse(any(call[0].startswith("verify") for call in client.calls))
+
     def test_missing_local_asset_fails_before_remote_access(self) -> None:
         (self.dist / self.assets[-1].name).unlink()
         client = FakeReleaseClient()
         with self.assertRaisesRegex(publish_release.ReleaseError, "missing"):
-            publish_release.publish_release(
+            publish_release.prepare_release(
                 "owner/repo",
                 "v1.1.0",
                 self.dist,
@@ -328,8 +507,17 @@ class ReleasePublicationTests(unittest.TestCase):
     def test_gh_release_lookup_treats_only_http_404_as_absent(self) -> None:
         client = publish_release.GhReleaseClient()
         not_found = CompletedProcess([], 1, "", "gh: Not Found (HTTP 404)\n")
-        with patch.object(client, "_run", return_value=not_found):
+        with patch.object(client, "_run", return_value=not_found) as run:
             self.assertIsNone(client.get_release("owner/repo", "v1.1.0"))
+        run.assert_called_once_with(
+            [
+                "api",
+                "-H",
+                "X-GitHub-Api-Version: 2026-03-10",
+                "repos/owner/repo/releases/tags/v1.1.0",
+            ],
+            allow_failure=True,
+        )
 
         unauthorized = CompletedProcess([], 1, "", "authentication failed\n")
         with (
@@ -342,6 +530,7 @@ class ReleasePublicationTests(unittest.TestCase):
         client = publish_release.GhReleaseClient()
         payload = {
             "draft": True,
+            "immutable": False,
             "assets": [
                 {
                     "name": self.assets[0].name,
@@ -356,6 +545,7 @@ class ReleasePublicationTests(unittest.TestCase):
         self.assertIsNotNone(state)
         assert state is not None
         self.assertTrue(state.draft)
+        self.assertFalse(state.immutable)
         self.assertEqual(state.assets[0].name, self.assets[0].name)
 
         ok = CompletedProcess([], 0, "", "")
@@ -404,17 +594,23 @@ class ReleasePublicationTests(unittest.TestCase):
             publish_release.expected_assets(self.dist, "1.1.0")
         duplicate = publish_release.ReleaseState(
             draft=True,
+            immutable=False,
             assets=(remote(self.assets[0]), remote(self.assets[0])),
         )
         with self.assertRaisesRegex(publish_release.ReleaseError, "duplicate"):
             publish_release.validate_inventory(duplicate, self.assets)
         with self.assertRaisesRegex(publish_release.ReleaseError, "missing"):
             publish_release.validate_inventory(
-                publish_release.ReleaseState(draft=True, assets=()),
+                publish_release.ReleaseState(
+                    draft=True,
+                    immutable=False,
+                    assets=(),
+                ),
                 self.assets,
             )
         mismatched = publish_release.ReleaseState(
             draft=True,
+            immutable=False,
             assets=(
                 publish_release.RemoteAsset(
                     name=self.assets[0].name,
@@ -427,9 +623,36 @@ class ReleasePublicationTests(unittest.TestCase):
         with self.assertRaisesRegex(publish_release.ReleaseError, "mismatch"):
             publish_release.validate_inventory(mismatched, self.assets)
 
+        malformed_release_payloads = (
+            {"draft": True, "assets": []},
+            {"draft": True, "immutable": "yes", "assets": []},
+            {"draft": True, "immutable": False, "assets": "invalid"},
+        )
+        for payload in malformed_release_payloads:
+            with (
+                self.subTest(payload=payload),
+                patch.object(
+                    client,
+                    "_run",
+                    return_value=CompletedProcess([], 0, json.dumps(payload), ""),
+                ),
+                self.assertRaisesRegex(publish_release.ReleaseError, "malformed"),
+            ):
+                client.get_release("owner/repo", "v1.1.0")
+        with (
+            patch.object(
+                client,
+                "_run",
+                return_value=CompletedProcess([], 0, "not-json", ""),
+            ),
+            self.assertRaisesRegex(publish_release.ReleaseError, "malformed"),
+        ):
+            client.get_release("owner/repo", "v1.1.0")
+
     def test_main_reports_success_and_release_errors(self) -> None:
         arguments = [
             str(SCRIPT),
+            "publish",
             "--repository",
             "owner/repo",
             "--tag",
@@ -449,6 +672,20 @@ class ReleasePublicationTests(unittest.TestCase):
         ):
             self.assertEqual(publish_release.main(), 0)
         self.assertIn("verified-existing", stdout.getvalue())
+
+        prepare_arguments = [*arguments]
+        prepare_arguments[1] = "prepare"
+        with (
+            patch.object(sys, "argv", prepare_arguments),
+            patch.object(
+                publish_release,
+                "prepare_release",
+                return_value="draft-prepared",
+            ) as prepare,
+            redirect_stdout(io.StringIO()),
+        ):
+            self.assertEqual(publish_release.main(), 0)
+        prepare.assert_called_once()
 
         stderr = io.StringIO()
         with (
