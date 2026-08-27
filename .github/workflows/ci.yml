@@ -24,10 +24,12 @@ jobs:
           - windows-latest
         python-version:
           - "3.11"
-          - "3.13"
+          - "3.14"
         include:
           - os: ubuntu-latest
             python-version: "3.12"
+          - os: ubuntu-latest
+            python-version: "3.13"
 
     steps:
       - name: Check out repository
@@ -60,8 +62,28 @@ jobs:
       - name: Validate architecture knowledge
         run: python resources/scripts/validate_knowledge.py
 
+      - name: Run tests with branch coverage
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.13'
+        run: >-
+          python -m pytest
+          --cov=resources/scripts
+          --cov-branch
+          --cov-report=term-missing:skip-covered
+          --cov-report=xml
+
       - name: Run tests
+        if: matrix.os != 'ubuntu-latest' || matrix.python-version != '3.13'
         run: python -m pytest
+
+      - name: Enforce pull request changed-line coverage
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.13'
+        env:
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: python scripts/check_changed_coverage.py
+
+      - name: Run strict type checking
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.13'
+        run: python -m mypy resources/scripts scripts
 
       - name: Run layered architecture change gate
         shell: bash
@@ -83,7 +105,7 @@ jobs:
         run: python -m ruff format --check .
 
       - name: Audit runtime dependencies
-        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.13'
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.14'
         run: python -m pip_audit --requirement requirements-runtime.lock
 
       - name: Audit runtime dependency licenses
@@ -137,11 +159,29 @@ jobs:
         with:
           deny-licenses: GPL-3.0, AGPL-3.0
 
+  quality-gate:
+    name: Quality gate
+    if: always()
+    needs:
+      - quality
+      - dependency-review
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Require event-specific quality results
+        run: >-
+          python scripts/evaluate_ci_gate.py
+          --event "${{ github.event_name }}"
+          --quality "${{ needs.quality.result }}"
+          --dependency-review "${{ needs.dependency-review.result }}"
+
   release:
     name: Publish verified tag
     if: startsWith(github.ref, 'refs/tags/v')
     needs:
-      - quality
+      - quality-gate
     permissions:
       attestations: write
       contents: write

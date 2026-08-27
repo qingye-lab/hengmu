@@ -2,15 +2,15 @@
 
 ## Supported runtime boundary
 
-The portable CLI supports CPython 3.11–3.13 with the exact packages and hashes
+The portable CLI supports CPython 3.11–3.14 with the exact packages and hashes
 in `requirements-runtime.lock`. CI runs repository validation, tests, lint,
 formatting, packaging, and checksum verification on:
 
-| Operating system | Python 3.11 | Python 3.13 |
-| --- | --- | --- |
-| Ubuntu | CI | CI |
-| macOS | CI | CI |
-| Windows | CI | CI |
+| Operating system | Python 3.11 | Python 3.12 | Python 3.13 | Python 3.14 |
+| --- | --- | --- | --- | --- |
+| Ubuntu | CI | CI | CI | CI |
+| macOS | CI | — | — | CI |
+| Windows | CI | — | — | CI |
 
 `requirements.txt` contains supported dependency ranges. The lock is the
 reproducible installation boundary used by CI and release packaging.
@@ -40,7 +40,7 @@ Packaging has two explicit targets:
 The portable package targets the [Agent Plugins v1 specification](https://agent-plugins.org/specification):
 the root manifest and `skills/` location are portable, while installation,
 permissions, invocation syntax, UI, and marketplace behavior remain client
-specific. The runtime still requires CPython 3.11–3.13 and the locked
+specific. The runtime still requires CPython 3.11–3.14 and the locked
 dependencies described above. See [host compatibility](host-compatibility.md)
 for the precise capability and lifecycle boundary.
 

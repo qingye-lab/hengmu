@@ -92,7 +92,7 @@ class PackagePluginTests(unittest.TestCase):
                 first_checksum.read_text(encoding="utf-8"),
                 f"{digest}  {first.name}\n",
             )
-            self.assertEqual(first.name, "hengmu-1.0.4-agent-plugins.zip")
+            self.assertEqual(first.name, "hengmu-1.1.0-agent-plugins.zip")
 
             with zipfile.ZipFile(first) as archive:
                 names = archive.namelist()

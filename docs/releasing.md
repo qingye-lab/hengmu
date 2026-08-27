@@ -86,8 +86,10 @@
 17. Create a signed or annotated `v<version>` tag.
 18. Push the tag. The release workflow re-runs validation, tests, lint,
    formatting, dependency audit, deterministic packaging, checksum, and SBOM
-   generation. It creates GitHub provenance and SBOM attestations before
-   publishing the ZIP, checksum, and SBOM.
+   generation. It creates GitHub provenance and SBOM attestations, creates or
+   resumes a draft containing exactly the two ZIPs, two checksums, and two SPDX
+   SBOMs, verifies their remote digests, and then publishes. A repeated run
+   verifies an existing published Release without modifying it.
 
 After publication, verify both artifact digest and attestation:
 
@@ -103,5 +105,7 @@ python3 scripts/verify_checksum.py \
 ```
 
 Do not publish from an uncommitted working tree or manually replace a release
-asset without issuing a new version. GitHub attestations establish build
+asset without issuing a new version. If post-publication verification fails,
+fix the source or workflow and issue a patch release; never mutate the published
+Release. GitHub attestations establish build
 provenance; they do not prove the source or workflow is vulnerability-free.

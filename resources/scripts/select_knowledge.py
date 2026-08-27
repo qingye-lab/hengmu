@@ -9,7 +9,7 @@ import json
 import re
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import yaml
 from build_project_profile import fact_ids
@@ -255,7 +255,7 @@ def selector_runtime_source() -> dict[str, str]:
         raise SelectionError(
             "Selector source repository/version does not match plugin.json"
         )
-    return source
+    return cast(dict[str, str], source)
 
 
 def selector_implementation_inputs() -> list[dict[str, str]]:
@@ -566,12 +566,12 @@ def select_knowledge(
         task.lower(),
     ):
         negated_tokens.update(normalized_tokens(match.group("tail")))
-    for entry_id, entry in entries.items():
+    for entry_id, knowledge_entry in entries.items():
         if entry_id in excludes:
             continue
         trigger_tokens = {
             token
-            for trigger in entry.metadata["triggers"]
+            for trigger in knowledge_entry.metadata["triggers"]
             for token in normalized_tokens(str(trigger))
         }
         matched = sorted((task_tokens & trigger_tokens) - negated_tokens)
@@ -582,12 +582,13 @@ def select_knowledge(
             or bool(set(decision_intents) & AMBIGUOUS_TRIGGER_INTENTS[token])
         ]
         entry_domains = {
-            canonical_domain(str(domain)) for domain in entry.metadata["domains"]
+            canonical_domain(str(domain))
+            for domain in knowledge_entry.metadata["domains"]
         }
         matched_domains = sorted(entry_domains & project_domains)
         distinctive_matches = set(matched) - GENERIC_TRIGGER_TOKENS
         reference_match = (
-            entry.metadata["kind"] != "reference-architecture"
+            knowledge_entry.metadata["kind"] != "reference-architecture"
             or (
                 bool(matched_domains)
                 and (len(distinctive_matches) >= 1 or len(set(matched)) >= 2)
@@ -818,7 +819,7 @@ def select_knowledge(
                 "selected it."
             )
         excluded_records.append({"id": entry_id, "reason": reason})
-    result = {
+    result: dict[str, Any] = {
         "schema_version": "1.4",
         "selection": selected,
         "excluded": excluded_records,

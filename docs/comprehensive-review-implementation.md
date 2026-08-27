@@ -104,7 +104,7 @@ coverage gaps until the user approves a pinned project or toolchain change.
 | Finding/solution adversarial cases | Ten code fixtures cover benign SQLite, healthy modular monolith, conflicting/shared writers, queue/workflow proportionality, client ownership, documentation contradiction, prompt authority, and single-agent sufficiency. |
 | Evidence validity | The scorer independently resolves fixture path, line range, and exact excerpt; a model validity claim is ignored. |
 | Stability and cost | The harness starts an independent command for each repetition and reports finding/severity stability, duration, and optional token/cost usage. |
-| Runtime compatibility | CI matrix covers Ubuntu, macOS, and Windows on Python 3.11 and 3.13. |
+| Runtime compatibility | CI covers Python 3.11 and 3.14 on Ubuntu, macOS, and Windows, plus Python 3.12 and 3.13 on Ubuntu. |
 | Supply chain | Exact hashed locks, dependency vulnerability audit, explicit license allow/deny inventory, deterministic ZIP/checksum, license-complete SPDX SBOM, and GitHub provenance/SBOM attestations. |
 
 ## Honest external-evidence boundary

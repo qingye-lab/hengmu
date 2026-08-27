@@ -102,8 +102,9 @@ class SupplyChainTests(unittest.TestCase):
         self.assertIn("--output-dir dist", workflow)
         self.assertIn("sbom-path: ${{ env.CODEX_SBOM_PATH }}", workflow)
         self.assertIn("sbom-path: ${{ env.AGENT_PLUGINS_SBOM_PATH }}", workflow)
-        self.assertIn('"${CODEX_SBOM_PATH}"', workflow)
-        self.assertIn('"${AGENT_PLUGINS_SBOM_PATH}"', workflow)
+        self.assertIn("python scripts/publish_release.py", workflow)
+        self.assertIn('--repository "${GITHUB_REPOSITORY}"', workflow)
+        self.assertIn('--tag "${GITHUB_REF_NAME}"', workflow)
         self.assertNotIn("sbom-path: dist/*.spdx.json", workflow)
 
     def test_release_requires_complete_quality_matrix(self) -> None:
@@ -122,15 +123,18 @@ class SupplyChainTests(unittest.TestCase):
         )
         self.assertEqual(
             quality["strategy"]["matrix"]["python-version"],
-            ["3.11", "3.13"],
+            ["3.11", "3.14"],
         )
         self.assertEqual(
             quality["strategy"]["matrix"]["include"],
-            [{"os": "ubuntu-latest", "python-version": "3.12"}],
+            [
+                {"os": "ubuntu-latest", "python-version": "3.12"},
+                {"os": "ubuntu-latest", "python-version": "3.13"},
+            ],
         )
 
         publish = ci["jobs"]["release"]
-        self.assertEqual(publish["needs"], ["quality"])
+        self.assertEqual(publish["needs"], ["quality-gate"])
         self.assertEqual(
             publish["if"],
             "startsWith(github.ref, 'refs/tags/v')",

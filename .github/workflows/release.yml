@@ -22,7 +22,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
-          python-version: "3.13"
+          python-version: "3.14"
           cache: pip
 
       - name: Install locked development dependencies
@@ -60,8 +60,16 @@ jobs:
       - name: Validate architecture knowledge
         run: python resources/scripts/validate_knowledge.py
 
-      - name: Run tests
-        run: python -m pytest
+      - name: Run tests with branch coverage
+        run: >-
+          python -m pytest
+          --cov=resources/scripts
+          --cov-branch
+          --cov-report=term-missing:skip-covered
+          --cov-report=xml
+
+      - name: Run strict type checking
+        run: python -m mypy resources/scripts scripts
 
       - name: Run layered architecture release gate
         run: >-
@@ -139,14 +147,11 @@ jobs:
           subject-path: ${{ env.AGENT_PLUGINS_ARCHIVE }}
           sbom-path: ${{ env.AGENT_PLUGINS_SBOM_PATH }}
 
-      - name: Publish GitHub release
+      - name: Publish or verify immutable GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release create "${GITHUB_REF_NAME}" \
-            dist/*.zip \
-            dist/*.zip.sha256 \
-            "${CODEX_SBOM_PATH}" \
-            "${AGENT_PLUGINS_SBOM_PATH}" \
-            --generate-notes \
-            --title "Hengmu ${GITHUB_REF_NAME}"
+        run: >-
+          python scripts/publish_release.py
+          --repository "${GITHUB_REPOSITORY}"
+          --tag "${GITHUB_REF_NAME}"
+          --dist dist

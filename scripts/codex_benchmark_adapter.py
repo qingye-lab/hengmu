@@ -9,7 +9,7 @@ import shutil
 import subprocess
 import tempfile
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import yaml
 from jsonschema import Draft202012Validator, FormatChecker
@@ -91,7 +91,7 @@ def treatment_for(
         raise ValueError(
             f"Context manifest must define one {condition!r} treatment for {skill!r}"
         )
-    return matches[0]
+    return cast(dict[str, Any], matches[0])
 
 
 def resolve_treatment_paths(
@@ -209,7 +209,7 @@ def allowed_rule_ids(root: Path) -> list[str]:
     return sorted(result)
 
 
-def evidence_errors(observation: dict, fixture: Path) -> list[str]:
+def evidence_errors(observation: dict[str, Any], fixture: Path) -> list[str]:
     errors: list[str] = []
     fixture = fixture.resolve()
     for finding in observation["observed_findings"]:
@@ -237,7 +237,7 @@ def evidence_errors(observation: dict, fixture: Path) -> list[str]:
     return errors
 
 
-def validate_observation(observation: dict, schema: dict) -> None:
+def validate_observation(observation: dict[str, Any], schema: dict[str, Any]) -> None:
     errors = sorted(
         Draft202012Validator(
             schema,
@@ -261,7 +261,7 @@ def execute_codex(
     output_path: Path,
     prompt: str,
     timeout: int,
-) -> dict:
+) -> dict[str, Any]:
     command = [
         codex,
         "exec",
@@ -295,7 +295,10 @@ def execute_codex(
         )
     if not output_path.is_file():
         raise RuntimeError("Codex did not write a structured observation")
-    return json.loads(output_path.read_text(encoding="utf-8"))
+    payload = json.loads(output_path.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise RuntimeError("Codex structured observation must be an object")
+    return payload
 
 
 def parse_args() -> argparse.Namespace:

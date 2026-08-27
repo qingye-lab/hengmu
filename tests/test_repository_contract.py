@@ -37,6 +37,20 @@ class RepositoryContractTests(unittest.TestCase):
             self.assertEqual(len(errors), 1)
             self.assertIn("40-character commit SHA", errors[0])
 
+    def test_non_github_owned_action_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            workflow_root = root / ".github" / "workflows"
+            workflow_root.mkdir(parents=True)
+            (workflow_root / "ci.yml").write_text(
+                "steps:\n  - uses: third-party/example@" + "a" * 40 + "\n",
+                encoding="utf-8",
+            )
+            errors: list[str] = []
+            validate_repository.validate_github_action_pins(root, errors)
+            self.assertEqual(len(errors), 1)
+            self.assertIn("must use a GitHub-owned action", errors[0])
+
     def test_duplicate_json_key_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary) / "duplicate.json"

@@ -7,6 +7,7 @@ import argparse
 import json
 import re
 from pathlib import Path
+from typing import Any
 
 PACKAGE_RE = re.compile(r"^(?P<name>[A-Za-z0-9_.-]+)==(?P<version>[^\s\\]+)")
 DENIED_LICENSES = {
@@ -43,7 +44,7 @@ def locked_packages(path: Path) -> dict[str, str]:
     return result
 
 
-def audit(lock_path: Path, policy_path: Path) -> dict:
+def audit(lock_path: Path, policy_path: Path) -> dict[str, Any]:
     locked = locked_packages(lock_path)
     try:
         policy = json.loads(policy_path.read_text(encoding="utf-8"))

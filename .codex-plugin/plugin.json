@@ -1,6 +1,6 @@
 {
   "name": "hengmu",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "description": "Evidence-bound current-state assessment, open or constrained target-architecture design, decisions, planning, and deterministic governance for Codex.",
   "author": {
     "name": "Qingye Open Source",
@@ -24,7 +24,7 @@
   "interface": {
     "displayName": "Hengmu",
     "shortDescription": "Evidence-bound architecture design and governance",
-    "longDescription": "Assess repositories and portfolios, design open or constrained target architectures, compare architecture and technology options, verify evidence and provenance, record decisions, plan remediation or Greenfield implementation, and enforce trusted artifacts with layered deterministic policy. Hengmu proposes artifacts; it does not accept decisions, implement application code, or run gates implicitly. Local helpers require Python 3.11–3.13 with PyYAML and jsonschema.",
+    "longDescription": "Assess repositories and portfolios, design open or constrained target architectures, compare architecture and technology options, verify evidence and provenance, record decisions, plan remediation or Greenfield implementation, and enforce trusted artifacts with layered deterministic policy. Hengmu proposes artifacts; it does not accept decisions, implement application code, or run gates implicitly. Local helpers require Python 3.11–3.14 with PyYAML and jsonschema.",
     "developerName": "Qingye",
     "category": "Developer Tools",
     "capabilities": [

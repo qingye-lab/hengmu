@@ -87,6 +87,9 @@ REQUIRED_FILES = (
     "requirements-runtime.lock",
     "requirements.txt",
     "scripts/generate_sbom.py",
+    "scripts/check_changed_coverage.py",
+    "scripts/evaluate_ci_gate.py",
+    "scripts/publish_release.py",
     "scripts/smoke_test_package.py",
     "scripts/curate_golden_knowledge.py",
     "scripts/codex_benchmark_adapter.py",
@@ -107,6 +110,7 @@ REQUIRED_FILES = (
     "resources/schemas/governance-run-manifest.schema.json",
     "resources/selector-source.json",
     "resources/scripts/build_project_profile.py",
+    "resources/scripts/artifact_types.py",
     "resources/scripts/fingerprint_artifact.py",
     "resources/scripts/inspect_repository.py",
     "resources/scripts/knowledge_model.py",
@@ -720,11 +724,13 @@ def validate_benchmark_ablation(root: Path, errors: list[str]) -> None:
     truth = load_yaml(root / "benchmarks" / "ground-truth.yaml", errors)
     if not isinstance(treatments, list) or not isinstance(truth, dict):
         return
-    benchmark_skills = {
-        case.get("skill")
-        for case in truth.get("cases", [])
-        if isinstance(case, dict) and isinstance(case.get("skill"), str)
-    }
+    benchmark_skills: set[str] = set()
+    for case in truth.get("cases", []):
+        if not isinstance(case, dict):
+            continue
+        skill = case.get("skill")
+        if isinstance(skill, str):
+            benchmark_skills.add(skill)
     expected = {
         (condition, skill)
         for condition in ("base", "full", "compressed")
@@ -962,6 +968,8 @@ def validate_github_action_pins(root: Path, errors: list[str]) -> None:
             action_ref = match.group("ref")
             if action.startswith("./") or action.startswith("docker://"):
                 continue
+            if action.split("/", 1)[0] not in {"actions", "github"}:
+                errors.append(f"{path} must use a GitHub-owned action; found {action}")
             if COMMIT_SHA_RE.fullmatch(action_ref) is None:
                 errors.append(
                     f"{path} must pin {action} to a 40-character commit SHA; "

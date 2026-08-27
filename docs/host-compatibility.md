@@ -40,7 +40,7 @@ recorded in the
 | Automatic completion gate | Not a Hengmu capability; the Gate is explicit | Optional future stop/post-tool Hook |
 
 Hengmu never silently installs dependencies, changes client permissions, or
-registers Hooks. The portable runtime supports CPython 3.11–3.13 with the exact
+registers Hooks. The portable runtime supports CPython 3.11–3.14 with the exact
 hashes in `requirements-runtime.lock`. Evidence Provider commands remain
 project-owned explicit configuration.
 

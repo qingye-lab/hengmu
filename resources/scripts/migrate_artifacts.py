@@ -7,7 +7,7 @@ import argparse
 import re
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import yaml
 from architecture_tool import (
@@ -23,6 +23,11 @@ from architecture_tool import (
     slugify,
     validate_file,
     validate_review,
+)
+from artifact_types import (
+    KnowledgeSelectionArtifact,
+    ProfileArtifact,
+    ReviewArtifact,
 )
 
 WORKFLOW_BY_KIND = {
@@ -61,15 +66,21 @@ def migrate_review(
         selection_path,
         "knowledge selection",
     )
-    source = validate_review(source_path)
+    source = cast(ReviewArtifact, validate_review(source_path))
     if source["schema_version"] == "1.2":
         raise MigrationError(f"{source_path} already uses Review schema 1.2")
     profile_path = root / ".architecture" / "profile.yaml"
-    profile = validate_file(profile_path, "project-profile.schema.json")
+    profile = cast(
+        ProfileArtifact,
+        validate_file(profile_path, "project-profile.schema.json"),
+    )
     facts = validate_file(facts_path, "repository-facts.schema.json")
-    selection = validate_file(
-        selection_path,
-        "knowledge-selection.schema.json",
+    selection = cast(
+        KnowledgeSelectionArtifact,
+        validate_file(
+            selection_path,
+            "knowledge-selection.schema.json",
+        ),
     )
     if selection["inputs"]["facts_sha256"] != file_sha256(facts_path):
         raise MigrationError("Knowledge selection is bound to different facts")
@@ -102,7 +113,7 @@ def migrate_review(
                 f"Finding {finding['id']} references rule "
                 f"{finding['rule_id']} outside the effective Rule Packs"
             )
-        migrated = dict(finding)
+        migrated: dict[str, Any] = dict(finding)
         migrated["verification"] = {
             "status": "candidate",
             "rationale": (
@@ -317,7 +328,6 @@ def main() -> int:
             encoding="utf-8",
         )
     except (ArchitectureError, MigrationError, OSError, yaml.YAMLError) as exc:
-        _validation_path(root).unlink(missing_ok=True)
         print(f"Review migration failed: {exc}", file=sys.stderr)
         return 2
     print(

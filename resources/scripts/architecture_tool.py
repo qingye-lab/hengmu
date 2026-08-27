@@ -16,7 +16,7 @@ import tempfile
 import xml.etree.ElementTree as ElementTree
 from datetime import UTC, date, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from build_project_profile import ProfileBuildError, build_profile, derive_domains
 from inspect_repository import InspectionError, inspect_repository
@@ -63,7 +63,7 @@ VERIFICATION_LEVEL_ORDER = {
     "V4": 4,
     "V5": 5,
 }
-TOOL_VERSION = "1.0.4"
+TOOL_VERSION = "1.1.0"
 TRUSTED_POLICY_VERSIONS = {"1.1", "1.2"}
 BENCHMARK_TREATMENT_CONDITIONS = ("base", "full", "compressed")
 REVIEW_KIND_CORE_PACK = {
@@ -159,7 +159,12 @@ def load_yaml(path: Path) -> dict[str, Any]:
         raise ArchitectureError(f"Invalid YAML in {path}: {exc}") from exc
     if not isinstance(value, dict):
         raise ArchitectureError(f"Expected a YAML mapping in {path}")
-    return normalize_yaml_scalars(value)
+    normalized = normalize_yaml_scalars(value)
+    if not isinstance(normalized, dict) or not all(
+        isinstance(key, str) for key in normalized
+    ):
+        raise ArchitectureError(f"Expected string mapping keys in {path}")
+    return cast(dict[str, Any], normalized)
 
 
 def write_yaml(path: Path, value: dict[str, Any]) -> None:
@@ -1529,7 +1534,7 @@ def run_evidence_provider(
         root,
         configured_inputs,
     )
-    artifact = {
+    artifact: dict[str, Any] = {
         "schema_version": "1.2",
         "run": {
             "id": run_id,
@@ -2487,8 +2492,8 @@ def validate_review(
                     root / item["provider_run"],
                     f"{path} finding {finding['id']} tool evidence",
                 )
-                evidence_run = provider_runs.get(run_path)
-                if evidence_run is None:
+                referenced_run = provider_runs.get(run_path)
+                if referenced_run is None:
                     if historical_evidence:
                         continue
                     raise ArchitectureError(
@@ -2500,12 +2505,12 @@ def validate_review(
                         f"{path} finding {finding['id']} tool evidence hash "
                         "does not match its run"
                     )
-                if evidence_run["run"]["provider_id"] != item["provider_id"]:
+                if referenced_run["run"]["provider_id"] != item["provider_id"]:
                     raise ArchitectureError(
                         f"{path} finding {finding['id']} tool evidence provider "
                         "does not match its run"
                     )
-                if evidence_run["run"]["trust"] == "deterministic":
+                if referenced_run["run"]["trust"] == "deterministic":
                     deterministic_finding_evidence = True
             if (
                 finding["verification"].get("level") in {"V4", "V5"}
@@ -2661,10 +2666,10 @@ def _declared_source_snapshot(source: dict[str, Any]) -> dict[str, Any]:
 
 def _brief_constraint_entries(data: dict[str, Any]) -> list[Any]:
     if isinstance(data.get("architecture_constraints"), list):
-        return data["architecture_constraints"]
+        return list(data["architecture_constraints"])
     context = data.get("context", {})
     if isinstance(context, dict) and isinstance(context.get("constraints"), list):
-        return context["constraints"]
+        return list(context["constraints"])
     constraints = data.get("constraints", [])
     return constraints if isinstance(constraints, list) else []
 
@@ -2860,15 +2865,18 @@ def _validate_greenfield_target_architecture(
                 f"{path} option {option['id']} has a constraint coverage entry "
                 "without an ID"
             )
-        if len(ids) != len(set(ids)) or set(ids) != set(constraint_by_id):
-            missing = sorted(set(constraint_by_id) - set(ids))
-            unknown = sorted(set(ids) - set(constraint_by_id))
+        valid_ids = [item_id for item_id in ids if item_id is not None]
+        if len(valid_ids) != len(set(valid_ids)) or set(valid_ids) != set(
+            constraint_by_id
+        ):
+            missing = sorted(set(constraint_by_id) - set(valid_ids))
+            unknown = sorted(set(valid_ids) - set(constraint_by_id))
             details = []
             if missing:
                 details.append("missing " + ", ".join(missing))
             if unknown:
                 details.append("unknown " + ", ".join(unknown))
-            if len(ids) != len(set(ids)):
+            if len(valid_ids) != len(set(valid_ids)):
                 details.append("duplicate IDs")
             raise ArchitectureError(
                 f"{path} option {option['id']} constraint coverage is not exact: "
@@ -3599,6 +3607,10 @@ def validate_decision(
                     "project Profile: " + ", ".join(unknown_quality)
                 )
         if data["schema_version"] in {"1.2", "1.3", "1.4"}:
+            if profile is None:
+                raise ArchitectureError(
+                    f"{path} requires a project Profile for current bindings"
+                )
             selection_path = require_within_root(
                 root,
                 root / data["decision"]["knowledge_selection_path"],
@@ -3838,7 +3850,7 @@ def _validate_greenfield_plan_bindings(
         "technologies": target_technology_ids,
     }
 
-    observed_bindings = {field: set() for field in binding_fields}
+    observed_bindings: dict[str, set[str]] = {field: set() for field in binding_fields}
 
     def check_bindings(bindings: Any, field: str) -> None:
         if not isinstance(bindings, dict):
@@ -4374,7 +4386,7 @@ def validate_profile_review_requirements(
             f"{source} rule_packs must exactly equal the review requirement "
             "union; unassigned packs: " + ", ".join(unused)
         )
-    return requirements
+    return cast(list[dict[str, Any]], requirements)
 
 
 def validate_project(root: Path) -> list[Path]:
@@ -5009,8 +5021,9 @@ def git_changed_paths(root: Path, old_commit: str, new_commit: str) -> set[str]:
 
 
 def evidence_path(item: dict[str, Any]) -> str | None:
-    if item.get("path"):
-        return item["path"]
+    path_value = item.get("path")
+    if isinstance(path_value, str) and path_value:
+        return path_value
     location = item.get("location", "")
     if "://" in location or not location:
         return None
@@ -7735,6 +7748,10 @@ def validate_benchmark_provenance(
     if file_sha256(log_path) != log["sha256"]:
         raise ArchitectureError("Benchmark execution log hash mismatch")
     if archive_binding is not None:
+        if artifact_commit is None:
+            raise ArchitectureError(
+                "Archived benchmark verification requires an artifact commit"
+            )
         relative_log_path = log_path.resolve().relative_to(root)
         archived_log = git_blob_bytes(
             root,
@@ -8148,13 +8165,13 @@ def score_benchmark(
                     compared_severity_stability += 1
                     if left[rule_id]["severity"] == right[rule_id]["severity"]:
                         stable_severity += 1
-        for left_index, left in enumerate(trial_decisions):
-            for right in trial_decisions[left_index + 1 :]:
-                decision_stability_values.append(float(left == right))
+        for left_index, left_decision in enumerate(trial_decisions):
+            for right_decision in trial_decisions[left_index + 1 :]:
+                decision_stability_values.append(float(left_decision == right_decision))
 
     precision_denominator = true_positive + false_positive
     recall_denominator = true_positive + false_negative
-    result = {
+    result: dict[str, Any] = {
         "cases": len(truth_cases),
         "trials": total_trials,
         "true_positive": true_positive,
@@ -9005,8 +9022,8 @@ def run(args: argparse.Namespace) -> int:
         )
         return 0
     if args.command == "evidence-providers":
-        result = evidence_provider_status(Path(args.project))
-        print(json.dumps(result, indent=2, ensure_ascii=False))
+        provider_status = evidence_provider_status(Path(args.project))
+        print(json.dumps(provider_status, indent=2, ensure_ascii=False))
         return 0
     if args.command == "run-evidence-provider":
         artifact_path, artifact = run_evidence_provider(
@@ -9067,9 +9084,9 @@ def run(args: argparse.Namespace) -> int:
         print("Review SSH signature is valid.")
         return 0
     if args.command == "verify-evidence":
-        review = validate_review(Path(args.review).resolve())
-        result = verify_review_evidence(review, Path(args.repo))
-        print(json.dumps(result, indent=2, ensure_ascii=False))
+        evidence_review = validate_review(Path(args.review).resolve())
+        evidence_result = verify_review_evidence(evidence_review, Path(args.repo))
+        print(json.dumps(evidence_result, indent=2, ensure_ascii=False))
         return 0
     if args.command == "review-bindings":
         result = review_bindings(
@@ -9101,20 +9118,20 @@ def run(args: argparse.Namespace) -> int:
             project_root / ".architecture" / "profile.yaml",
             "project-profile.schema.json",
         )
-        review: dict[str, Any] | None = None
+        decision_review: dict[str, Any] | None = None
         design_brief_path: Path | None = None
-        review_path: Path | None = None
+        decision_review_path: Path | None = None
         if args.review:
-            review_path = Path(args.review)
-            if not review_path.is_absolute():
-                review_path = project_root / review_path
-            review_path = require_within_root(
+            decision_review_path = Path(args.review)
+            if not decision_review_path.is_absolute():
+                decision_review_path = project_root / decision_review_path
+            decision_review_path = require_within_root(
                 project_root,
-                review_path,
+                decision_review_path,
                 "decision source review",
             )
-            review = validate_review(
-                review_path,
+            decision_review = validate_review(
+                decision_review_path,
                 rule_pack_ids=profile["project"]["rule_packs"],
                 strict_trust=True,
                 repository_root=project_root,
@@ -9139,8 +9156,8 @@ def run(args: argparse.Namespace) -> int:
                 )
         if args.knowledge_selection:
             selection_path: Path | None = Path(args.knowledge_selection)
-        elif review is not None and review["schema_version"] == "1.2":
-            selection_path = Path(review["knowledge_selection"]["path"])
+        elif decision_review is not None and decision_review["schema_version"] == "1.2":
+            selection_path = Path(decision_review["knowledge_selection"]["path"])
         else:
             selection_path = None
         if design_brief_path is not None and selection_path is None:
@@ -9248,13 +9265,13 @@ def run(args: argparse.Namespace) -> int:
         print(rendered)
         return 0
     if args.command == "gate":
-        review_path = Path(args.review) if args.review else None
+        gate_review_path = Path(args.review) if args.review else None
         if args.decision and args.portfolio:
             raise ArchitectureError("--decision cannot be combined with --portfolio")
         if args.portfolio:
             result = gate_portfolio(
                 Path(args.portfolio),
-                review_path,
+                gate_review_path,
                 mode=args.stage,
                 base_commit=args.base_commit,
             )
@@ -9268,7 +9285,7 @@ def run(args: argparse.Namespace) -> int:
         else:
             result = gate_project(
                 Path(args.project or "."),
-                review_path,
+                gate_review_path,
                 mode=args.stage,
                 base_commit=args.base_commit,
             )
