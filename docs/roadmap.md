@@ -30,6 +30,8 @@ Required outcomes:
 - keep dependency audit authoritative in the Ubuntu Python 3.14 lane;
 - publish exactly two ZIPs, two checksums, and two SPDX 2.3 SBOMs through a
   resumable draft-first Release state machine; and
+- before any Release mutation, fail closed unless the read-only repository
+  immutable-releases endpoint returns a well-formed `enabled: true`; and
 - verify published immutable assets and attestations without modifying a
   published Release.
 
@@ -37,6 +39,9 @@ Done when all local gates pass, the hosted eight-lane matrix and summary gate
 pass, release-stage evidence reaches V4, and a future v1.1.0 tag publishes and
 verifies the six exact assets. Repository rulesets and immutable-release
 settings are enabled only as a separately observed remote administration step.
+Before the first v1.1 tag, an administrator must enable immutable releases and
+the maintainer must retain an authenticated GET readback; the publication
+workflow does not enable it.
 
 ## v1.2 AI Knowledge 2026
 

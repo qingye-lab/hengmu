@@ -83,8 +83,22 @@
    scorer output.
 16. Confirm migration evidence never preserves a legacy verified label as
     current 1.2 verification.
-17. Create a signed or annotated `v<version>` tag.
-18. Push the tag. The release workflow re-runs validation, tests, lint,
+17. Before the first v1.1 tag, a repository administrator must enable GitHub
+    immutable releases. Read the setting back with the authenticated GET
+    endpoint and require `enabled: true`:
+
+    ```bash
+    gh api repos/qingye-lab/hengmu/immutable-releases
+    ```
+
+    The publication script performs this same read-only preflight before any
+    Release lookup or mutation. A disabled setting (including `404`), malformed
+    response, or authentication/API/CLI error blocks publication. The workflow
+    never enables the setting itself; retain the administrator action and GET
+    readback as release evidence. See GitHub's
+    [immutable-release repository endpoints](https://docs.github.com/en/rest/repos/repos#check-if-immutable-releases-are-enabled-for-a-repository).
+18. Create a signed or annotated `v<version>` tag.
+19. Push the tag. The release workflow re-runs validation, tests, lint,
    formatting, dependency audit, deterministic packaging, checksum, and SBOM
    generation. It creates GitHub provenance and SBOM attestations, creates or
    resumes a draft containing exactly the two ZIPs, two checksums, and two SPDX

@@ -41,6 +41,8 @@ class ReleaseState:
 
 
 class ReleaseClient(Protocol):
+    def require_immutable_releases(self, repository: str) -> None: ...
+
     def get_release(self, repository: str, tag: str) -> ReleaseState | None: ...
 
     def create_draft(self, repository: str, tag: str, title: str) -> None: ...
@@ -158,6 +160,7 @@ def publish_release(
     delay_seconds: float = 10.0,
 ) -> str:
     assets = expected_assets(dist.resolve(), tag)
+    client.require_immutable_releases(repository)
     state = client.get_release(repository, tag)
     if state is not None and not state.draft:
         validate_inventory(state, assets)
@@ -221,15 +224,49 @@ class GhReleaseClient:
         *,
         allow_failure: bool = False,
     ) -> subprocess.CompletedProcess[str]:
-        process = subprocess.run(
-            ["gh", *arguments],
-            check=False,
-            capture_output=True,
-            text=True,
-        )
+        try:
+            process = subprocess.run(
+                ["gh", *arguments],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+        except OSError as exc:
+            raise ReleaseError(f"GitHub CLI invocation failed: {exc}") from exc
         if process.returncode != 0 and not allow_failure:
             raise ReleaseError(process.stderr.strip() or "GitHub CLI command failed")
         return process
+
+    def require_immutable_releases(self, repository: str) -> None:
+        process = self._run(
+            ["api", f"repos/{repository}/immutable-releases"],
+            allow_failure=True,
+        )
+        if process.returncode != 0:
+            if "(HTTP 404)" in process.stderr:
+                raise ReleaseError(
+                    "GitHub immutable releases are not enabled for the repository"
+                )
+            raise ReleaseError(
+                process.stderr.strip() or "GitHub immutable-release preflight failed"
+            )
+        try:
+            payload: Any = json.loads(process.stdout)
+        except json.JSONDecodeError as exc:
+            raise ReleaseError(
+                "GitHub immutable-release response is malformed"
+            ) from exc
+        if not isinstance(payload, dict) or not isinstance(
+            payload.get("enabled"), bool
+        ):
+            raise ReleaseError("GitHub immutable-release response is malformed")
+        enforced_by_owner = payload.get("enforced_by_owner")
+        if enforced_by_owner is not None and not isinstance(enforced_by_owner, bool):
+            raise ReleaseError("GitHub immutable-release response is malformed")
+        if not payload["enabled"]:
+            raise ReleaseError(
+                "GitHub immutable releases are not enabled for the repository"
+            )
 
     def get_release(self, repository: str, tag: str) -> ReleaseState | None:
         process = self._run(

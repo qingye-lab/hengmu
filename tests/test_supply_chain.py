@@ -107,6 +107,30 @@ class SupplyChainTests(unittest.TestCase):
         self.assertIn('--tag "${GITHUB_REF_NAME}"', workflow)
         self.assertNotIn("sbom-path: dist/*.spdx.json", workflow)
 
+    def test_release_publication_requires_read_only_immutability_preflight(
+        self,
+    ) -> None:
+        script = (ROOT / "scripts" / "publish_release.py").read_text(encoding="utf-8")
+        self.assertIn(
+            '["api", f"repos/{repository}/immutable-releases"]',
+            script,
+        )
+        self.assertNotRegex(
+            script,
+            re.compile(
+                r'(?:-X|--method|"PUT"|\bPUT\b).*immutable-releases|'
+                r'immutable-releases.*(?:-X|--method|"PUT"|\bPUT\b)',
+                re.IGNORECASE,
+            ),
+        )
+        publication = script.index("def publish_release(")
+        preflight = script.index(
+            "client.require_immutable_releases(repository)",
+            publication,
+        )
+        lookup = script.index("client.get_release(repository, tag)", publication)
+        self.assertLess(preflight, lookup)
+
     def test_release_requires_complete_quality_matrix(self) -> None:
         ci_path = ROOT / ".github" / "workflows" / "ci.yml"
         release_path = ROOT / ".github" / "workflows" / "release.yml"

@@ -27,10 +27,17 @@ class FakeReleaseClient:
         state=None,
         *,
         verify_results: list[bool] | None = None,
+        immutable_error: str | None = None,
     ) -> None:
         self.state = state
         self.verify_results = list(verify_results or [True])
+        self.immutable_error = immutable_error
         self.calls: list[tuple[object, ...]] = []
+
+    def require_immutable_releases(self, repository: str) -> None:
+        self.calls.append(("immutable", repository))
+        if self.immutable_error is not None:
+            raise publish_release.ReleaseError(self.immutable_error)
 
     def get_release(self, repository: str, tag: str):
         self.calls.append(("get", repository, tag))
@@ -120,6 +127,7 @@ class ReleasePublicationTests(unittest.TestCase):
             sleep=lambda _: None,
         )
         self.assertEqual(outcome, "published")
+        self.assertEqual(client.calls[0], ("immutable", "owner/repo"))
         self.assertEqual(sum(call[0] == "create" for call in client.calls), 1)
         uploads = [call for call in client.calls if call[0] == "upload"]
         self.assertEqual(len(uploads), 6)
@@ -225,6 +233,75 @@ class ReleasePublicationTests(unittest.TestCase):
             )
         self.assertEqual(client.calls, [])
 
+    def test_immutable_release_preflight_failure_has_zero_remote_mutation(
+        self,
+    ) -> None:
+        for failure in (
+            "immutable releases are disabled",
+            "immutable-release endpoint returned 404",
+            "immutable-release response is malformed",
+            "authentication failed",
+            "GitHub API failed",
+            "GitHub CLI failed",
+        ):
+            with self.subTest(failure=failure):
+                client = FakeReleaseClient(immutable_error=failure)
+                with self.assertRaisesRegex(
+                    publish_release.ReleaseError,
+                    failure,
+                ):
+                    publish_release.publish_release(
+                        "owner/repo",
+                        "v1.1.0",
+                        self.dist,
+                        client=client,
+                    )
+                self.assertEqual(client.calls, [("immutable", "owner/repo")])
+
+    def test_gh_immutable_release_preflight_is_read_only_and_fail_closed(
+        self,
+    ) -> None:
+        client = publish_release.GhReleaseClient()
+        enabled = CompletedProcess(
+            [],
+            0,
+            json.dumps({"enabled": True, "enforced_by_owner": False}),
+            "",
+        )
+        with patch.object(client, "_run", return_value=enabled) as run:
+            client.require_immutable_releases("owner/repo")
+        run.assert_called_once_with(
+            ["api", "repos/owner/repo/immutable-releases"],
+            allow_failure=True,
+        )
+
+        failures = (
+            (
+                CompletedProcess([], 1, "", "gh: Not Found (HTTP 404)\n"),
+                "not enabled",
+            ),
+            (CompletedProcess([], 0, '{"enabled": false}', ""), "not enabled"),
+            (CompletedProcess([], 0, "not-json", ""), "malformed"),
+            (CompletedProcess([], 0, '{"enabled": "yes"}', ""), "malformed"),
+            (
+                CompletedProcess(
+                    [],
+                    0,
+                    '{"enabled": true, "enforced_by_owner": "yes"}',
+                    "",
+                ),
+                "malformed",
+            ),
+            (CompletedProcess([], 1, "", "authentication failed\n"), "authentication"),
+        )
+        for completed, message in failures:
+            with (
+                self.subTest(completed=completed, message=message),
+                patch.object(client, "_run", return_value=completed),
+                self.assertRaisesRegex(publish_release.ReleaseError, message),
+            ):
+                client.require_immutable_releases("owner/repo")
+
     def test_gh_asset_verification_is_bound_to_requested_tag(self) -> None:
         client = publish_release.GhReleaseClient()
         asset = self.dist / self.assets[0].name
@@ -305,6 +382,18 @@ class ReleasePublicationTests(unittest.TestCase):
             self.assertRaisesRegex(publish_release.ReleaseError, "command failed"),
         ):
             client._run(["release", "view", "v1.1.0"])
+        with (
+            patch.object(
+                publish_release.subprocess,
+                "run",
+                side_effect=OSError("gh is unavailable"),
+            ),
+            self.assertRaisesRegex(
+                publish_release.ReleaseError,
+                "GitHub CLI invocation failed",
+            ),
+        ):
+            client.require_immutable_releases("owner/repo")
 
         with self.assertRaisesRegex(publish_release.ReleaseError, "start with v"):
             publish_release.expected_assets(self.dist, "1.1.0")
