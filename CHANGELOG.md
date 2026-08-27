@@ -7,6 +7,29 @@ and this project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-08-27
+
+### Added
+
+- Strict mypy and branch-aware coverage quality gates for source and maintainer
+  scripts, including direct CLI-wrapper and changed-line regression tests.
+- CPython 3.14 hosted coverage and a stable event-aware CI `Quality gate` across
+  eight supported endpoint and intermediate lanes.
+- A resumable draft-first GitHub Release publisher that accepts exactly two
+  ZIPs, two checksums, and two SPDX 2.3 SBOMs and verifies published assets with
+  bounded retries.
+
+### Changed
+
+- The documented portable runtime boundary now covers CPython 3.11–3.14.
+- Tagged publication depends on the stable summary gate, uses Python 3.14, and
+  treats an existing published Release as read-only.
+
+### Fixed
+
+- Legacy Review migration no longer deletes a pre-existing user-owned temporary
+  validation artifact when a migration is refused.
+
 ## [1.0.4] - 2026-08-10
 
 ### Changed

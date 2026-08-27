@@ -16,9 +16,9 @@
     <img alt="CI" src="https://github.com/qingye-lab/hengmu/actions/workflows/ci.yml/badge.svg?branch=main">
   </a>
   <a href="https://github.com/qingye-lab/hengmu/releases">
-    <img alt="Version 1.0.4" src="https://img.shields.io/badge/version-1.0.4-173FBE">
+    <img alt="Version 1.1.0" src="https://img.shields.io/badge/version-1.1.0-173FBE">
   </a>
-  <img alt="Python 3.11–3.13" src="https://img.shields.io/badge/python-3.11%E2%80%933.13-161719">
+  <img alt="Python 3.11–3.14" src="https://img.shields.io/badge/python-3.11%E2%80%933.14-161719">
   <a href="LICENSE">
     <img alt="MIT License" src="https://img.shields.io/badge/license-MIT-173FBE">
   </a>
@@ -229,7 +229,7 @@ those Skills require the shared runtime. See the official
 ### Prepare the shared Python runtime
 
 Hengmu's Skills are portable, while its deterministic helpers require Python
-3.11–3.13, PyYAML, and jsonschema. Install the locked dependencies into the
+3.11–3.14, PyYAML, and jsonschema. Install the locked dependencies into the
 `python3` environment exposed to the IDE agent, or launch the IDE from this
 activated environment:
 
@@ -241,7 +241,7 @@ python3 -m pip install --require-hashes -r requirements-runtime.lock
 python3 resources/scripts/architecture_tool.py --version
 ```
 
-The last command should print `architecture_tool.py 1.0.4`. On Windows
+The last command should print `architecture_tool.py 1.1.0`. On Windows
 PowerShell, activate with `.venv\Scripts\Activate.ps1`. Installation does not
 grant permissions or enable Hooks; review each host's agent permissions before
 allowing repository writes or shell execution.
@@ -276,7 +276,7 @@ dependencies, migration order, and stopping conditions.
 
 ### 1. Prepare the runtime
 
-Hengmu supports Python 3.11–3.13. The runtime is local: it requires no hosted
+Hengmu supports Python 3.11–3.14. The runtime is local: it requires no hosted
 service, telemetry, credentials, network access, or MCP server.
 
 ```bash

@@ -2,6 +2,26 @@
 addopts = "-ra --strict-config --strict-markers"
 testpaths = ["tests"]
 
+[tool.coverage.run]
+branch = true
+source = ["."]
+relative_files = true
+omit = ["*/hengmu-package-smoke-*/*"]
+patch = ["subprocess"]
+
+[tool.coverage.report]
+include = ["resources/scripts/*", "scripts/*"]
+show_missing = true
+skip_covered = true
+
+[tool.coverage.xml]
+output = "coverage.xml"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+files = ["resources/scripts", "scripts"]
+
 [tool.ruff]
 target-version = "py311"
 line-length = 88

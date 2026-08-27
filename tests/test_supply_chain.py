@@ -102,9 +102,40 @@ class SupplyChainTests(unittest.TestCase):
         self.assertIn("--output-dir dist", workflow)
         self.assertIn("sbom-path: ${{ env.CODEX_SBOM_PATH }}", workflow)
         self.assertIn("sbom-path: ${{ env.AGENT_PLUGINS_SBOM_PATH }}", workflow)
-        self.assertIn('"${CODEX_SBOM_PATH}"', workflow)
-        self.assertIn('"${AGENT_PLUGINS_SBOM_PATH}"', workflow)
+        self.assertIn("python scripts/publish_release.py", workflow)
+        self.assertIn("          prepare\n", workflow)
+        self.assertIn('--repository "${GITHUB_REPOSITORY}"', workflow)
+        self.assertIn('--tag "${GITHUB_REF_NAME}"', workflow)
         self.assertNotIn("sbom-path: dist/*.spdx.json", workflow)
+
+    def test_release_publication_requires_read_only_immutability_preflight(
+        self,
+    ) -> None:
+        script = (ROOT / "scripts" / "publish_release.py").read_text(encoding="utf-8")
+        self.assertIn('"X-GitHub-Api-Version: 2026-03-10",', script)
+        self.assertIn('f"repos/{repository}/immutable-releases",', script)
+        self.assertNotRegex(
+            script,
+            re.compile(
+                r'(?:-X|--method|"PUT"|\bPUT\b).*immutable-releases|'
+                r'immutable-releases.*(?:-X|--method|"PUT"|\bPUT\b)',
+                re.IGNORECASE,
+            ),
+        )
+        publication = script.index("def publish_release(")
+        preflight = script.index(
+            "client.require_immutable_releases(repository)",
+            publication,
+        )
+        lookup = script.index("client.get_release(repository, tag)", publication)
+        self.assertLess(preflight, lookup)
+        preparation = script[script.index("def prepare_release(") : publication]
+        self.assertNotIn("require_immutable_releases", preparation)
+        self.assertNotIn("client.publish(", preparation)
+        publication_body = script[publication : script.index("class GhReleaseClient:")]
+        self.assertNotIn("client.create_draft(", publication_body)
+        self.assertNotIn("client.upload_asset(", publication_body)
+        self.assertIn("immutable: bool", script)
 
     def test_release_requires_complete_quality_matrix(self) -> None:
         ci_path = ROOT / ".github" / "workflows" / "ci.yml"
@@ -122,15 +153,26 @@ class SupplyChainTests(unittest.TestCase):
         )
         self.assertEqual(
             quality["strategy"]["matrix"]["python-version"],
-            ["3.11", "3.13"],
+            ["3.11", "3.14"],
         )
         self.assertEqual(
             quality["strategy"]["matrix"]["include"],
-            [{"os": "ubuntu-latest", "python-version": "3.12"}],
+            [
+                {"os": "ubuntu-latest", "python-version": "3.12"},
+                {"os": "ubuntu-latest", "python-version": "3.13"},
+            ],
         )
+        quality_steps = {step["name"]: step for step in quality["steps"]}
+        coverage_command = quality_steps["Run tests with branch coverage"]["run"]
+        self.assertRegex(coverage_command, r"(?:^|\s)--cov(?:\s|$)")
+        self.assertNotIn("--cov=", coverage_command)
+        runtime_command = quality_steps["Enforce runtime branch coverage"]["run"]
+        self.assertIn('--include="resources/scripts/*"', runtime_command)
+        self.assertIn("--fail-under=68.0", runtime_command)
 
         publish = ci["jobs"]["release"]
-        self.assertEqual(publish["needs"], ["quality"])
+        self.assertEqual(publish["name"], "Prepare verified tag draft")
+        self.assertEqual(publish["needs"], ["quality-gate"])
         self.assertEqual(
             publish["if"],
             "startsWith(github.ref, 'refs/tags/v')",
@@ -145,6 +187,22 @@ class SupplyChainTests(unittest.TestCase):
             },
         )
         self.assertEqual(set(release["on"]), {"workflow_call"})
+        release_steps = {
+            step["name"]: step for step in release["jobs"]["release"]["steps"]
+        }
+        self.assertIn("Prepare exact GitHub release draft", release_steps)
+        prepare_command = release_steps["Prepare exact GitHub release draft"]["run"]
+        self.assertIn("scripts/publish_release.py prepare", prepare_command)
+        self.assertNotIn("scripts/publish_release.py publish", prepare_command)
+        self.assertFalse(any("Publish" in name for name in release_steps))
+        self.assertRegex(
+            release_steps["Run tests with branch coverage"]["run"],
+            r"(?:^|\s)--cov(?:\s|$)",
+        )
+        self.assertIn(
+            "--fail-under=68.0",
+            release_steps["Enforce runtime branch coverage"]["run"],
+        )
 
     def test_checksum_and_sbom_cover_archive(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

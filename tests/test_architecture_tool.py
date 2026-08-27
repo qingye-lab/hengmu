@@ -603,6 +603,60 @@ class ArchitectureToolTests(unittest.TestCase):
         resolved_migrated = architecture_tool.load_yaml(resolved_migrated_path)
         self.assertEqual(resolved_migrated["findings"][0]["status"], "resolved")
 
+        overwrite_result = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "resources" / "scripts" / "migrate_artifacts.py"),
+                "--project",
+                str(self.root),
+                "--review",
+                str(review_path),
+                "--facts",
+                str(facts_path),
+                "--knowledge-selection",
+                str(selection_path),
+                "--output",
+                str(migrated_path),
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(overwrite_result.returncode, 2)
+        self.assertIn("Refusing to overwrite", overwrite_result.stderr)
+
+        validation_sentinel = config_root / "reviews" / ".migration-validation.yaml"
+        validation_sentinel.write_text("preserve: user-owned\n", encoding="utf-8")
+        sentinel_output = config_root / "reviews" / "sentinel-migrated.yaml"
+        sentinel_result = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "resources" / "scripts" / "migrate_artifacts.py"),
+                "--project",
+                str(self.root),
+                "--review",
+                str(review_path),
+                "--facts",
+                str(facts_path),
+                "--knowledge-selection",
+                str(selection_path),
+                "--output",
+                str(sentinel_output),
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(sentinel_result.returncode, 2)
+        self.assertIn(
+            "Temporary validation path already exists", sentinel_result.stderr
+        )
+        self.assertEqual(
+            validation_sentinel.read_text(encoding="utf-8"),
+            "preserve: user-owned\n",
+        )
+        self.assertFalse(sentinel_output.exists())
+
         unsupported_assessment = copy.deepcopy(migrated)
         unsupported_assessment["coverage"][0].update({"status": "assessed"})
         unsupported_assessment["coverage"][0].pop("reason", None)
@@ -3325,7 +3379,7 @@ class ArchitectureToolTests(unittest.TestCase):
             check=False,
         )
         self.assertEqual(process.returncode, 0, process.stderr)
-        self.assertEqual(process.stdout.strip(), "architecture_tool.py 1.0.4")
+        self.assertEqual(process.stdout.strip(), "architecture_tool.py 1.1.0")
 
     def test_benchmark_score_cli_can_preserve_json_output(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

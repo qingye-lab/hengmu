@@ -284,10 +284,10 @@ def validate_context_budget(payload: dict[str, Any], *, root: Path) -> None:
     calculated["artifact_input_bytes"] = 0
     seen: set[tuple[str, str]] = set()
     for record in payload["inputs"]:
-        key = (record["role"], record["path"])
-        if key in seen:
-            raise ValueError("Context budget repeats input " + "/".join(key))
-        seen.add(key)
+        input_key = (record["role"], record["path"])
+        if input_key in seen:
+            raise ValueError("Context budget repeats input " + "/".join(input_key))
+        seen.add(input_key)
         source = _within_root(root, root / record["path"], "context budget input")
         if record["role"] == "artifact-input":
             if not source.is_dir():
@@ -320,9 +320,9 @@ def validate_context_budget(payload: dict[str, Any], *, root: Path) -> None:
                 f"Context input character count is stale: {record['path']}"
             )
         calculated[character_totals[record["role"]]] += actual
-    for key, actual in calculated.items():
-        if payload.get(key) != actual:
-            raise ValueError(f"Context budget total is stale: {key}")
+    for total_name, actual in calculated.items():
+        if payload.get(total_name) != actual:
+            raise ValueError(f"Context budget total is stale: {total_name}")
 
 
 def git_output(root: Path, *args: str) -> str:
@@ -342,7 +342,7 @@ def executable_provenance(
     runtime_id: str,
     role: str,
     requested: str,
-) -> dict:
+) -> dict[str, Any]:
     resolved_value = shutil.which(requested)
     if resolved_value is None:
         raise ValueError(f"Benchmark runtime executable is unavailable: {requested}")
@@ -384,13 +384,13 @@ def executable_provenance(
 def collect_runtime_provenance(
     command: list[str],
     declared_runtimes: list[str],
-) -> list[dict]:
+) -> list[dict[str, Any]]:
     requested = [("command-executable", "command", command[0])]
     requested.extend(
         (f"model-runtime-{index}", "model", executable)
         for index, executable in enumerate(declared_runtimes, start=1)
     )
-    records = []
+    records: list[dict[str, Any]] = []
     seen: set[tuple[str, str]] = set()
     for runtime_id, role, executable in requested:
         key = (role, executable)
@@ -411,7 +411,7 @@ def collect_provenance(
     *,
     root: Path,
     corpus_path: Path,
-    corpus: dict,
+    corpus: dict[str, Any],
     command: list[str],
     skill_version: str,
     model: str,
@@ -419,7 +419,7 @@ def collect_provenance(
     declared_runtimes: list[str],
     context_manifest_path: Path | None = None,
     context_budget: dict[str, Any] | None = None,
-) -> dict:
+) -> dict[str, Any]:
     schema_root = root / "resources" / "schemas"
     manifest_path = root / ".codex-plugin" / "plugin.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
@@ -427,22 +427,23 @@ def collect_provenance(
         raise ValueError(
             "Declared benchmark Skill version does not match plugin manifest"
         )
-    input_specs = (
+    input_specs: list[tuple[str, Path]] = [
         ("ground-truth", corpus_path),
         ("benchmark-schema", schema_root / "benchmark.schema.json"),
         ("observation-schema", schema_root / "benchmark-observation.schema.json"),
         ("dependency-lock", root / "requirements-runtime.lock"),
         ("knowledge-manifest", root / "resources" / "knowledge" / "manifest.yaml"),
         ("plugin-manifest", manifest_path),
-    )
+    ]
     if context_manifest_path is not None:
-        input_specs = (
-            *input_specs,
-            ("context-manifest", context_manifest_path),
-            (
-                "benchmark-context-schema",
-                schema_root / "benchmark-context-manifest.schema.json",
-            ),
+        input_specs.extend(
+            [
+                ("context-manifest", context_manifest_path),
+                (
+                    "benchmark-context-schema",
+                    schema_root / "benchmark-context-manifest.schema.json",
+                ),
+            ]
         )
     inputs = [
         {
@@ -547,14 +548,14 @@ def collect_provenance(
     }
 
 
-def load_yaml(path: Path) -> dict:
+def load_yaml(path: Path) -> dict[str, Any]:
     payload = yaml.safe_load(path.read_text(encoding="utf-8"))
     if not isinstance(payload, dict):
         raise ValueError(f"{path} must contain a mapping")
     return payload
 
 
-def validate(payload: dict, schema: dict, source: Path) -> None:
+def validate(payload: dict[str, Any], schema: dict[str, Any], source: Path) -> None:
     errors = sorted(
         Draft202012Validator(
             schema,
@@ -627,7 +628,7 @@ def evidence_is_valid(fixture: Path, evidence: object) -> bool:
     return True
 
 
-def run_benchmark(args: argparse.Namespace) -> dict:
+def run_benchmark(args: argparse.Namespace) -> dict[str, Any]:
     root = args.root.resolve()
     repetitions = getattr(args, "repetitions", 1)
     corpus_path = args.ground_truth.resolve()
@@ -695,7 +696,7 @@ def run_benchmark(args: argparse.Namespace) -> dict:
     log_path.write_text("", encoding="utf-8")
     log_records = 0
 
-    result = {
+    result: dict[str, Any] = {
         "schema_version": "1.5",
         "benchmark": {
             "id": corpus["benchmark"]["id"],
@@ -892,7 +893,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--model", required=True)
     parser.add_argument("--surface", required=True)
-    parser.add_argument("--skill-version", default="1.0.4")
+    parser.add_argument("--skill-version", default="1.1.0")
     parser.add_argument(
         "--condition",
         choices=["base", "full", "compressed"],

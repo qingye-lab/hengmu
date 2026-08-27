@@ -1,0 +1,224 @@
+schema_version: '1.2'
+decision:
+  id: ADR-HENGMU-V1.1-ENGINEERING-TRUST-001
+  source_review: hengmu-20260827-v1-1-engineering-trust-project-verified
+  source_review_sha256: 2af79704eae32d1d37e631e840cabc07f628d8abeee21c54b586ea3af965b6c4
+  decided_at: '2026-08-27T16:41:47Z'
+  decision_makers: [architecture-owner]
+  status: accepted
+  supersedes: ADR-HENGMU-RELEASE-1.0.4-001
+  knowledge_selection_path: .architecture/reviews/inputs/2026-08-27-v1-1-engineering-trust-decision-knowledge-selection.yaml
+  knowledge_selection_sha256: 226e386fdbb8205d15dbd4cf3958200adb69f8b16b9665d42627a9d07bf6dea9
+problem:
+  quality_attributes:
+    - compatibility
+    - deterministic-enforcement
+    - safety
+    - traceability
+  constraints:
+    - Preserve public Skill names, artifact schemas, CLI behavior, both package formats, and historical runtime compatibility.
+    - Retain the verified two-stage release boundary in which the workflow prepares an exact six-asset draft and a local administrator performs immutable preflight and publication.
+    - Require the hosted eight-lane matrix and stable Quality gate to pass before release progression.
+    - Require immutable releases to be enabled and read back successfully before any publish mutation.
+    - Do not add privileged workflow credentials, expand account permissions, replace published assets, or weaken quality and release gates.
+  finding_ids: []
+  assumptions:
+    - The independently verified v1.1 implementation remains the intended release candidate while external release gates are pending.
+    - GitHub remains the hosted CI and release environment for the authorized v1.1 release.
+  known_facts:
+    - The independent verified Review reports zero Findings across 31 Rule coverage rows, six assessed critical flows, and seven selected Knowledge entries.
+    - The clean source-matched test-results Evidence Provider run at commit 0b5962857536ae0b2354dc6deab19fbb8952b9ef reports 204 passing tests and 63 passing subtests with dirty_tree and dirty_tree_after both false.
+    - Local verification reports 70 percent branch coverage for resources/scripts, 91 percent changed-line coverage across resources/scripts and scripts, and zero strict mypy errors across 25 source files.
+    - Both package formats were built twice with byte-identical archives, and local smoke, checksum, SPDX SBOM, and license checks passed.
+    - The verified release implementation separates prepare from publish, keeps workflow permissions unchanged, and requires immutable-release readback before the local administrative publish path can mutate a draft.
+  unknowns:
+    - The hosted eight-lane matrix and stable Quality gate, including the authoritative Python 3.14 dependency-audit lane, have not been observed for this implementation.
+    - Remote repository rulesets, Actions policy, tag protection, and immutable-release enablement and readback have not been verified for the target repository state.
+    - A real draft preparation, administrative publication, exact six-asset verification, and provenance and SBOM attestation verification have not been observed for v1.1.
+    - Installation, routing, and Knowledge selection smoke on the current Codex host have not been observed for the v1.1 packages.
+knowledge_snapshot:
+  - {id: foundation.evolutionary-architecture, version: 1.0.0, sha256: b9b125fa34bdeb346145f926210f7052d60d8f3b5f4e225cf1aa0fdb6a7888e5}
+  - {id: foundation.proportional-design, version: 1.0.0, sha256: ccfa63d523fab3503c47dbf73fc7a9ae85c7fc516856bcf422322c0d92a409df}
+  - {id: foundation.quality-attributes, version: 1.0.0, sha256: 50d92ab7563d70605408ba4592d9445f79f6eb0cecb50195471b56e42418b680}
+  - {id: foundation.technology-selection, version: 1.0.0, sha256: ce43c17d29cc79ad65c0f1a551a938f3fec642d1e75070b98d4aa3336ddf882d}
+  - {id: foundation.tradeoff-analysis, version: 1.0.0, sha256: 058c9756ba4d9306f42e0fb49365aff3564f3545e103c05812040ce2c9f8b9d5}
+  - {id: domain.plugin-platform, version: 1.0.0, sha256: b72a0e3b6959464b32c9a4d44b50baa40b4baf13b5b14f65f99d094f301bf58c}
+  - {id: domain.test-automation-platform, version: 1.0.0, sha256: 7ce2621239bad831f4a6689a1718b5dd1cdbbf1d6d2e3bb9a6d043457a70e016}
+options:
+  - id: keep-current
+    title: Retain the verified two-stage release implementation and proceed only after external gates pass
+    complexity_tier: keep-current
+    architecture_styles: []
+    patterns: []
+    technologies: []
+    benefits:
+      - Preserves the independently verified implementation and all existing public and persisted contracts.
+      - Keeps privileged publication authority out of the workflow while requiring a fail-closed immutable-release preflight.
+      - Allows hosted, remote, publication, attestation, and host-smoke evidence to gate progression without changing the reviewed source.
+    liabilities:
+      - Release completion remains blocked until the external hosted and administrative gates produce evidence.
+      - The two-stage process requires an authorized administrator to perform publication after workflow draft preparation.
+    assumptions:
+      - External gates can validate the reviewed commit without requiring source or contract changes.
+    quality_attribute_effects:
+      - {attribute: compatibility, effect: neutral, rationale: 'The verified public Skills, schemas, CLI, package formats, and historical readers remain unchanged.'}
+      - {attribute: deterministic-enforcement, effect: improves, rationale: 'The prepare workflow and local publish command enforce distinct, fail-closed state transitions and an exact six-asset inventory.'}
+      - {attribute: safety, effect: improves, rationale: 'Publication cannot proceed until immutable-release enablement is read back, and the workflow receives no privileged publishing credential.'}
+      - {attribute: traceability, effect: improves, rationale: 'The candidate, independent verification, clean provider run, Knowledge selection, decision, hosted gates, and release checks form explicit evidence boundaries.'}
+    business_fit: Completes the authorized v1.1 route after its outstanding external gates without adding another implementation change.
+    team_fit: Uses the existing repository, GitHub Actions, local administrator, deterministic tooling, and governance boundaries.
+    evolution_fit: Keeps future release corrections additive through patch versions and leaves immutable published assets untouched.
+    implementation_complexity: low
+    operational_complexity: medium
+    migration_risk: low
+    reversibility: easy
+    cost: low
+    technical_maturity: mature
+    lock_in: none
+    tradeoff_scores: {business_fit: 2, quality_fit: 2, team_fit: 2, implementation: 2, operations: 0, migration: 2, reversibility: 2, cost: 2, maturity: 2, lock_in: 2, evolution: 2}
+    rejected_reasons: []
+  - id: defer-release
+    title: Retain the implementation but defer all hosted and release progression
+    complexity_tier: low
+    architecture_styles: []
+    patterns: []
+    technologies: []
+    benefits:
+      - Avoids immediate hosted and administrative release operations.
+      - Leaves all existing published releases untouched.
+    liabilities:
+      - Leaves the explicitly authorized v1.1 release route incomplete.
+      - Produces no evidence for the hosted matrix, remote controls, two-stage release, attestations, or current-host compatibility.
+    assumptions:
+      - The same reviewed commit and external environments will remain available for a later release attempt.
+    quality_attribute_effects:
+      - {attribute: compatibility, effect: neutral, rationale: 'No new package is published.'}
+      - {attribute: deterministic-enforcement, effect: degrades, rationale: 'The hosted and release-only enforcement paths remain unexercised.'}
+      - {attribute: safety, effect: neutral, rationale: 'Deferral avoids release mutation but supplies no additional release safety evidence.'}
+      - {attribute: traceability, effect: degrades, rationale: 'The authorized implementation chain ends before hosted and public release evidence exists.'}
+    business_fit: Avoids near-term operations but does not complete the authorized v1.1 delivery.
+    team_fit: Requires maintainers to repeat the same external-gate preparation later.
+    evolution_fit: Defers rather than removes the outstanding validation obligations.
+    implementation_complexity: low
+    operational_complexity: low
+    migration_risk: low
+    reversibility: easy
+    cost: medium
+    technical_maturity: mature
+    lock_in: none
+    tradeoff_scores: {business_fit: -2, quality_fit: -1, team_fit: -1, implementation: 2, operations: 2, migration: 2, reversibility: 2, cost: 0, maturity: 2, lock_in: 2, evolution: -1}
+    rejected_reasons:
+      - It leaves the explicitly authorized release route and all external release evidence incomplete without reducing a verified implementation risk.
+  - id: add-privileged-workflow-credential
+    title: Add a privileged workflow credential and publish automatically from the tag workflow
+    complexity_tier: medium
+    architecture_styles: []
+    patterns: []
+    technologies: []
+    benefits:
+      - Could combine draft preparation and administrative publication into one hosted workflow.
+    liabilities:
+      - Expands credential and account-permission scope inside the workflow.
+      - Collapses the reviewed separation between unprivileged preparation and explicit administrative publication.
+      - Violates the user's explicit prohibition on account permission and credential expansion.
+    assumptions:
+      - A suitably privileged token could be provisioned and governed for hosted execution.
+    quality_attribute_effects:
+      - {attribute: compatibility, effect: neutral, rationale: 'Package runtime contracts would not change.'}
+      - {attribute: deterministic-enforcement, effect: neutral, rationale: 'Automation changes the authority boundary rather than the deterministic six-asset checks.'}
+      - {attribute: safety, effect: degrades, rationale: 'A hosted credential with publication authority increases credential exposure and mutation blast radius.'}
+      - {attribute: traceability, effect: degrades, rationale: 'Automatic publication removes the separately authorized administrative checkpoint recorded by the two-stage process.'}
+    business_fit: Reduces one manual operation by exceeding the authorized credential and account boundary.
+    team_fit: Introduces secret lifecycle and privileged workflow ownership that the current contract forbids.
+    evolution_fit: Couples future release administration to a higher-authority workflow token.
+    implementation_complexity: medium
+    operational_complexity: high
+    migration_risk: high
+    reversibility: moderate
+    cost: high
+    technical_maturity: mature
+    lock_in: medium
+    tradeoff_scores: {business_fit: -2, quality_fit: -2, team_fit: -2, implementation: 0, operations: -2, migration: -2, reversibility: 0, cost: -2, maturity: 1, lock_in: -1, evolution: -2}
+    rejected_reasons:
+      - The user explicitly forbids account permission and credential expansion, so this option is outside the authorized release boundary.
+selected_option: keep-current
+rationale: >-
+  The independently verified implementation has no confirmed Findings and already
+  expresses the authorized two-stage, fail-closed release boundary. Retaining it is
+  the smallest option that preserves public contracts and credential separation while
+  allowing the unverified hosted, remote, publication, attestation, and current-host
+  checks to remain blocking gates. Deferral does not complete the authorized route,
+  and adding a privileged workflow credential exceeds the user's explicit authority
+  boundary.
+revisit_triggers:
+  - Any hosted matrix lane or the stable Quality gate fails or is cancelled.
+  - Remote immutable-release readback is disabled, missing, malformed, or otherwise cannot satisfy the publish preflight.
+  - Draft preparation, exact asset inventory, administrative publication, checksum, SBOM, provenance, or attestation verification fails.
+  - Current Codex host installation, routing, or Knowledge selection smoke exposes a public compatibility defect.
+acceptance_evidence:
+  - The repository owner explicitly authorized the full upgrade route, phased publication, and repository-setting hardening while prohibiting account permission and credential expansion.
+  - The architecture-owner accepts keep-current and requires every outstanding hosted, remote, publication, attestation, and current-host check to pass before the corresponding release progression.
+  - The decision is bound to the independent verified Review with zero Findings and the clean test-results Evidence Provider run reporting 204 passing tests and 63 passing subtests at commit 0b5962857536ae0b2354dc6deab19fbb8952b9ef.
+migration:
+  affected_paths:
+    - .architecture/constraints.md
+    - .architecture/evidence/test-results-20260827t142022503088z-eacb7ee1a6d3.result
+    - .architecture/evidence/test-results-20260827t142022503088z-eacb7ee1a6d3.stderr
+    - .architecture/evidence/test-results-20260827t142022503088z-eacb7ee1a6d3.stdout
+    - .architecture/evidence/test-results-20260827t142022503088z-eacb7ee1a6d3.yaml
+    - .architecture/profile.yaml
+    - .codex-plugin/plugin.json
+    - .github/workflows/ci.yml
+    - .github/workflows/release.yml
+    - CHANGELOG.md
+    - README.md
+    - README.zh-CN.md
+    - docs/compatibility.md
+    - docs/comprehensive-review-implementation.md
+    - docs/decisions/2026-08-27-adopt-v1.1-engineering-trust-gates.md
+    - docs/host-compatibility.md
+    - docs/releasing.md
+    - docs/roadmap.md
+    - index.html
+    - plugin.json
+    - pyproject.toml
+    - requirements-dev.lock
+    - requirements-dev.txt
+    - resources/scripts/architecture_tool.py
+    - resources/scripts/artifact_types.py
+    - resources/scripts/migrate_artifacts.py
+    - resources/scripts/select_knowledge.py
+    - resources/scripts/validate_coverage.py
+    - resources/selector-source.json
+    - resources/templates/knowledge-selection.yaml
+    - scripts/audit_licenses.py
+    - scripts/check_changed_coverage.py
+    - scripts/codex_benchmark_adapter.py
+    - scripts/evaluate_ci_gate.py
+    - scripts/publish_release.py
+    - scripts/run_behavior_benchmark.py
+    - scripts/validate_repository.py
+    - site/i18n.json
+    - tests/test_architecture_cli_dispatch.py
+    - tests/test_architecture_tool.py
+    - tests/test_behavior_benchmark.py
+    - tests/test_changed_coverage.py
+    - tests/test_ci_gate.py
+    - tests/test_cli_wrappers.py
+    - tests/test_constrained_target_architecture.py
+    - tests/test_package_plugin.py
+    - tests/test_release_publication.py
+    - tests/test_repository_contract.py
+    - tests/test_supply_chain.py
+  slices:
+    - Preserve the reviewed v1.1 implementation and its Merge Commit ancestry while moving it through pull-request review and the hosted eight-lane Quality gate.
+    - Apply only the authorized remote repository controls, enable immutable releases administratively, and require successful readback without adding a workflow credential or changing account permissions.
+    - Let the tag workflow prepare and validate the exact six-asset draft without publishing it.
+    - Run the local administrative publish command, verify the immutable published state, exact assets, checksums, SBOMs, provenance, and attestations, then run current Codex host installation, routing, and Knowledge selection smoke.
+  rollback: Before immutable publication, revert the v1.1 Merge Commit and leave any failed draft in place for diagnosis and correction; after publication, never move the tag or replace or delete immutable assets, and publish any correction as a new patch release.
+  validation:
+    - Validate exact Review, Decision, Knowledge selection and context, Evidence Provider, repository, project, history-anchor, and Knowledge bindings.
+    - Require the hosted eight-lane matrix and stable Quality gate, including Python 3.14 dependency audit, to pass without failure or cancellation.
+    - Verify authorized repository rulesets, Actions policy, tag protection, immutable-release enablement, and successful immutable GET readback.
+    - Verify the exact six-asset draft, administrative publication, post-publish immutable state, checksums, SPDX SBOMs, provenance and SBOM attestations, and bounded release verification.
+    - Install both v1.1 package forms on the current Codex host and record dated routing and Knowledge selection smoke evidence.

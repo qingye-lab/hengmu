@@ -96,8 +96,8 @@ project:
     data_volume: Repository-scale YAML, JSON, Markdown, and source evidence.
     consistency: Artifact hashes and deterministic policy are authoritative.
     offline_requirement: full
-    deployment_model: Installable Codex and Agent Plugins packages plus a local
-      Python CLI.
+    deployment_model: Installable Codex and Agent Plugins packages plus a local Python
+      CLI.
     budget: constrained
     deadlines: Release only after all local and CI contracts pass.
     required_stack:
@@ -112,14 +112,16 @@ project:
   - plugin-platform
   - test-automation-platform
   repository_facts:
-    path: .architecture/repository-facts.yaml
-    sha256: f5e15ff2a292ddadf54d923bf682936779fa5922b10a64155a7ca7ecd1eaed64
+    path: .architecture/reviews/inputs/2026-08-27-v1-1-engineering-trust-repository-facts.yaml
+    sha256: 07996786bcb90fe2453a3a9ad7de6edbaeb39fcc167db3645cc1ba562ae6709f
   profile_sources:
     detected:
     - .architecture/repository-facts.yaml
+    - .architecture/reviews/inputs/2026-08-27-v1-1-engineering-trust-repository-facts.yaml
     declared:
     - .architecture/constraints.md
     - .architecture/critical-flows.md
+    - .architecture/profile.yaml
     inferred:
     - inference: Python is the governance runtime; Swift occurs only in a mobile benchmark
         fixture.

@@ -16,9 +16,9 @@
     <img alt="CI" src="https://github.com/qingye-lab/hengmu/actions/workflows/ci.yml/badge.svg?branch=main">
   </a>
   <a href="https://github.com/qingye-lab/hengmu/releases">
-    <img alt="版本 1.0.4" src="https://img.shields.io/badge/version-1.0.4-173FBE">
+    <img alt="版本 1.1.0" src="https://img.shields.io/badge/version-1.1.0-173FBE">
   </a>
-  <img alt="Python 3.11–3.13" src="https://img.shields.io/badge/python-3.11%E2%80%933.13-161719">
+  <img alt="Python 3.11–3.14" src="https://img.shields.io/badge/python-3.11%E2%80%933.14-161719">
   <a href="LICENSE">
     <img alt="MIT 许可证" src="https://img.shields.io/badge/license-MIT-173FBE">
   </a>
@@ -205,7 +205,7 @@ Router 会委派给八个同级 Skill，而这些 Skill 还需要共享运行时
 
 ### 准备共享 Python 运行时
 
-衡木 Skill 可跨宿主复用，但确定性 Helper 需要 Python 3.11–3.13、PyYAML 和
+衡木 Skill 可跨宿主复用，但确定性 Helper 需要 Python 3.11–3.14、PyYAML 和
 jsonschema。请把锁定依赖安装到 IDE Agent 可见的 `python3` 环境，或从下面已激活
 的环境启动 IDE：
 
@@ -217,7 +217,7 @@ python3 -m pip install --require-hashes -r requirements-runtime.lock
 python3 resources/scripts/architecture_tool.py --version
 ```
 
-最后一条命令应输出 `architecture_tool.py 1.0.4`。Windows PowerShell 使用
+最后一条命令应输出 `architecture_tool.py 1.1.0`。Windows PowerShell 使用
 `.venv\Scripts\Activate.ps1` 激活。安装不会授予权限或启用 Hook；在允许仓库写入
 或 Shell 执行前，请检查对应宿主的 Agent 权限。
 
@@ -250,7 +250,7 @@ python3 resources/scripts/architecture_tool.py --version
 
 ### 1. 准备运行环境
 
-衡木支持 Python 3.11–3.13。运行时完全本地，不依赖托管服务、遥测、
+衡木支持 Python 3.11–3.14。运行时完全本地，不依赖托管服务、遥测、
 凭据、网络访问或 MCP Server。
 
 ```bash

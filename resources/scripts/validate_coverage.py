@@ -6,8 +6,10 @@ from __future__ import annotations
 import argparse
 import sys
 from pathlib import Path
+from typing import cast
 
 from architecture_tool import ArchitectureError, validate_file, validate_review
+from artifact_types import ProfileArtifact, ReviewArtifact
 
 
 def main() -> int:
@@ -25,15 +27,21 @@ def main() -> int:
     if not review_path.is_absolute():
         review_path = root / review_path
     try:
-        profile = validate_file(
-            root / ".architecture" / "profile.yaml",
-            "project-profile.schema.json",
+        profile = cast(
+            ProfileArtifact,
+            validate_file(
+                root / ".architecture" / "profile.yaml",
+                "project-profile.schema.json",
+            ),
         )
-        review = validate_review(
-            review_path.resolve(),
-            rule_pack_ids=profile["project"]["rule_packs"],
-            strict_trust=True,
-            repository_root=root,
+        review = cast(
+            ReviewArtifact,
+            validate_review(
+                review_path.resolve(),
+                rule_pack_ids=profile["project"]["rule_packs"],
+                strict_trust=True,
+                repository_root=root,
+            ),
         )
         if (
             not args.allow_candidates
