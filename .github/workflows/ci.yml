@@ -25,6 +25,9 @@ jobs:
         python-version:
           - "3.11"
           - "3.13"
+        include:
+          - os: ubuntu-latest
+            python-version: "3.12"
 
     steps:
       - name: Check out repository
