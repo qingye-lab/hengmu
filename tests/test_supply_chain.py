@@ -71,6 +71,28 @@ class SupplyChainTests(unittest.TestCase):
         )
         self.assertLess(tuple(map(int, locked.groups())), (10, 0, 0))
 
+    def test_ruff_dependency_is_within_declared_range(self) -> None:
+        requirements = (ROOT / "requirements-dev.txt").read_text(encoding="utf-8")
+        lock = (ROOT / "requirements-dev.lock").read_text(encoding="utf-8")
+        minimum = re.search(
+            r"^ruff>=(\d+)\.(\d+)\.(\d+),<1$",
+            requirements,
+            re.MULTILINE,
+        )
+        locked = re.search(
+            r"^ruff==(\d+)\.(\d+)\.(\d+)\s*\\",
+            lock,
+            re.MULTILINE,
+        )
+        self.assertIsNotNone(minimum)
+        self.assertIsNotNone(locked)
+        assert minimum is not None and locked is not None
+        self.assertGreaterEqual(
+            tuple(map(int, locked.groups())),
+            tuple(map(int, minimum.groups())),
+        )
+        self.assertLess(tuple(map(int, locked.groups())), (1, 0, 0))
+
     def test_release_attestation_uses_exact_sbom_path(self) -> None:
         workflow = (ROOT / ".github" / "workflows" / "release.yml").read_text(
             encoding="utf-8"
@@ -101,6 +123,10 @@ class SupplyChainTests(unittest.TestCase):
         self.assertEqual(
             quality["strategy"]["matrix"]["python-version"],
             ["3.11", "3.13"],
+        )
+        self.assertEqual(
+            quality["strategy"]["matrix"]["include"],
+            [{"os": "ubuntu-latest", "python-version": "3.12"}],
         )
 
         publish = ci["jobs"]["release"]
