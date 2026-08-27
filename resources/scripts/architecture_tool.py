@@ -9226,21 +9226,21 @@ def run(args: argparse.Namespace) -> int:
                     }
                 )
             else:
-                if review is None or review_path is None:
+                if decision_review is None or decision_review_path is None:
                     raise ArchitectureError("Missing decision source review")
                 binding_result.update(
                     {
-                        "source_review": review["review"]["id"],
-                        "source_review_sha256": file_sha256(review_path),
+                        "source_review": decision_review["review"]["id"],
+                        "source_review_sha256": file_sha256(decision_review_path),
                     }
                 )
         else:
-            if review is None or review_path is None:
+            if decision_review is None or decision_review_path is None:
                 raise ArchitectureError("Missing decision source review")
             binding_result = {
                 "schema_version": "1.1",
-                "source_review": review["review"]["id"],
-                "source_review_sha256": file_sha256(review_path),
+                "source_review": decision_review["review"]["id"],
+                "source_review_sha256": file_sha256(decision_review_path),
                 "knowledge_snapshot": decision_knowledge_snapshot(),
             }
         print(
