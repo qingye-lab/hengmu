@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 import importlib.util
+import io
 import sys
 import unittest
+from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
+from unittest.mock import patch
 
 import yaml
 
@@ -69,6 +72,35 @@ class CiGateTests(unittest.TestCase):
         self.assertEqual(summary["if"], "always()")
         self.assertEqual(summary["needs"], ["quality", "dependency-review"])
         self.assertEqual(workflow["jobs"]["release"]["needs"], ["quality-gate"])
+
+    def test_main_reports_table_outcomes(self) -> None:
+        cases = (
+            ("push", "success", "skipped", 0, "passed"),
+            ("pull_request", "success", "failure", 2, "failed"),
+        )
+        for event, quality, dependency, expected, message in cases:
+            with self.subTest(event=event, dependency=dependency):
+                stdout = io.StringIO()
+                stderr = io.StringIO()
+                with (
+                    patch.object(
+                        sys,
+                        "argv",
+                        [
+                            str(SCRIPT),
+                            "--event",
+                            event,
+                            "--quality",
+                            quality,
+                            "--dependency-review",
+                            dependency,
+                        ],
+                    ),
+                    redirect_stdout(stdout),
+                    redirect_stderr(stderr),
+                ):
+                    self.assertEqual(evaluate_ci_gate.main(), expected)
+                self.assertIn(message, (stdout.getvalue() + stderr.getvalue()).lower())
 
 
 if __name__ == "__main__":

@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 import importlib.util
+import io
+import json
 import sys
 import tempfile
 import unittest
+from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 from subprocess import CompletedProcess
 from unittest.mock import patch
@@ -252,6 +255,119 @@ class ReleasePublicationTests(unittest.TestCase):
             self.assertRaisesRegex(publish_release.ReleaseError, "authentication"),
         ):
             client.get_release("owner/repo", "v1.1.0")
+
+    def test_gh_client_parses_inventory_and_issues_mutation_commands(self) -> None:
+        client = publish_release.GhReleaseClient()
+        payload = {
+            "draft": True,
+            "assets": [
+                {
+                    "name": self.assets[0].name,
+                    "size": self.assets[0].size,
+                    "digest": f"sha256:{self.assets[0].digest}",
+                }
+            ],
+        }
+        completed = CompletedProcess([], 0, json.dumps(payload), "")
+        with patch.object(publish_release.subprocess, "run", return_value=completed):
+            state = client.get_release("owner/repo", "v1.1.0")
+        self.assertIsNotNone(state)
+        assert state is not None
+        self.assertTrue(state.draft)
+        self.assertEqual(state.assets[0].name, self.assets[0].name)
+
+        ok = CompletedProcess([], 0, "", "")
+        with patch.object(client, "_run", return_value=ok) as run:
+            client.create_draft("owner/repo", "v1.1.0", "Hengmu v1.1.0")
+            client.upload_asset(
+                "owner/repo",
+                "v1.1.0",
+                self.assets[0].path,
+                clobber=False,
+            )
+            client.upload_asset(
+                "owner/repo",
+                "v1.1.0",
+                self.assets[0].path,
+                clobber=True,
+            )
+            client.publish("owner/repo", "v1.1.0")
+            self.assertTrue(client.verify_release("owner/repo", "v1.1.0"))
+        self.assertEqual(run.call_count, 5)
+        self.assertNotIn("--clobber", run.call_args_list[1].args[0])
+        self.assertIn("--clobber", run.call_args_list[2].args[0])
+
+    def test_gh_command_failure_and_invalid_inventory_fail_closed(self) -> None:
+        client = publish_release.GhReleaseClient()
+        failed = CompletedProcess([], 1, "", "command failed\n")
+        with (
+            patch.object(publish_release.subprocess, "run", return_value=failed),
+            self.assertRaisesRegex(publish_release.ReleaseError, "command failed"),
+        ):
+            client._run(["release", "view", "v1.1.0"])
+
+        with self.assertRaisesRegex(publish_release.ReleaseError, "start with v"):
+            publish_release.expected_assets(self.dist, "1.1.0")
+        duplicate = publish_release.ReleaseState(
+            draft=True,
+            assets=(remote(self.assets[0]), remote(self.assets[0])),
+        )
+        with self.assertRaisesRegex(publish_release.ReleaseError, "duplicate"):
+            publish_release.validate_inventory(duplicate, self.assets)
+        with self.assertRaisesRegex(publish_release.ReleaseError, "missing"):
+            publish_release.validate_inventory(
+                publish_release.ReleaseState(draft=True, assets=()),
+                self.assets,
+            )
+        mismatched = publish_release.ReleaseState(
+            draft=True,
+            assets=(
+                publish_release.RemoteAsset(
+                    name=self.assets[0].name,
+                    size=0,
+                    digest=f"sha256:{self.assets[0].digest}",
+                ),
+                *(remote(asset) for asset in self.assets[1:]),
+            ),
+        )
+        with self.assertRaisesRegex(publish_release.ReleaseError, "mismatch"):
+            publish_release.validate_inventory(mismatched, self.assets)
+
+    def test_main_reports_success_and_release_errors(self) -> None:
+        arguments = [
+            str(SCRIPT),
+            "--repository",
+            "owner/repo",
+            "--tag",
+            "v1.1.0",
+            "--dist",
+            str(self.dist),
+        ]
+        stdout = io.StringIO()
+        with (
+            patch.object(sys, "argv", arguments),
+            patch.object(
+                publish_release,
+                "publish_release",
+                return_value="verified-existing",
+            ),
+            redirect_stdout(stdout),
+        ):
+            self.assertEqual(publish_release.main(), 0)
+        self.assertIn("verified-existing", stdout.getvalue())
+
+        stderr = io.StringIO()
+        with (
+            patch.object(sys, "argv", arguments),
+            patch.object(
+                publish_release,
+                "publish_release",
+                side_effect=publish_release.ReleaseError("unsafe state"),
+            ),
+            redirect_stderr(stderr),
+        ):
+            self.assertEqual(publish_release.main(), 2)
+        self.assertIn("unsafe state", stderr.getvalue())
 
 
 if __name__ == "__main__":

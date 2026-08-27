@@ -206,6 +206,64 @@ class ChangedCoverageTests(unittest.TestCase):
         ):
             check_changed_coverage.resolve_merge_base(self.root, "main")
 
+    def test_malformed_coverage_and_diff_cover_fail_closed(self) -> None:
+        malformed = self.root / "malformed.xml"
+        malformed.write_text("<coverage>", encoding="utf-8")
+        with self.assertRaisesRegex(
+            check_changed_coverage.ChangedCoverageError,
+            "malformed",
+        ):
+            check_changed_coverage.coverage_xml_paths(self.root, malformed)
+
+        missing_filename = self.root / "missing-filename.xml"
+        missing_filename.write_text(
+            "<coverage><class /></coverage>",
+            encoding="utf-8",
+        )
+        with self.assertRaisesRegex(
+            check_changed_coverage.ChangedCoverageError,
+            "without a file",
+        ):
+            check_changed_coverage.coverage_xml_paths(self.root, missing_filename)
+
+        with (
+            patch.object(check_changed_coverage.shutil, "which", return_value=None),
+            self.assertRaisesRegex(
+                check_changed_coverage.ChangedCoverageError,
+                "unavailable",
+            ),
+        ):
+            check_changed_coverage.run_diff_cover(
+                self.root,
+                malformed,
+                "a" * 40,
+                fail_under=90,
+            )
+
+        failed = subprocess.CompletedProcess([], 1, "", "")
+        with (
+            patch.object(
+                check_changed_coverage.shutil,
+                "which",
+                return_value="diff-cover",
+            ),
+            patch.object(
+                check_changed_coverage.subprocess,
+                "run",
+                return_value=failed,
+            ),
+            self.assertRaisesRegex(
+                check_changed_coverage.ChangedCoverageError,
+                "exit code 1",
+            ),
+        ):
+            check_changed_coverage.run_diff_cover(
+                self.root,
+                malformed,
+                "a" * 40,
+                fail_under=90,
+            )
+
 
 if __name__ == "__main__":
     unittest.main()
