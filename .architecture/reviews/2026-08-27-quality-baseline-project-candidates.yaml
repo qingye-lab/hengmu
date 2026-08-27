@@ -1,0 +1,175 @@
+schema_version: '1.2'
+review:
+  id: hengmu-20260827-quality-baseline-project-candidates
+  kind: project
+  workflow: project-architecture
+  subject:
+    id: hengmu
+    name: Hengmu
+    repository: .
+  performed_at: '2026-08-27T10:49:05+00:00'
+  commit: bd576e45c253691a6bb362c99cc5e6315a04cdc5
+  scope: ['.']
+  verification_state: candidates
+  reviewers: [architecture-auditor]
+  profile: .architecture/reviews/inputs/2026-08-27-quality-baseline-profile.yaml
+  repository_identity: hengmu
+  profile_sha256: 55eae34e43bf43cbe28ffeeaffb29d207d84dce32c6dd99e2bb9c165d9569456
+  dirty_tree: false
+  rule_packs:
+    - {id: project-core, version: 1.0.0, sha256: b211d548ad5fe367b9dab8416051c43f3a206da81bd2a8e7596cd788ed3f100c}
+    - {id: plugin-platform, version: 1.0.0, sha256: 7ae17488df7a78ce1b857d3f842bd51b87de4ec30576fbe250cfa991472b3700}
+    - {id: test-automation-platform, version: 1.0.0, sha256: 23efb3c02cd9e4e2ec2cb83d1505b30dd780aff2a9ac7157506b361cb783c5aa}
+  scope_manifest: ['.']
+summary:
+  architecture: >-
+    Hengmu remains a local distributable architecture-governance plugin. This
+    change aligns the declared Ruff range with the exact hash-locked version,
+    adds a regression guard for that invariant, and covers Python 3.12 with one
+    bounded Ubuntu CI lane while preserving the existing operating-system
+    boundary jobs. Workflow permissions, release dependencies, runtime locks,
+    public Skills, schemas, CLI contracts, and package allowlists are unchanged.
+    The new cover assets remain source-only and both runtime package formats
+    pass deterministic build and smoke verification.
+  raw_findings: 0
+  confirmed: 0
+  rejected: 0
+  needs_evidence: 0
+coverage:
+  - rule_id: PROJECT.BOUNDARY.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - &router {path: skills/hengmu/SKILL.md, commit: bd576e45c253691a6bb362c99cc5e6315a04cdc5, blob_sha: 19f859ecd6778d7da2b19cfb65d2f2ded5b4f102, line_start: 8, line_end: 47, observation: "The stable entry routes each intent to one focused workflow and does not reimplement the routed procedure."}
+  - rule_id: PROJECT.DEPENDENCY.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - &provider_safety {path: resources/scripts/architecture_tool.py, commit: bd576e45c253691a6bb362c99cc5e6315a04cdc5, blob_sha: fc02611b087cef64335659ce5a88785855655815, line_start: 982, line_end: 1102, observation: "Evidence Provider configuration rejects shell and package runners and requires dependency closure and isolated caches for enabled deterministic providers."}
+      - &dependency_lock {path: requirements-dev.txt, commit: bd576e45c253691a6bb362c99cc5e6315a04cdc5, blob_sha: 0eb73404542f54f7bc68bc978ed3a18bed7437a5, line_start: 1, line_end: 6, observation: "The direct development dependency contract requires Ruff 0.16.4 or newer within the existing pre-1.0 compatibility boundary."}
+      - {path: requirements-dev.lock, commit: bd576e45c253691a6bb362c99cc5e6315a04cdc5, blob_sha: 49f2b8cc9752dba25c22600d08323fb890d45a6e, line_start: 494, line_end: 513, observation: "The exact hash lock resolves Ruff 0.16.4 with hashes for supported wheels and source distribution."}
+  - {rule_id: PROJECT.COHESION.001, status: assessed, finding_ids: [], evidence: [*router]}
+  - {rule_id: PROJECT.FRONTEND.001, status: not_applicable, finding_ids: [], reason: "Hengmu has no frontend/backend request boundary or client-owned authoritative business invariant."}
+  - rule_id: PROJECT.DATA.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - &decision_contract {path: resources/scripts/architecture_tool.py, commit: bd576e45c253691a6bb362c99cc5e6315a04cdc5, blob_sha: fc02611b087cef64335659ce5a88785855655815, line_start: 3577, line_end: 3762, observation: "Decision validation requires acceptance evidence and valid source and Knowledge bindings and permits remediation decisions to reference only confirmed findings from a trusted Review."}
+  - {rule_id: PROJECT.OWNERSHIP.001, status: assessed, finding_ids: [], evidence: [*decision_contract]}
+  - rule_id: PROJECT.CONTRACT.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - &review_schema {path: resources/schemas/review.schema.json, commit: bd576e45c253691a6bb362c99cc5e6315a04cdc5, blob_sha: fb65714fe2a3261ed327a52ed8c92d4af7bb2673, line_start: 1, line_end: 80, observation: "Review schema defines versioned identity, coverage, source bindings, and candidate and verified lifecycle fields."}
+  - {rule_id: PROJECT.TRANSACTION.001, status: not_applicable, finding_ids: [], reason: "The product has no cross-system business transaction; local artifact writes and release archives are bounded local operations."}
+  - rule_id: PROJECT.IDEMPOTENCY.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - &init_safety {path: resources/scripts/architecture_tool.py, commit: bd576e45c253691a6bb362c99cc5e6315a04cdc5, blob_sha: fc02611b087cef64335659ce5a88785855655815, line_start: 4874, line_end: 4955, observation: "Project-audit preparation validates an existing control plane or uses bounded initialization and never overwrites existing state."}
+  - rule_id: PROJECT.RELIABILITY.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - &provider_execution {path: resources/scripts/architecture_tool.py, commit: bd576e45c253691a6bb362c99cc5e6315a04cdc5, blob_sha: fc02611b087cef64335659ce5a88785855655815, line_start: 1344, line_end: 1531, observation: "Provider execution resolves an executable, bounds environment and time, isolates caches when configured, captures outputs, validates structured content, and records terminal state."}
+  - {rule_id: PROJECT.STATE.001, status: assessed, finding_ids: [], evidence: [*decision_contract]}
+  - rule_id: PROJECT.SECURITY.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - &ci_matrix {path: .github/workflows/ci.yml, commit: bd576e45c253691a6bb362c99cc5e6315a04cdc5, blob_sha: b2c5c9c93466da850bc28867cb258389cfae31c0, line_start: 7, line_end: 149, observation: "CI retains read-only top-level permissions, pinned actions, isolated release permissions, and a seven-job quality matrix with one bounded Ubuntu Python 3.12 lane."}
+      - &release_workflow {path: .github/workflows/release.yml, commit: bd576e45c253691a6bb362c99cc5e6315a04cdc5, blob_sha: 67dbab51794b0f925bdaef4e5ca8988501abf780, line_start: 1, line_end: 147, observation: "The release workflow retains explicit attestations, contents, and OIDC permissions and uses the same official v4.2.2 commit pin for provenance and both package SBOM attestations."}
+      - *provider_safety
+  - rule_id: PROJECT.PRIVACY.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - &host_boundary {path: docs/host-compatibility.md, commit: bd576e45c253691a6bb362c99cc5e6315a04cdc5, blob_sha: 28bec3cfecfb82466230718d09c84a647198bb6d, line_start: 30, line_end: 66, observation: "The portable contract excludes silent dependency installation, permission changes, hooks, and unconfigured Evidence Provider execution."}
+  - {rule_id: PROJECT.OBSERVABILITY.001, status: assessed, finding_ids: [], evidence: [*provider_execution]}
+  - {rule_id: PROJECT.CONFIG.001, status: assessed, finding_ids: [], evidence: [*provider_safety, *dependency_lock, *ci_matrix]}
+  - rule_id: PROJECT.PERFORMANCE.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - &benchmark_report {path: benchmarks/reports/1.0.3-model-behavior.md, commit: bd576e45c253691a6bb362c99cc5e6315a04cdc5, blob_sha: 13349180b3f711ba3a11cfb6e5bb0cb78a56b863, line_start: 5, line_end: 66, observation: "The release benchmark identifies models, trials, duration, immutable source context and run bindings, and separates repaired release runs from the diagnostic run."}
+  - rule_id: PROJECT.TEST.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - &package_tests {path: tests/test_package_plugin.py, commit: bd576e45c253691a6bb362c99cc5e6315a04cdc5, blob_sha: 3ff56a74d3989459ffc33b7e3e4be1403ab9decb, line_start: 33, line_end: 209, observation: "Tests build deterministic Codex and Agent Plugins archives, exercise each package smoke path, and reject unsafe archive names."}
+      - &supply_chain_tests {path: tests/test_supply_chain.py, commit: bd576e45c253691a6bb362c99cc5e6315a04cdc5, blob_sha: a241c015420f262abf48e0eaa7b4a012e7198154, line_start: 35, line_end: 147, observation: "Supply-chain tests bind exact dependency ranges to locked versions, the complete seven-job quality matrix, release prerequisites, and exact SBOM paths."}
+      - &benchmark_tests {path: tests/test_behavior_benchmark.py, commit: bd576e45c253691a6bb362c99cc5e6315a04cdc5, blob_sha: 818e7daf0d3eeeec93409d39f54ff65885cc68ee, line_start: 52, line_end: 142, observation: "Benchmark tests reject malformed ablation treatment shapes and bind declared context assets into provenance."}
+  - rule_id: PROJECT.DEPLOY.001
+    status: assessed
+    finding_ids: []
+    evidence: [*release_workflow, *ci_matrix, *dependency_lock, *supply_chain_tests]
+  - rule_id: PROJECT.CHANGE.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - &manifests {path: .codex-plugin/plugin.json, commit: bd576e45c253691a6bb362c99cc5e6315a04cdc5, blob_sha: 64115ac37796d16d5f5ef30ec56463ab4b19a8e4, line_start: 1, line_end: 40, observation: "The native manifest declares Hengmu 1.0.4 and preserves the existing Skill entry and capabilities."}
+      - {path: plugin.json, commit: bd576e45c253691a6bb362c99cc5e6315a04cdc5, blob_sha: dea34c5ad2070db47bdfd7fa40c03313f7ac7228, line_start: 1, line_end: 25, observation: "The portable manifest declares the same Hengmu 1.0.4 identity under Agent Plugins schema 1.0."}
+      - &selector_source {path: resources/selector-source.json, commit: bd576e45c253691a6bb362c99cc5e6315a04cdc5, blob_sha: 1f35df41058cd3fc9816d4e41b69bf1cb559fbdc, line_start: 1, line_end: 6, observation: "The selector source remains bound to the compatible 1.0.4 release-preparation ancestor."}
+  - {rule_id: PROJECT.DEBT.001, status: assessed, finding_ids: [], evidence: [*package_tests, *supply_chain_tests]}
+  - {rule_id: PROJECT.DESIGN.001, status: assessed, finding_ids: [], evidence: [*router, *release_workflow]}
+  - {rule_id: PLUGIN.MANIFEST.001, status: assessed, finding_ids: [], evidence: [*manifests]}
+  - {rule_id: PLUGIN.AUTHORITY.001, status: assessed, finding_ids: [], evidence: [*host_boundary, *release_workflow]}
+  - {rule_id: PLUGIN.ISOLATION.001, status: assessed, finding_ids: [], evidence: [*provider_safety, *provider_execution]}
+  - rule_id: PLUGIN.LIFECYCLE.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - &codex_evidence {path: docs/compatibility-evidence/2026-08-10-hengmu-1.0.4.md, commit: bd576e45c253691a6bb362c99cc5e6315a04cdc5, blob_sha: ae21965a647d8153c3690feccc44591e6198d686, line_start: 7, line_end: 56, observation: "The dated Codex observation records the exact 1.0.4 package digest, temporary installation, read-only routed invocation, restoration, byte-identical rebuilds, and explicitly unverified hosts."}
+  - {rule_id: PLUGIN.SUPPLYCHAIN.001, status: assessed, finding_ids: [], evidence: [*release_workflow, *package_tests, *dependency_lock, *supply_chain_tests]}
+  - {rule_id: TESTPLATFORM.RUN.001, status: assessed, finding_ids: [], evidence: [*provider_execution, *ci_matrix]}
+  - {rule_id: TESTPLATFORM.ISOLATION.001, status: assessed, finding_ids: [], evidence: [*provider_safety, *package_tests]}
+  - {rule_id: TESTPLATFORM.EVIDENCE.001, status: assessed, finding_ids: [], evidence: [*benchmark_report, *benchmark_tests, *supply_chain_tests]}
+  - {rule_id: TESTPLATFORM.SCHEDULE.001, status: not_applicable, finding_ids: [], reason: "Hengmu has synchronous local validation and benchmark processes, not a shared scheduler, worker pool, tenancy model, leases, or abandoned-work queue."}
+  - {rule_id: TESTPLATFORM.FLAKE.001, status: assessed, finding_ids: [], evidence: [*benchmark_report, *benchmark_tests, *ci_matrix]}
+findings: []
+evidence_sources:
+  - .codex-plugin/plugin.json
+  - .github/workflows/ci.yml
+  - .github/workflows/release.yml
+  - benchmarks/reports/1.0.3-model-behavior.md
+  - docs/compatibility-evidence/2026-08-10-hengmu-1.0.4.md
+  - docs/host-compatibility.md
+  - plugin.json
+  - requirements-dev.lock
+  - requirements-dev.txt
+  - resources/schemas/review.schema.json
+  - resources/scripts/architecture_tool.py
+  - resources/selector-source.json
+  - skills/hengmu/SKILL.md
+  - tests/test_behavior_benchmark.py
+  - tests/test_package_plugin.py
+  - tests/test_supply_chain.py
+limitations:
+  - The new hosted Ubuntu Python 3.12 job has not run because this local branch has not been pushed; exact-lock installation, the full suite, and the enabled test-results provider passed locally under Python 3.12.
+  - Visual rendering and brand review of the source cover assets are outside this code-assurance review; deterministic package smokes confirm those assets do not enter either runtime archive.
+coverage_complete: true
+repository_facts:
+  path: .architecture/reviews/inputs/2026-08-27-quality-baseline-repository-facts.yaml
+  sha256: 8b0c5294c3015b1e65ce79569edc8fc80760a430a933cf978d4741564426a9cd
+knowledge_selection:
+  path: .architecture/reviews/inputs/2026-08-27-quality-baseline-knowledge-selection.yaml
+  sha256: 7434b173624b587fe79a3e8f44ff31d522108ed9985cf6e9a7478b8c8e89771f
+selected_knowledge:
+  - {id: foundation.data-ownership, version: 1.0.0, sha256: 260f240ec9782f5a42a68481652912532cfcd6a0b07fdc5366d44388cc3d0204}
+  - {id: foundation.evidence-reasoning, version: 1.0.0, sha256: e3c370e04b8a9be5e64ea0d107281043652b1cdba3393fb61b57efd77262650f}
+  - {id: foundation.proportional-design, version: 1.0.0, sha256: ccfa63d523fab3503c47dbf73fc7a9ae85c7fc516856bcf422322c0d92a409df}
+  - {id: foundation.quality-attributes, version: 1.0.0, sha256: 50d92ab7563d70605408ba4592d9445f79f6eb0cecb50195471b56e42418b680}
+  - {id: foundation.system-boundaries, version: 1.0.0, sha256: a326964ec74303e0f08f3e7207e4836a0ff04c93c7f8516e6190b47925ec06db}
+  - {id: domain.plugin-platform, version: 1.0.0, sha256: b72a0e3b6959464b32c9a4d44b50baa40b4baf13b5b14f65f99d094f301bf58c}
+  - {id: domain.test-automation-platform, version: 1.0.0, sha256: 7ce2621239bad831f4a6689a1718b5dd1cdbbf1d6d2e3bb9a6d043457a70e016}
+  - {id: foundation.compatibility, version: 1.0.0, sha256: 17d8e8c8557969246fe2e9a62e8a645aeac171c9c9d2cbeb5d0bdfc27e51330b}
+  - {id: technology.dependency-cruiser, version: 1.0.0, sha256: fe4a638d8f858e6f6b3b91991126322e324694a428be848d2023f66a9968796e}
+critical_flow_coverage:
+  - {id: plugin-discovery-and-skill-execution, status: assessed, reason: "Public manifests and the stable router are unchanged, and both packaged runtime forms pass smoke checks.", evidence: [*manifests, *router, *package_tests]}
+  - {id: finding-verification-and-policy-enforcement, status: assessed, reason: "Candidate and verifier authority, evidence-provider boundaries, and source-bound Review validation remain unchanged.", evidence: [*review_schema, *decision_contract, *provider_safety, *release_workflow]}
+  - {id: architecture-knowledge-and-behavior-evaluation, status: assessed, reason: "Knowledge catalogs, selection behavior, Rule Packs, Evidence Providers, and benchmark provenance are unchanged.", evidence: [*benchmark_report, *benchmark_tests, *provider_execution]}
+  - {id: greenfield-architecture-decision, status: assessed, reason: "Decision validation still requires accepted evidence and trusted Review and Knowledge bindings before remediation authority exists.", evidence: [*decision_contract]}
+  - {id: safe-project-initialization, status: assessed, reason: "Preparation reuses valid control-plane state and initialization remains a bounded overwrite-refusing operation.", evidence: [*init_safety]}
+  - {id: deterministic-release-packaging, status: assessed, reason: "Exact-lock installation, full Python 3.12 tests, two package builds, both smoke paths, checksums, SPDX generation, and the enabled provider pass while release still depends on the complete quality matrix.", evidence: [*dependency_lock, *ci_matrix, *release_workflow, *package_tests, *supply_chain_tests, *selector_source]}
+unknowns:
+  - The added Ubuntu Python 3.12 GitHub Actions lane remains externally unverified until this branch is pushed and its workflow completes.
