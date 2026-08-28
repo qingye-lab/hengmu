@@ -1,0 +1,2137 @@
+schema_version: '1.2'
+run:
+  id: test-results-20260828t222941714479z-db27b78a5de7
+  provider_id: test-results
+  provider_catalog_sha256: 10c2539964a7ba2ded48c735df6134e0bad6dadef090fa8345bf71533cab21b7
+  provider_definition_sha256: ddfb1bc97b92d57ee3b420420987581089bb5cf04f6264c40bb48dc18f3f4f8d
+  provider_config_sha256: 0b2ae4b6b5fd4439db6c7ab1d214b23facca36fd1bb9dd7a797367807cd9f3cc
+  evidence_type: test
+  trust: deterministic
+  project_id: hengmu
+  repository_identity: hengmu
+  commit: db27b78a5de7502e294078aec603c0c8b9de10a5
+  dirty_tree: false
+  completed_commit: db27b78a5de7502e294078aec603c0c8b9de10a5
+  dirty_tree_after: false
+  started_at: '2026-08-28T22:29:41.715799+00:00'
+  completed_at: '2026-08-28T22:30:40.304787+00:00'
+  command:
+  - scripts/run_test_evidence.py
+  - --junitxml=.architecture/evidence/test-results-20260828t222941714479z-db27b78a5de7.result
+  executable: scripts/run_test_evidence.py
+  executable_sha256: d40ce9ced7647aebc5f76545ca259a29a4f15b8b4746ec65f7b7cb765b2c2b3c
+  detect_matches:
+  - pyproject.toml
+  output_source: file
+  timeout_seconds: 1200
+  success_exit_codes:
+  - 0
+  environment_names:
+  - CARGO_HOME
+  - GOMODCACHE
+  - GRADLE_USER_HOME
+  - HOME
+  - LANG
+  - LC_ALL
+  - PATH
+  - PIP_CACHE_DIR
+  - TMPDIR
+  - XDG_CACHE_HOME
+  - YARN_CACHE_FOLDER
+  - npm_config_cache
+  dependency_inputs_before:
+  - path: .architecture/evidence-providers.yaml
+    sha256: 9aa8a377dc1f8cfbf16e383270cf1c17a5349cae1569660bbe9d5f29a85c42d2
+    bytes: 3407
+  - path: pyproject.toml
+    sha256: a0bd6824dd0c35936ba93817fce1a6a9a9ac008e9927203fdfb50bca01f973df
+    bytes: 808
+  - path: requirements-dev.lock
+    sha256: c2f0862f99caed178f7cb0bd422bf4337273ce67e46019c0dc95931cd13fbd73
+    bytes: 87716
+  - path: resources/evidence-providers/catalog.yaml
+    sha256: 10c2539964a7ba2ded48c735df6134e0bad6dadef090fa8345bf71533cab21b7
+    bytes: 7386
+  - path: resources/knowledge/anti-patterns/cache-without-invalidation.md
+    sha256: cb6c751d04c1b9a5eb89e420fa448d8c7fc0fd7bad2c9ef422028edfdddf69c3
+    bytes: 2743
+  - path: resources/knowledge/anti-patterns/distributed-monolith.md
+    sha256: 5492ddd2c0b07b52effdb9069b3658e76e45f94d4da95f8d5248ed209f97d969
+    bytes: 2755
+  - path: resources/knowledge/anti-patterns/event-sourcing-for-crud.md
+    sha256: 3e5df46fcfddb879c83002933514c0d9a865fca084bc6a177e6a5881ed89e48d
+    bytes: 2762
+  - path: resources/knowledge/anti-patterns/multi-agent-for-workflow.md
+    sha256: c38a11b01e023d1ec78ebae148ff36a3edba3dd6d8b561610954c4c54e3a4421
+    bytes: 2725
+  - path: resources/knowledge/anti-patterns/premature-generic-platform.md
+    sha256: 9443605c07920df10626b3d51fee80dd6828adb7a53f2da562cce3344bdd354f
+    bytes: 2792
+  - path: resources/knowledge/anti-patterns/queue-as-default.md
+    sha256: f08393a8f202aaed4dcbdd35c88f7b1a6a44cdd6e24c5bf3d5ddc5dcb58bba5b
+    bytes: 2670
+  - path: resources/knowledge/anti-patterns/redis-everywhere.md
+    sha256: 94e15aac452594ad5741e526f698014786c50b4a48d3ce380e4b984794d297e0
+    bytes: 2736
+  - path: resources/knowledge/anti-patterns/repository-layer-everywhere.md
+    sha256: c65cada6a3d9a4ae49cc8e8b2856eab654e0b667395af696273eca1abdba6ee1
+    bytes: 2707
+  - path: resources/knowledge/anti-patterns/shared-database-microservices.md
+    sha256: 8fed0fad18ac900c7b19af041f6d31a4b8ac051ec413101f7ea1d59b64337956
+    bytes: 2705
+  - path: resources/knowledge/anti-patterns/websocket-for-rare-updates.md
+    sha256: e53f3f694e01eaaa0c1b6596c776a55565421c01259ee47c721dd3554b0b4309
+    bytes: 2701
+  - path: resources/knowledge/architecture-styles/actor-model.md
+    sha256: 1ac880f7b7fe556888cbb81444700dff5565a46e99ef8cb4067228ad49b40861
+    bytes: 2168
+  - path: resources/knowledge/architecture-styles/catalog.yaml
+    sha256: 836baa29ac1924ccc2bedd6b1ab0624ab1910ae73eb1de71dce05ac1c7327c4d
+    bytes: 12884
+  - path: resources/knowledge/architecture-styles/cell-based.md
+    sha256: 1c137de8e2ad8e3d96b65dfc95e7100ffba0daa9e799b3e8026db2e17550e5c6
+    bytes: 2250
+  - path: resources/knowledge/architecture-styles/clean-architecture.md
+    sha256: 14452abbc18d59b3316f442ad2d49edac7e06f4277606fb3d5c9c5b7c552e2aa
+    bytes: 2784
+  - path: resources/knowledge/architecture-styles/data-mesh.md
+    sha256: f78a8c4e8eb51340658e77c8d4c1560c4b26d773a5f34368e15ba87a331c510c
+    bytes: 2426
+  - path: resources/knowledge/architecture-styles/durable-workflow.md
+    sha256: ecf4dc9fb8529f4ab7950c6bca6043a16bbbc0af8937a08b33abdfb870e6be9d
+    bytes: 3884
+  - path: resources/knowledge/architecture-styles/event-driven.md
+    sha256: abb9d414a5acdb85c8f4f7cdedd81cf7dc774a163a0b6bd4db62449b495b19de
+    bytes: 2303
+  - path: resources/knowledge/architecture-styles/hexagonal.md
+    sha256: 184a3ddcd1483bd4156b319b86dc9114b52de20a8eb5508b71416c66f4a39ca4
+    bytes: 2238
+  - path: resources/knowledge/architecture-styles/layered-monolith.md
+    sha256: 22b1080faccbab7f5cc64021c7f0f843887c5ba48a098f03033c42b82f3c0bf7
+    bytes: 2233
+  - path: resources/knowledge/architecture-styles/microservices.md
+    sha256: 0533dbcda24b99313c8fe8fccd64ea2ce08bd020e60571ad561c04a800ececf6
+    bytes: 2244
+  - path: resources/knowledge/architecture-styles/modular-monolith.md
+    sha256: 3f97c548665d8e6c4159c5f6ecee4a5d099a2ac4def69fba2b0a5d6d6703c3c0
+    bytes: 2235
+  - path: resources/knowledge/architecture-styles/multi-tenant-saas.md
+    sha256: ac1d5df4cdf3436e7329ee260f49e9c4f66fdbcdc1576d3c1fa15902e449e10a
+    bytes: 2805
+  - path: resources/knowledge/architecture-styles/offline-first.md
+    sha256: 1befa375e479fd311849eb47e658fe1bbdd359f0d4265bb5ff2d4f211ca199bf
+    bytes: 2252
+  - path: resources/knowledge/architecture-styles/pipe-and-filter.md
+    sha256: a9e8ce39127ce8c4a4c79ac549734fcf29794e0de1066b79e47bde3ed779e1b7
+    bytes: 2382
+  - path: resources/knowledge/architecture-styles/plugin-architecture.md
+    sha256: 9d72e896b0154e8ee979474c6d47579889705c751a32a172f4b1b72bdef13a8a
+    bytes: 2258
+  - path: resources/knowledge/architecture-styles/serverless.md
+    sha256: 213ab4fed7022f5e9aa8f82e115af6adcc6bc0e53b4c09a8f53d45159d55b5a2
+    bytes: 2172
+  - path: resources/knowledge/architecture-styles/space-based.md
+    sha256: 5b7982b399df352f9858aca74aa8db9effa95189d9b7fd5998af3a2a5b722c13
+    bytes: 2337
+  - path: resources/knowledge/architecture-styles/web-queue-worker.md
+    sha256: 45ea90ec6cb781bb95a8ec0a746e7e71f171c89f32e90a0ac9a389fdd6971855
+    bytes: 2257
+  - path: resources/knowledge/case-studies/queue-worker-before-workflow.md
+    sha256: c136b2d15ee59068b4c14f3d8bbb5d044f01df369ed867f97f2b62266551bd30
+    bytes: 2737
+  - path: resources/knowledge/case-studies/server-cache-not-local-first.md
+    sha256: f9c07f51140357f40b9a973cc44f6f88bd5e328939d2f6473267c51372e6c951
+    bytes: 2763
+  - path: resources/knowledge/case-studies/single-agent-is-sufficient.md
+    sha256: 5a6bfc949f2f2d91711dc86ec6abb911821fddf2a624ad40421ca9e6171622ac
+    bytes: 2742
+  - path: resources/knowledge/case-studies/small-team-modular-saas.md
+    sha256: 358980e0bdd5b0a88b2288bd0e0f7f121bcdfa8d94719cb3de6511c3f2f51e97
+    bytes: 2817
+  - path: resources/knowledge/case-studies/sqlite-is-appropriate.md
+    sha256: 4a9a57c11a815b2a8b1b4e331150c4967baf0e6225c845ab6b9ed289cf1d4ef4
+    bytes: 2706
+  - path: resources/knowledge/case-studies/sse-task-progress.md
+    sha256: cc426d1e2a29143d9a9b23053cf42f0a73d2ad008674e5d9979b3a7149de8bf5
+    bytes: 2702
+  - path: resources/knowledge/decision-guides/agent-orchestration-selection.md
+    sha256: 7bb4341f473aab91178ea33a70ccf9a80d60bc25a6170cbd9494f54c92fbcad2
+    bytes: 2763
+  - path: resources/knowledge/decision-guides/build-vs-adopt.md
+    sha256: e03ef8a45322addd565dd8be17bc1d75e0c1d9de2a1f627d3fbc97d8c4097449
+    bytes: 2758
+  - path: resources/knowledge/decision-guides/cache-strategy.md
+    sha256: c6a0df6a66cc23048d674421c871e0d0dc60742b9e306bfe10433b47892d868d
+    bytes: 4278
+  - path: resources/knowledge/decision-guides/client-data-model-selection.md
+    sha256: 00f5e397c5fa94ab7afe24b9b947cbaf9e8df9ef86fdd43196d80ba822911798
+    bytes: 2704
+  - path: resources/knowledge/decision-guides/data-loading-and-refresh.md
+    sha256: 78e010395003ad579fb5a31a468fc88cea493065e0ca5fd1ca4fbb9f81591844
+    bytes: 4591
+  - path: resources/knowledge/decision-guides/data-store-selection.md
+    sha256: f31e7f021925fe265d89a05692ee26e7087fac8ad8102101040bf1ee63611dde
+    bytes: 2779
+  - path: resources/knowledge/decision-guides/database-selection.md
+    sha256: cfe185b25924899c8e275b3f132ee1a816dc0aac613aa6a9699d40b25fd308a0
+    bytes: 4646
+  - path: resources/knowledge/decision-guides/integration-style-selection.md
+    sha256: 8f512dcaab1da2ca17e8768339b5dfa2d5bf2d92d0771c3f88316fa78837c17f
+    bytes: 2808
+  - path: resources/knowledge/decision-guides/layered-vs-modular-monolith.md
+    sha256: c4d1f142585644ef6c42eacb2e7ee6fb1b379204a35a5e7666b3f87de85e36c5
+    bytes: 2774
+  - path: resources/knowledge/decision-guides/local-first-vs-server-first.md
+    sha256: e240200929e13e48276dc33d036e5f2547c00911b712a9a45fe2f2a0012540c8
+    bytes: 4556
+  - path: resources/knowledge/decision-guides/message-system-selection.md
+    sha256: bb692596da5c55080f50730a588ecd83155790654d6450a7f76939dad6f38051
+    bytes: 4587
+  - path: resources/knowledge/decision-guides/monolith-vs-microservices.md
+    sha256: f1f4e093d5a2ca19780e296798fd3016bd1730b92a26c74339737999db8e1cb0
+    bytes: 4738
+  - path: resources/knowledge/decision-guides/optimistic-vs-pessimistic-update.md
+    sha256: 935e92047bb3a9ce3b4ba8484b5cecc28c5c981a1c61453aff31bb892854ff64
+    bytes: 4615
+  - path: resources/knowledge/decision-guides/polling-vs-sse-vs-websocket.md
+    sha256: 2d0486ec0cf1526dd65b5739125a27d9e89e52b908b18f742c2caa1187bbbe1e
+    bytes: 4443
+  - path: resources/knowledge/decision-guides/relational-vs-document-vs-graph.md
+    sha256: 4c46d31c86cb748f0c9566be502b7941bbdb9b1bd0a2d9ebd90a94527d32a092
+    bytes: 4600
+  - path: resources/knowledge/decision-guides/request-vs-background-job.md
+    sha256: b54da8477e8dd3c64d074a728729ce169a7830bbac48b73491b5537e61a88a43
+    bytes: 4092
+  - path: resources/knowledge/decision-guides/rest-vs-graphql-vs-grpc.md
+    sha256: 4729753c88fe2635059df1803d715fed5538d24bff8dd26b343a22229033a20f
+    bytes: 4732
+  - path: resources/knowledge/decision-guides/single-agent-vs-multi-agent.md
+    sha256: c45be66e4d490f31c66e912f96d9b36f284cf6e91336ea462110beeabe4cefec
+    bytes: 4618
+  - path: resources/knowledge/decision-guides/ssr-vs-csr-vs-ssg.md
+    sha256: a6563559891ae896817ed6f50889f6c719a4111b8fe69f89e043fd7c39bf99d2
+    bytes: 4818
+  - path: resources/knowledge/decision-guides/state-management.md
+    sha256: 486710b4fc5f052821b04c3706c133dac7cd25f6965b8fcf23d9faf2764baa66
+    bytes: 4501
+  - path: resources/knowledge/decision-guides/sync-vs-async.md
+    sha256: 14c441bec1a112719eea8a8e0a4f855ff3e3053ea7aa274cca7c9b2331403fcf
+    bytes: 4200
+  - path: resources/knowledge/decision-guides/system-style-selection.md
+    sha256: a7eefc3a3c2a1394dee92d873fa30cd53ef22bf6d274aeed7df2c4fec341a71a
+    bytes: 3316
+  - path: resources/knowledge/decision-guides/system-style-selection.yaml
+    sha256: 430f9a2211b1bddc57242b8b0dab24a302d596fbaa1fa02cbe1b1cbcc5481c67
+    bytes: 7984
+  - path: resources/knowledge/decision-guides/workflow-vs-agent.md
+    sha256: f8fc79dfd6cbe7824c9bafe120e116dd1e7c681dd84f27806dbed4bf5bf9b36d
+    bytes: 4581
+  - path: resources/knowledge/domains/ai-agent/overview.md
+    sha256: c9d283d3d804f06b66eb80520a6f09c5e0ddf95900958625b2e4101f975ad4dd
+    bytes: 3906
+  - path: resources/knowledge/domains/backend-api/overview.md
+    sha256: ea716865510106db441623d39045b2ca26f66c4424ed18fb15383938614ac4b4
+    bytes: 2337
+  - path: resources/knowledge/domains/catalog.yaml
+    sha256: 265ab92b6f715c616e4793075a4946f969f0e5b56372a5ecc24704e06db23e48
+    bytes: 13152
+  - path: resources/knowledge/domains/cloud-native-platform/overview.md
+    sha256: 37ee84809a4162ff3e49a04a82433786efe762f7440dc5273232cb7b5b612c9c
+    bytes: 2354
+  - path: resources/knowledge/domains/data-platform/overview.md
+    sha256: 72dc109fdb28d74df5f947bf615017bd80d655a7e9c5b3fde7df53cff2fc6364
+    bytes: 2319
+  - path: resources/knowledge/domains/desktop-application/overview.md
+    sha256: c662229e6e86021611a4d730fc4a6d7abc9998699446aa2572d67248d21ed995
+    bytes: 2312
+  - path: resources/knowledge/domains/financial-trading/overview.md
+    sha256: 5a0a97a14993c0aef22bd82ce2189aeef3e24a1345a45d68e2a578be6161cb3c
+    bytes: 2352
+  - path: resources/knowledge/domains/identity/overview.md
+    sha256: ea71711f1ddc69b08f9124c36da67a59a9001245ae134317c68f172d1e10834e
+    bytes: 2250
+  - path: resources/knowledge/domains/iot-edge/overview.md
+    sha256: 13d59617cb29d6df286e910da56b1eb782a621f7feb46b131ee6095d668f142f
+    bytes: 2264
+  - path: resources/knowledge/domains/local-first-application/overview.md
+    sha256: 5e93c4e4186eee37b0a88e6ddf9835a6640eebd959e4bbab538015b575ca634b
+    bytes: 2321
+  - path: resources/knowledge/domains/mobile/overview.md
+    sha256: 2ea2e6bc0a933063138793d9e3f657a100605f05411fc8fe4b1235b72f578a2b
+    bytes: 2273
+  - path: resources/knowledge/domains/multi-tenant-saas/overview.md
+    sha256: 6f29f25363327f0b6ea6ad8cd134c7c16258c09c85a1c4c47abbd410f0c7815a
+    bytes: 2266
+  - path: resources/knowledge/domains/plugin-platform/overview.md
+    sha256: b72a0e3b6959464b32c9a4d44b50baa40b4baf13b5b14f65f99d094f301bf58c
+    bytes: 2298
+  - path: resources/knowledge/domains/real-time-system/overview.md
+    sha256: 00acd4c0be719d8bc5ae140d13f6adbd4a0fc5f234bf9424b3dd2387e462875c
+    bytes: 2300
+  - path: resources/knowledge/domains/search-recommendation/overview.md
+    sha256: 84217f6c94c319e657ed908a746e6693f46c75dbf0cb987c3d8e338d660218d2
+    bytes: 2355
+  - path: resources/knowledge/domains/streaming-media/overview.md
+    sha256: ece41335fb2444cd42460df6e611a84bf7226e706afe062d9c6494ccbb1e9482
+    bytes: 2277
+  - path: resources/knowledge/domains/test-automation-platform/overview.md
+    sha256: 7ce2621239bad831f4a6689a1718b5dd1cdbbf1d6d2e3bb9a6d043457a70e016
+    bytes: 2338
+  - path: resources/knowledge/domains/web-frontend/overview.md
+    sha256: ce8f519876db182bb8e6a2ca75db64135828c758d2722e2086bfd9641cd1f302
+    bytes: 2365
+  - path: resources/knowledge/foundations/architecture-principles.md
+    sha256: 9394a24578d7e7ec483c68ab78bfe6192451411552ee92401744b7e87e56ca1f
+    bytes: 2744
+  - path: resources/knowledge/foundations/aws-well-architected.md
+    sha256: d1c7119725f7f419ffd37472922e65976ff8f9ac6a74a6bfe4580b66c8000162
+    bytes: 2504
+  - path: resources/knowledge/foundations/azure-well-architected.md
+    sha256: e200a38cd313d40aa2330740540c050a06e309f4cb73c9396943070ad033d14a
+    bytes: 2442
+  - path: resources/knowledge/foundations/compatibility.md
+    sha256: 17d8e8c8557969246fe2e9a62e8a645aeac171c9c9d2cbeb5d0bdfc27e51330b
+    bytes: 2161
+  - path: resources/knowledge/foundations/data-ownership.md
+    sha256: 260f240ec9782f5a42a68481652912532cfcd6a0b07fdc5366d44388cc3d0204
+    bytes: 2676
+  - path: resources/knowledge/foundations/evidence-reasoning.md
+    sha256: e3c370e04b8a9be5e64ea0d107281043652b1cdba3393fb61b57efd77262650f
+    bytes: 2714
+  - path: resources/knowledge/foundations/evolutionary-architecture.md
+    sha256: b9b125fa34bdeb346145f926210f7052d60d8f3b5f4e225cf1aa0fdb6a7888e5
+    bytes: 3739
+  - path: resources/knowledge/foundations/flexibility.md
+    sha256: f19738e3ca5272292834c5548fcc387d492750e5e366b6c8dd88fc9f6eed2c87
+    bytes: 2065
+  - path: resources/knowledge/foundations/functional-suitability.md
+    sha256: bb0aad55ea1166e27c2f5d938bc40269a35cc33bdb6312d46d2a6e57477afacc
+    bytes: 2244
+  - path: resources/knowledge/foundations/google-cloud-well-architected.md
+    sha256: 32518e83df10d07ae31329aa31a14d4b0eff4007f0f73bed137f8fd1ac5d6ba8
+    bytes: 2505
+  - path: resources/knowledge/foundations/interaction-capability.md
+    sha256: 12506a0f8ea7482fc54e914f1c54c937fa9be198c053cbbca4d51caa9d060a3a
+    bytes: 2211
+  - path: resources/knowledge/foundations/maintainability.md
+    sha256: 84ac29ee75bfb409091ae5af6ccc6b51d68c571147e8718df991c4b6af63914e
+    bytes: 2124
+  - path: resources/knowledge/foundations/performance-efficiency.md
+    sha256: 92c8ada167b80a1fa870d87d56a8922f5a43cfe7aa0c7cd2a3590b92321f9516
+    bytes: 2199
+  - path: resources/knowledge/foundations/proportional-design.md
+    sha256: ccfa63d523fab3503c47dbf73fc7a9ae85c7fc516856bcf422322c0d92a409df
+    bytes: 2764
+  - path: resources/knowledge/foundations/quality-attribute-scenario.md
+    sha256: 5ac5810dc0f9f168080d03ee43270407bd8ed0945fafd73de32e0447c22ffe42
+    bytes: 2307
+  - path: resources/knowledge/foundations/quality-attributes.md
+    sha256: 50d92ab7563d70605408ba4592d9445f79f6eb0cecb50195471b56e42418b680
+    bytes: 2816
+  - path: resources/knowledge/foundations/reliability.md
+    sha256: 11b11648b8f5b97834894d80746a4ecbf5a147a499460cd3528b51732b30954c
+    bytes: 2166
+  - path: resources/knowledge/foundations/safety.md
+    sha256: a68a9ec40c59a1fa5a457721f3c87af73c45c0760f258b9628a8c3399068b823
+    bytes: 2093
+  - path: resources/knowledge/foundations/security.md
+    sha256: 193298c1142616fc40785b279e00d3664c7b4df6d17b96f62268370dedf4c8d2
+    bytes: 2166
+  - path: resources/knowledge/foundations/system-boundaries.md
+    sha256: a326964ec74303e0f08f3e7207e4836a0ff04c93c7f8516e6190b47925ec06db
+    bytes: 2758
+  - path: resources/knowledge/foundations/technology-selection.md
+    sha256: ce43c17d29cc79ad65c0f1a551a938f3fec642d1e75070b98d4aa3336ddf882d
+    bytes: 3759
+  - path: resources/knowledge/foundations/tradeoff-analysis.md
+    sha256: 058c9756ba4d9306f42e0fb49365aff3564f3545e103c05812040ce2c9f8b9d5
+    bytes: 2779
+  - path: resources/knowledge/manifest.yaml
+    sha256: 73797e90b8216cf970c13dc08a882e2facd1e6c45e3519d28d29e864a0025189
+    bytes: 1031
+  - path: resources/knowledge/migration-guides/batch-to-incremental-stream.md
+    sha256: 9394e6c8ef4db9de83bb7091f8fed10b3d9c15c53133233f3f3c27b24bf95326
+    bytes: 2324
+  - path: resources/knowledge/migration-guides/cache-introduction.md
+    sha256: f0b1c62a45ad4ebfca804a55e2db16360481b582e08c325fb3ec5920ed63a2ef
+    bytes: 2296
+  - path: resources/knowledge/migration-guides/client-only-to-hybrid-rendering.md
+    sha256: e61d2253819b54093b07789111fcc3efc131705e6b666294ca34a7ae429ae991
+    bytes: 2763
+  - path: resources/knowledge/migration-guides/direct-write-to-outbox.md
+    sha256: 9d8d6bd72c99d36870bd0fbd3e573fe071b0cb5fe3f0b0c4472a8b4edbf2210b
+    bytes: 2778
+  - path: resources/knowledge/migration-guides/expand-contract-migration.md
+    sha256: a8eb79105f44d4960dea1dad466ba84039611108586144c0c3d215ec73dd39d1
+    bytes: 2228
+  - path: resources/knowledge/migration-guides/internal-extension-to-plugin.md
+    sha256: a54900d935353aa5f91741743a936e2b7f2967fdbdfaecbce6cde6f7847215f2
+    bytes: 2427
+  - path: resources/knowledge/migration-guides/layered-monolith-to-modular.md
+    sha256: 3017c377c06e2d19654ccf0b07f6431a1dfb5854e135ea8c4ec58117aab64bb9
+    bytes: 2245
+  - path: resources/knowledge/migration-guides/offset-to-cursor-pagination.md
+    sha256: 5c56beb3ddeb00c3525e88cacf25c68e99f0d5280b6119d405094b0f2c602e3c
+    bytes: 2745
+  - path: resources/knowledge/migration-guides/polling-to-sse.md
+    sha256: 241ee91194c0754c00a86def2c1b44585218a098c0be4c25403ca4db30a1af10
+    bytes: 2751
+  - path: resources/knowledge/migration-guides/queue-to-durable-workflow.md
+    sha256: f8b4e11ff287f9a4ebea3d5c66d4b92dd10a7cd9810955597bd4736fa4e5fc62
+    bytes: 2300
+  - path: resources/knowledge/migration-guides/server-first-to-offline-capable.md
+    sha256: 93cad2f3b23462460691214ede964ef679a6f466210a00113b446e7fdcaf8fc6
+    bytes: 2775
+  - path: resources/knowledge/migration-guides/server-first-to-offline-first.md
+    sha256: 0e163790fd0d31e8054a49e1f0be6fd00011c18da0b7ce60c6f7f8e843477fb7
+    bytes: 2349
+  - path: resources/knowledge/migration-guides/shared-database-to-owned-data.md
+    sha256: 23dca5cb577537339da5676361423fa0d3b52577c8011ad01f983cac7a74d7a9
+    bytes: 2379
+  - path: resources/knowledge/migration-guides/shared-saas-to-cells.md
+    sha256: 1fde0cc7b872fd7cdc1fce3ecb10a7614f45ae6e27ec4c243c75869e59d9ed9d
+    bytes: 2316
+  - path: resources/knowledge/migration-guides/single-region-to-multi-region.md
+    sha256: 19b209a9521d49584bef2d1191993b06c27df5faaa7a8a55fdfd78588933a675
+    bytes: 2414
+  - path: resources/knowledge/migration-guides/strangler-migration.md
+    sha256: 3eba32d79fd8412946ce4863dd201e0f69273211b68a87127b19ae2b97aae20a
+    bytes: 2251
+  - path: resources/knowledge/migration-guides/sync-to-event-integration.md
+    sha256: 5a74a79f30232192cd9cbb16885785f739144e252ba3677ae7906c2edda78cad
+    bytes: 2354
+  - path: resources/knowledge/migration-guides/synchronous-to-background-job.md
+    sha256: 3fc839ed3fbe936ee8c70930b97b237df269684f01a832b8c94a8802ae3e1ad9
+    bytes: 2755
+  - path: resources/knowledge/migrations/catalog.yaml
+    sha256: b2b6e3124560ef7110a4dafa0123d4254eea2cc273da57c60dd3fe561c97c4f1
+    bytes: 11384
+  - path: resources/knowledge/patterns/anti-corruption-layer.md
+    sha256: a6953e107cfc8420ccce879557dd3f2819543176865ab7ae7455d458648fd428
+    bytes: 2143
+  - path: resources/knowledge/patterns/api-aggregation.md
+    sha256: 90d8648b9a612b3494a6e2cb59ce6fe078cbf2a91967f4470538d2c30981535f
+    bytes: 2739
+  - path: resources/knowledge/patterns/api-gateway.md
+    sha256: 35ce6282da1e8c6f7f144fd8166186f7f81e610100cbda6db601b2501a7d98eb
+    bytes: 2287
+  - path: resources/knowledge/patterns/backend-for-frontend.md
+    sha256: c48ef6b05167f41992d1d6507adbcf8438b076ac6bbad4ef0ffc9b38ee4c8e14
+    bytes: 3674
+  - path: resources/knowledge/patterns/branch-by-abstraction.md
+    sha256: 5128ed8a315076c07676a36b044545f57c40eeb12ebb10f9688d8b750c512400
+    bytes: 2327
+  - path: resources/knowledge/patterns/bulkhead.md
+    sha256: f6b94f58c28fbe80cb460e23f065c01c97991412f899aeefd5c911123cfd6417
+    bytes: 2116
+  - path: resources/knowledge/patterns/cache-aside.md
+    sha256: dd81aeb91ef3c1f3d2faad988a0b3b1bd96a7c39db4ca81e6d069aacc9f82672
+    bytes: 2163
+  - path: resources/knowledge/patterns/catalog.yaml
+    sha256: c2157d6b9b68e955e11757c58e0b7651fbf5e9742e13afc45b9386da99ea16e0
+    bytes: 18246
+  - path: resources/knowledge/patterns/change-data-capture.md
+    sha256: ef7b49b743c5563c0c20471dd2ad0c99ef25d8e5d138ffbf2f863cfa21cc7f5a
+    bytes: 2164
+  - path: resources/knowledge/patterns/circuit-breaker.md
+    sha256: 1de18be8eec0d86dcb8e00e284efa27e09a7f168228544d1f88b9dbfd5b584f8
+    bytes: 2178
+  - path: resources/knowledge/patterns/compensating-transaction.md
+    sha256: f87d067942f71f7e750617c0355ba4ade9332919ae6ef00aeb308c47ff819e62
+    bytes: 2350
+  - path: resources/knowledge/patterns/cqrs-event-sourcing.md
+    sha256: 626345a003dbc3ac51817d1233eafe97a13d180e4ebf4541d791122ade0d3c11
+    bytes: 2358
+  - path: resources/knowledge/patterns/cursor-pagination.md
+    sha256: 033b4b72638d46938c650284d57dafcd2008b6c67d4fa83aabac007f9c14edcb
+    bytes: 2725
+  - path: resources/knowledge/patterns/dead-letter-replay.md
+    sha256: da66f177f5a6a5768f1f1436a0b82d5557b1ea41f76703c55053f1679e5062e2
+    bytes: 2337
+  - path: resources/knowledge/patterns/expand-contract.md
+    sha256: 6a076465719b5f0112c893537cbcc070f030fcb2e9a976689aff95711855d1a4
+    bytes: 2142
+  - path: resources/knowledge/patterns/feature-flag.md
+    sha256: d873b6eb4fad0b98bcbbadd024b242db8c61ee8678247f8346382940bfc12dbb
+    bytes: 2161
+  - path: resources/knowledge/patterns/idempotency-key.md
+    sha256: 468592aed0baefffd8c287cee02e55c557671a810576633c833375e387822e1a
+    bytes: 2181
+  - path: resources/knowledge/patterns/inbox.md
+    sha256: b070256799803a69b48ade05657298ec2a41bee130af02ffbc2c5dcd6dd40c63
+    bytes: 2175
+  - path: resources/knowledge/patterns/leader-election.md
+    sha256: 8206558f6d2fac4cd16fea9f514ae948093894f11951121dd90fc2d1493eee78
+    bytes: 2249
+  - path: resources/knowledge/patterns/lease.md
+    sha256: d53af0d4ad3ed0d201cf20aaf0aeba3be1d4904edf8fee248d6853daed3be93a
+    bytes: 2072
+  - path: resources/knowledge/patterns/load-shedding.md
+    sha256: fd9ab124547bfecb8e28e0377588112e16f4f6e3852f10a6f60d6072fad9b1d1
+    bytes: 2765
+  - path: resources/knowledge/patterns/materialized-view.md
+    sha256: 4a50e9b46004f2eb68e8b5123da1d77653aea169f3fa6870447a374d30d57fdf
+    bytes: 3646
+  - path: resources/knowledge/patterns/outbox.md
+    sha256: 935122061e095ded8962e899fed700239caa17cca743c6876e5806dd7ae9bde5
+    bytes: 3792
+  - path: resources/knowledge/patterns/read-replica.md
+    sha256: f4627e55fb1c542da729fb3dff71fdcb94948a13e34ccaf6606b6611438fe3bc
+    bytes: 2296
+  - path: resources/knowledge/patterns/retry-timeout.md
+    sha256: e880903f97cab092ff31e75bdd28bc458e1c4b32d8d43e19e5d1fe7a5f14cf75
+    bytes: 2198
+  - path: resources/knowledge/patterns/retry-with-backoff.md
+    sha256: eb092082bd06267bb24e85a90183395788a798d25ee905677d984fa2358e3a9a
+    bytes: 2733
+  - path: resources/knowledge/patterns/saga.md
+    sha256: a5d7d07da26bf9696d3935f58e4c3ebad20551d4c9398f4e7ebc6eb2bd20bdbf
+    bytes: 2210
+  - path: resources/knowledge/patterns/schema-registry.md
+    sha256: e4253c2001c75153e8135597cef7f5ec3df56293b56561bc673820cb8d97151a
+    bytes: 2225
+  - path: resources/knowledge/patterns/sharding.md
+    sha256: a3a8ba9c877119dc1ded21ebc71e8aa51e44f3717f1df95fd8370da3232bdaa4
+    bytes: 2303
+  - path: resources/knowledge/patterns/stale-while-revalidate.md
+    sha256: cee6ad49172b527c9abf39edd06b5fe35ce6c0c8c7ab5f7882b1d6ea5548567f
+    bytes: 2750
+  - path: resources/knowledge/patterns/strangler.md
+    sha256: 487485138723ed150f120394d2211631fa87901c4857ec4b922f6a865cfe0c2c
+    bytes: 2189
+  - path: resources/knowledge/quality-models/core.yaml
+    sha256: 98fd690680e5c875254d40da4e50445ded96ebdf18af53fced5c1792c7a47123
+    bytes: 8941
+  - path: resources/knowledge/reference-architectures/catalog.yaml
+    sha256: 7077ec665b876a364a58855fc7d7f6b62cb130d988165bf8e26ab2a839b58279
+    bytes: 11345
+  - path: resources/knowledge/reference-architectures/cell-based-saas.md
+    sha256: a75a4187269d3298cfee2c22d61263807ac46017a082b0b3710583b24717c4fc
+    bytes: 2311
+  - path: resources/knowledge/reference-architectures/cloud-native-service-platform.md
+    sha256: 39e8eb4407a6deef217d74e61e2f840d6be32afb528c39588ddfac83da699bee
+    bytes: 2441
+  - path: resources/knowledge/reference-architectures/durable-agent-workflow.md
+    sha256: 064e439f82bf7721cc98e34c1192d8b956290729d39c42c89eabd1d5a6c854e8
+    bytes: 2333
+  - path: resources/knowledge/reference-architectures/event-driven-integration.md
+    sha256: eaa1631516f1741bdef349f7248df69a6c5b382d672b599d11a31c98d7e4b13a
+    bytes: 2363
+  - path: resources/knowledge/reference-architectures/modular-monolith-service.md
+    sha256: 4b05c2f7ddca828c10a6bda5336eb75af7c7a0463e6b4752d398748a3fd6d163
+    bytes: 2341
+  - path: resources/knowledge/reference-architectures/multi-tenant-knowledge-base.md
+    sha256: ace133a78ae8ea2b495194aa60988d540cffda73346bf19acc4fa8dd2072f791
+    bytes: 2771
+  - path: resources/knowledge/reference-architectures/multi-tenant-saas.md
+    sha256: ea30a930ad2f2bd30a8fe8a32b8f079bf69ab0fe3b22cf33f90c86429e8e80a6
+    bytes: 2309
+  - path: resources/knowledge/reference-architectures/offline-first-mobile.md
+    sha256: c36b24295804ebaff9b601513cd08f67ce489e2a87e41f2a1f9c54ad97493cd1
+    bytes: 2256
+  - path: resources/knowledge/reference-architectures/react-fastapi-postgresql.md
+    sha256: b608586a1f21f1bc4b56f337f0675e691344857fda9634b7328a42de7b7c43c8
+    bytes: 2832
+  - path: resources/knowledge/reference-architectures/real-time-stream-processing.md
+    sha256: 8386d256c2d3b2eefa5a320ef1f25760be1d702eb6da6d3ae3bb9d4ca63de484
+    bytes: 2380
+  - path: resources/knowledge/reference-architectures/real-time-task-status.md
+    sha256: ee1d2af3b7c414429e9de85eafeafe6ddf300949abee62200b2ffa0471623486
+    bytes: 2752
+  - path: resources/knowledge/reference-architectures/retrieval-augmented-agent.md
+    sha256: 15c3fa76ef6453d9f7bfec2a28bf1aba72339dcb1326fad8f02c750b72d15d07
+    bytes: 2417
+  - path: resources/knowledge/reference-architectures/secure-plugin-host.md
+    sha256: d6809643199d8352d5dd241c5a5a3e2cffbf5c8584bc0ae5fbd6e75d3ad8c79a
+    bytes: 2357
+  - path: resources/knowledge/reference-architectures/server-first-mobile-client.md
+    sha256: ff0f447457daf54af850f6eee1399a3fbbef71d74faf4ddc193347fadc4f9cfb
+    bytes: 2786
+  - path: resources/knowledge/reference-architectures/web-queue-worker-ai.md
+    sha256: e24d8dc169d6a80c85aab39bbbbaac1eae36ce6facd3fbb3f0661694efacd999
+    bytes: 2299
+  - path: resources/knowledge/technology-profiles/apache-kafka.md
+    sha256: 8dc8e36849a5434cb8910bff6a0c0cf8b7957a3e379acd979fc71566fab523ab
+    bytes: 2490
+  - path: resources/knowledge/technology-profiles/apache-pulsar.md
+    sha256: 79259cd79556a08598a51ef024cf0636f63cf80342b58ede9a902972b9daf907
+    bytes: 2444
+  - path: resources/knowledge/technology-profiles/archunit.md
+    sha256: 3cee4fc509bd97f1f591962761266502eac7862f4db545ad3bb149037e78e3c6
+    bytes: 2196
+  - path: resources/knowledge/technology-profiles/aspnet-core.md
+    sha256: 7ca9257f3efaa0795f256ce950af1b19a3d25a51278fc2581294dcb4b7a6f6bd
+    bytes: 2894
+  - path: resources/knowledge/technology-profiles/astro.md
+    sha256: cc4defabd2fbe95e782975d082c0a7b9e5ace079eccf9d62fac28bdc856f6a17
+    bytes: 2835
+  - path: resources/knowledge/technology-profiles/aws-sqs.md
+    sha256: 230b512d9d6c7789b5aa67b33454ed9fbb94038901307c96953ddec41b10f3ad
+    bytes: 2413
+  - path: resources/knowledge/technology-profiles/aws-step-functions.md
+    sha256: 92515968b50413ab14d476e49e9913243a4f657f9717425a5e01356e4caeb6aa
+    bytes: 2552
+  - path: resources/knowledge/technology-profiles/azure-durable-functions.md
+    sha256: 10ba1a9b3c920b7f93e0cd754e5363e57a21b7428cf8b4c5f79218ef275d356c
+    bytes: 2529
+  - path: resources/knowledge/technology-profiles/caddy.md
+    sha256: a330c31435ff76d4b2d2cee54fb1ab065af29794372d73a25d947e90926d3fb0
+    bytes: 2845
+  - path: resources/knowledge/technology-profiles/catalog.yaml
+    sha256: e5128e10d10c13b3520bb7dccb42cc659a913eaaf2569d903f93f6356f199b70
+    bytes: 29179
+  - path: resources/knowledge/technology-profiles/dapr-workflow.md
+    sha256: d458eaa2a7e3958b378ce0334f8d2baa9ad0ed0130629b7f70e758804ff5acad
+    bytes: 2528
+  - path: resources/knowledge/technology-profiles/dapr.md
+    sha256: 3c3455c101e6982a83cb0478772c3770038bbb8aff8412f47298e1c952e22364
+    bytes: 2450
+  - path: resources/knowledge/technology-profiles/dependency-cruiser.md
+    sha256: fe4a638d8f858e6f6b3b91991126322e324694a428be848d2023f66a9968796e
+    bytes: 2265
+  - path: resources/knowledge/technology-profiles/django.md
+    sha256: 90a00faaec61eec4da3650f2885eefe8b65a15a3c5c8b9228524e872b0ea06c5
+    bytes: 2841
+  - path: resources/knowledge/technology-profiles/docker.md
+    sha256: 1255b40a084f9283fbee7ba2abba2d2d960300d6e38e54be66c262141b327a90
+    bytes: 2837
+  - path: resources/knowledge/technology-profiles/elasticsearch-opensearch.md
+    sha256: 9e5576789528ad010e878a681408ab42524730eef75405495ba531ee947d8089
+    bytes: 2622
+  - path: resources/knowledge/technology-profiles/fastapi.md
+    sha256: feb8ff63fe866c89575be127317b8925ed51b32238ecdc436fb85904372cfbc6
+    bytes: 4392
+  - path: resources/knowledge/technology-profiles/google-workflows.md
+    sha256: 5d93714dd952c067f9826dd1adad68e56be45ec05464e80ed951f8e6f8c8b858
+    bytes: 2459
+  - path: resources/knowledge/technology-profiles/import-linter.md
+    sha256: 8a1dd4ac1887df7f0236750899809449062448196851b76a86e3bd9979eb17ee
+    bytes: 2218
+  - path: resources/knowledge/technology-profiles/kubernetes.md
+    sha256: 212d9ebb21002ceee27c8d30cf5defef064e2862c5a74a7d979d8a5df39b1580
+    bytes: 2448
+  - path: resources/knowledge/technology-profiles/langgraph.md
+    sha256: ca5d166439fd3ed515cae87414dc0016676feadfa4d7ea5ded14909ad1208141
+    bytes: 2390
+  - path: resources/knowledge/technology-profiles/microsoft-agent-framework.md
+    sha256: f24166f6e8166cf3534191a6cc3b8ae2c620d519a73a9107852202f810672cb4
+    bytes: 2562
+  - path: resources/knowledge/technology-profiles/milvus.md
+    sha256: 3be781ea6c097e125cb7ecaa1484d90e5a664ff2d90f1f13eb9baa7c1a5a1443
+    bytes: 2428
+  - path: resources/knowledge/technology-profiles/mongodb.md
+    sha256: e6d643d9100be951b1a7e07285abe437a6369f7f56aff72c13637bcff6df0e31
+    bytes: 2424
+  - path: resources/knowledge/technology-profiles/mysql.md
+    sha256: f367f2d2742950cb478480d34ad65fdc79a67fa1833af080b1084b4436873048
+    bytes: 2353
+  - path: resources/knowledge/technology-profiles/nats.md
+    sha256: 58f530e8b15176f7db754443918d9143b4acc9c904335a5b167b5bb88cf51482
+    bytes: 2831
+  - path: resources/knowledge/technology-profiles/neo4j.md
+    sha256: 0b348b1af60a8ec7f16b25fbf50914e12bc96b238e84944bfa26a4cf844415d4
+    bytes: 2377
+  - path: resources/knowledge/technology-profiles/nestjs.md
+    sha256: ee7ebd5b4a0aa8364926a7d9ba6596e9a0c21820975cb99f912854fc37af50f5
+    bytes: 2835
+  - path: resources/knowledge/technology-profiles/nextjs.md
+    sha256: b4d701ab66d604a3f8752814e7f6ac86030fd53c881e9b313ab1a3b91c499038
+    bytes: 2841
+  - path: resources/knowledge/technology-profiles/nginx.md
+    sha256: b9ecf7148fea6f736983af85597677a6be9f452c5ee004257db3b6f9b248cde1
+    bytes: 2842
+  - path: resources/knowledge/technology-profiles/openai-agents-sdk.md
+    sha256: 7b84ad375ad0dfc965b08dd85cadd4a4ae7645088b2d262d6c0798dda60c2693
+    bytes: 2374
+  - path: resources/knowledge/technology-profiles/opentelemetry.md
+    sha256: 2468da619e2ad051d805e04085c1c390d669743f715a0fbb62d575d0b3d8bda1
+    bytes: 2300
+  - path: resources/knowledge/technology-profiles/pgvector.md
+    sha256: c8f63f9cb095e744c8ef784b50975d84e91770038afbcdb6167697fda44237e0
+    bytes: 2472
+  - path: resources/knowledge/technology-profiles/postgresql.md
+    sha256: 77aed8013b5ea4f06c88ba53cfbd1340545b1e1a2b9c7aba3d0c49956d27adab
+    bytes: 2428
+  - path: resources/knowledge/technology-profiles/prometheus.md
+    sha256: f11d2717d2b09d00e89d0b199552fa527fe25870cff8926a88ef68f45bb73396
+    bytes: 2449
+  - path: resources/knowledge/technology-profiles/rabbitmq.md
+    sha256: 94dc6612eb0e61f57169f4a1796a4492dd44a680bfe73ab5f0b543d68471e67f
+    bytes: 2390
+  - path: resources/knowledge/technology-profiles/react.md
+    sha256: b6015bf240d44fb7daa6d661deba91df7ff09ca9276b13e495693934687e58e2
+    bytes: 2818
+  - path: resources/knowledge/technology-profiles/redis-streams.md
+    sha256: 75c64f4660193348ac646bd8b0cf06bd44b0a5090ee9999dee208b189d855451
+    bytes: 2926
+  - path: resources/knowledge/technology-profiles/redis-valkey.md
+    sha256: 6e8f845ea52ed8b7877a6929fd15a19e4448f417b01c7e92cd183487488c0515
+    bytes: 2572
+  - path: resources/knowledge/technology-profiles/redis.md
+    sha256: 45281222aa991c21a3860609646a3396e216c8972f915566ca4c94c371a73377
+    bytes: 2827
+  - path: resources/knowledge/technology-profiles/service-mesh.md
+    sha256: 041d3a47e6b32e33691ee5890e568587f69f7c91dfd73d5c70895f03e420a9a2
+    bytes: 2501
+  - path: resources/knowledge/technology-profiles/spring-boot.md
+    sha256: 66e7a54c8b74108ed8cebfa0b8b952c6b91cf3523744c203a65c02d5f6c5c46d
+    bytes: 2886
+  - path: resources/knowledge/technology-profiles/spring-modulith.md
+    sha256: a9bef69df73e57a07ad64b651d81ffabdbf63e6ae4bafbe8402c98a60a293a95
+    bytes: 2305
+  - path: resources/knowledge/technology-profiles/sqlite.md
+    sha256: 423e78baa0fd9b93bf7b6677fa15421a1bf870a4d16ee8a79496e1d44e07682c
+    bytes: 2849
+  - path: resources/knowledge/technology-profiles/temporal.md
+    sha256: 70b8c71d0280d416f03c03355506ba688005193029c9a86f190b0c7936b98bbc
+    bytes: 2298
+  - path: resources/knowledge/technology-profiles/timescaledb.md
+    sha256: e940fc108eb776aa4f0cd33bc1c472fe003edd22ebd53e5c223abdfef39a408f
+    bytes: 2425
+  - path: resources/knowledge/technology-profiles/vite.md
+    sha256: a12480cc8eb92d73359b9f3c86b724ab595841e49255bb14cbd37a2fafad079a
+    bytes: 2831
+  - path: resources/knowledge/technology-profiles/vue.md
+    sha256: 5619c7146dcc5250f7ded9ddd29c4de8275a745967099a50bfed07365abf7df5
+    bytes: 2810
+  - path: resources/references/ai-agent-rules.md
+    sha256: 0e3330b1497bfe9bf46a710fc8387dff106c027b886979baf584c7aeabead771
+    bytes: 6596
+  - path: resources/references/evidence-provider-contract.md
+    sha256: f5fef5d8e79564b82103921766ed5784682a0fd85679c11b79f4558b82be84d4
+    bytes: 6282
+  - path: resources/references/knowledge-contract.md
+    sha256: f14709b384b408c19bcf9371a00e168969703cfb21f6b7aa96495b8e2c9c6662
+    bytes: 3041
+  - path: resources/references/mobile-rules.md
+    sha256: a3d533441c45cf7b19cd688b0026e5c5579294655f3d38c68eaf558a90f98cac
+    bytes: 2918
+  - path: resources/references/portfolio-rules.md
+    sha256: 6dc22e4c94b10e12366730788299756e765e2a0cab991968a3acfba04b5a8e07
+    bytes: 3458
+  - path: resources/references/profile-guide.md
+    sha256: 74e993b0201166c85193d8d409b26ddaf3acabfcd9f996a3ad30eab72e052b24
+    bytes: 6133
+  - path: resources/references/project-rules.md
+    sha256: d9b5526460544350361ef0ac36242a4a0aa954ad58171d53505a0479ae18e7cd
+    bytes: 3655
+  - path: resources/references/quality-gate.md
+    sha256: b616b76e8553346a6203406da44752a0ff78a5e207aadd8b70ba49a7b717e89c
+    bytes: 4444
+  - path: resources/references/remediation-contract.md
+    sha256: 8f807b7b12abb7093f62d82d14c985ef7c0ebe2fa6ebb4359da191f74457fc45
+    bytes: 4381
+  - path: resources/references/review-contract.md
+    sha256: e86a62c637aa24a0b8b194916af1dac850346a7e10d8b7ae6b2c0e7ce1cc9a5b
+    bytes: 10168
+  - path: resources/references/solution-decision-contract.md
+    sha256: d7497c7253117d8bcfba247fcd6b1611b4fadca70c67a1806b732a097e38f609
+    bytes: 6710
+  - path: resources/rules/ai-agent-core.yaml
+    sha256: faffb7f98cd5147b9a68caa78a80eaf5b280f23658fa1c5267d82256377daba5
+    bytes: 9648
+  - path: resources/rules/backend-api.yaml
+    sha256: 37a01e3cfe6c2c6278e517a469efcd4d3c2e9ed02726903efaa1f9d92b31d04f
+    bytes: 1663
+  - path: resources/rules/cloud-native-platform.yaml
+    sha256: c112fd3ca5aeff62e044e205f64a582b828d93ceb8a62e24f4efb65d3747b4d4
+    bytes: 1639
+  - path: resources/rules/data-platform.yaml
+    sha256: 931eedce4530966c29f0e401d8793253bb337bdab5b5fc2eef77651122c39735
+    bytes: 1665
+  - path: resources/rules/desktop-application.yaml
+    sha256: 40d64121b31cd1ff51d0858c7ddf7733803e265e04e9e71fe23e0f42a209203b
+    bytes: 1654
+  - path: resources/rules/financial-trading.yaml
+    sha256: b38953e779da042b1feb3d53894e5b306180680c58d3702941b06612564245c5
+    bytes: 1637
+  - path: resources/rules/identity-authorization.yaml
+    sha256: 7042ec119fd31d065692c06b9ce831d2fe400c29bb3b0ef9bc3adf8f45645003
+    bytes: 1613
+  - path: resources/rules/iot-edge.yaml
+    sha256: 04c2b77985b4fe6fa6330eb8756406000c0040f20451ee82f3bf3bed71f16791
+    bytes: 1541
+  - path: resources/rules/local-first.yaml
+    sha256: 829fe2b028ad10419e82305c0bbd2cc564cddaf09cd4819aff372d537520ecb1
+    bytes: 1600
+  - path: resources/rules/mobile-core.yaml
+    sha256: 767c49a56f4b9d425cdc0002d5d2e891c9268ee6a84be3f27d5700c5967f4d05
+    bytes: 3309
+  - path: resources/rules/multi-tenant-saas.yaml
+    sha256: 888c7d953d7fa4602e22aab3d8847d3d1d1ccb7905fdb4101887fdbb5eff2e42
+    bytes: 1573
+  - path: resources/rules/plugin-platform.yaml
+    sha256: 7ae17488df7a78ce1b857d3f842bd51b87de4ec30576fbe250cfa991472b3700
+    bytes: 1598
+  - path: resources/rules/portfolio-core.yaml
+    sha256: 646a869ecfffd62bb11df6eb32580baa88e23ebda7de36f8f8c12f823dcd9aed
+    bytes: 3140
+  - path: resources/rules/project-core.yaml
+    sha256: b211d548ad5fe367b9dab8416051c43f3a206da81bd2a8e7596cd788ed3f100c
+    bytes: 6360
+  - path: resources/rules/real-time-system.yaml
+    sha256: 8c95aa387a22642599d20374ef7add7540468143d05c0e66edab0cfc03c7c9d4
+    bytes: 1608
+  - path: resources/rules/search-recommendation.yaml
+    sha256: dcb3f82e0d3c21528096fa0cb5dbfd5e4989010fa535d20ebdc6752a336e291b
+    bytes: 1584
+  - path: resources/rules/streaming-media.yaml
+    sha256: a53876f6e35f11b95d94fbcab4e293570033c570b65ebe4c7229c6eb4ac20fdc
+    bytes: 1606
+  - path: resources/rules/test-automation-platform.yaml
+    sha256: 23efb3c02cd9e4e2ec2cb83d1505b30dd780aff2a9ac7157506b361cb783c5aa
+    bytes: 1596
+  - path: resources/rules/web-frontend.yaml
+    sha256: 923f8b7252da751ff10ee508d61be751d993b2862e5c6f04cd13c3a47c754e48
+    bytes: 1677
+  - path: resources/schemas/architecture-decision.schema.json
+    sha256: 73e458724bd1cd6ec358e7b9c1c5cf621b1d8c9ed517027e2240141e1f10b712
+    bytes: 35326
+  - path: resources/schemas/architecture-design-brief.schema.json
+    sha256: aad11367a1634a5032a4bba5534f71c145f89bb1adda6720065d61212011dd41
+    bytes: 11215
+  - path: resources/schemas/baseline.schema.json
+    sha256: 14461dd858af7a8cb578047ec206ab617cf821c7f4adf00e9e3ed7ee74617c8e
+    bytes: 1522
+  - path: resources/schemas/benchmark-context-manifest.schema.json
+    sha256: 5332f3e472c27eec8a60f7ce91e6d7c11b92dbd171f92514aa1702ec1d13ae95
+    bytes: 2421
+  - path: resources/schemas/benchmark-observation.schema.json
+    sha256: 41a653c9943e18a418c19320950d1afd8dcc5048a5fafdb705f88f6bd9996b3e
+    bytes: 3324
+  - path: resources/schemas/benchmark.schema.json
+    sha256: f9411d66fd599abfe8439037ac67323be6c21d4aa4d3d0d69724a975c01bfe63
+    bytes: 19349
+  - path: resources/schemas/dependency-map.schema.json
+    sha256: 9119aca900d4a88004e554c082e16ead9b37f8ea78476125f5c19f7806794613
+    bytes: 1687
+  - path: resources/schemas/evidence-provider-config.schema.json
+    sha256: 4900cff274480adc36d9a770583aa1c033d4185bf62fbc041c838a17ac749280
+    bytes: 2661
+  - path: resources/schemas/evidence-provider.schema.json
+    sha256: 2d3fc33f17e746a6fc53905e74759aafadba2de3c9431f570ac196213d11c751
+    bytes: 1517
+  - path: resources/schemas/evidence-run.schema.json
+    sha256: 301891114e3509ca64f2cec1cb7908db46810c03fb03fd230197758e4ed6c4c6
+    bytes: 6097
+  - path: resources/schemas/finding.schema.json
+    sha256: 6827e3cbfc353a86c8b8efabd22850943ee8bd16f9289928857cf6bf3e6603fa
+    bytes: 8635
+  - path: resources/schemas/gate-policy.schema.json
+    sha256: 6d32a352ab24c80e8870fb806b72fe09cc3435fad60881d78dcb9e8471b763c2
+    bytes: 9883
+  - path: resources/schemas/governance-run-manifest.schema.json
+    sha256: 75f74e4f85b3cd07fdf20c3cea7bfb0d94c35eeffd3135004487f88fb747fa84
+    bytes: 7735
+  - path: resources/schemas/knowledge-catalog.schema.json
+    sha256: fcfb8fe2305d8dc14291bc9e1c18a46f4334f9111fc8a4cabcfef30e09360a8b
+    bytes: 3777
+  - path: resources/schemas/knowledge-context.schema.json
+    sha256: 01b8faec0add535eaeb099c8153804c21ffc39146397d3c04ce98cc4320425b9
+    bytes: 2713
+  - path: resources/schemas/knowledge-entry.schema.json
+    sha256: 3d803431f729c580e860f0bfb0fed1d59e9eb37678fd6ec45f6dbb3b86f2f69a
+    bytes: 4850
+  - path: resources/schemas/knowledge-manifest.schema.json
+    sha256: 397c1d77934bfb12176bedb35ecc16d1a927a2ad23163e9cea19cd2251db223d
+    bytes: 2048
+  - path: resources/schemas/knowledge-selection.schema.json
+    sha256: 600347c4ad9c0958f1cacdaa8550bc9e90fe706d6df7fab2938f1287b8c10331
+    bytes: 12661
+  - path: resources/schemas/portfolio.schema.json
+    sha256: b45c56afbaba0d9719fd09399e8a1ee23ce4793eea5501d4381ed838274d2fef
+    bytes: 3133
+  - path: resources/schemas/project-profile.schema.json
+    sha256: 5108edc799679eb04e5a1fccf41324d9de295e4fdf78f2b8d0f8cddd72de96a4
+    bytes: 10918
+  - path: resources/schemas/remediation-plan.schema.json
+    sha256: d97e22f43706a6040952014407325f1fb456408d65acbf016bd1e2707335bd4b
+    bytes: 16837
+  - path: resources/schemas/repository-facts.schema.json
+    sha256: d4e95057ac7c0497f1f19d47bffe8d3c68dc165c38b2dee7f56e71b4c4eebd8d
+    bytes: 4190
+  - path: resources/schemas/review.schema.json
+    sha256: fbf912e292baca1bd1169a857966457dc9369a88ff649b103ad2b55eae978fb0
+    bytes: 12087
+  - path: resources/schemas/risk-acceptance.schema.json
+    sha256: 9b0cd5d32e3da8f8ecb3762affdcb96e459b9980ea60199f9afebcfac2fa7c2f
+    bytes: 1826
+  - path: resources/schemas/rule-pack.schema.json
+    sha256: ba3c8b83d8a5e73ff31cd05f39fdabcef31589521f069907783101e0c4909f33
+    bytes: 1502
+  - path: resources/schemas/selector-source.schema.json
+    sha256: 465a0f92b2644895b3ab272b5b640c21e29bb9dd311d6253af3e57b6ac13c0a7
+    bytes: 745
+  - path: resources/schemas/shared-capabilities.schema.json
+    sha256: 9ad9ce32300f9489f28cf7df0c03a96ec351c86e246c1ccc4769cf71169b4212
+    bytes: 2202
+  - path: resources/schemas/technology-catalog.schema.json
+    sha256: b3f28c0e6eb560ec4e54c30fc21991e63049a2301d3aec428cb2d83704e5751a
+    bytes: 1634
+  - path: resources/scripts/architecture_tool.py
+    sha256: 955c13ff6bd0864edc0a774dd84d0b63a8c7e88eebba535d55330be11ecea200
+    bytes: 373166
+  - path: resources/scripts/artifact_types.py
+    sha256: d0e2b9ff2b834b00e8d05229f7b364a540395a8e4cec84723ecb14f848f955cf
+    bytes: 2510
+  - path: resources/scripts/build_project_profile.py
+    sha256: 08722272bcc5be14c13881752e5354fdac92dde825571667bab6f09c73027aa1
+    bytes: 15150
+  - path: resources/scripts/fingerprint_artifact.py
+    sha256: 053b419dec8d1d0ead70c31ff8c9afe0a99ab8dbe6dc787578120bfecae7d7f6
+    bytes: 3084
+  - path: resources/scripts/inspect_repository.py
+    sha256: 576c75bee779622634c7373ccfc4164de7b44f996028dab50b5e7a3c19edcb61
+    bytes: 22882
+  - path: resources/scripts/knowledge_model.py
+    sha256: 72d63011a69b3a0519c403dfd7f8ac5c065f46e501909b62c4669a2976a2bd5f
+    bytes: 17925
+  - path: resources/scripts/migrate_artifacts.py
+    sha256: 4b5455a4a337f8037a2c27ea0ff3ceff8aa864975a0bc207a58f5d6cd9e54c8b
+    bytes: 12073
+  - path: resources/scripts/select_knowledge.py
+    sha256: 5c01431bbffd79d79bb5d15eb21f39fb8c8ecb9e81063896750bada3b3f74778
+    bytes: 34264
+  - path: resources/scripts/validate_coverage.py
+    sha256: 72f22de715a869016acadc5e05d6495d98e576ed701758d42077574dd0d13c31
+    bytes: 2475
+  - path: resources/scripts/validate_knowledge.py
+    sha256: 73864bedfc45058277560b6ebcc30d743efa7399aaadf7e1fbf5fef9d3903549
+    bytes: 1511
+  - path: resources/selector-source.json
+    sha256: 96322401db0cf3a6e9f480827b3520529b197c87e32beaa6077da4dfb3b2317e
+    bytes: 171
+  - path: resources/supply-chain/runtime-licenses.json
+    sha256: cd9cf9b0dba1688f929a491eb5690397d0769df2dbd4ac9789d5e1bd7a21c4c8
+    bytes: 849
+  - path: resources/templates/architecture-decision.yaml
+    sha256: c63410661c860ccbf4c35fa8d4775a7c9d6d8457ba63ad3717a6e64181a82bd9
+    bytes: 22554
+  - path: resources/templates/architecture-design-brief.yaml
+    sha256: 4b17c07bc0efdf1887b330cc362f7ad87a08498690b700a5c2b67cf1a91ec007
+    bytes: 7684
+  - path: resources/templates/assetkeeper-profile.example.yaml
+    sha256: 2ba4e8cb4ee03cccb2783a49c8c3175cfed814302609e2f305f566a91f55e9af
+    bytes: 4169
+  - path: resources/templates/baseline.yaml
+    sha256: 4b7d7ba3388ebbe88f379c1de9b66494a3a542fa9ddd67160ecb01d9d5a0c5ec
+    bytes: 35
+  - path: resources/templates/cognera-profile.example.yaml
+    sha256: 3f702b3b6054189fbd0d0dfea72f2c0c1277e127e777fabb2f86d700fab6718f
+    bytes: 4507
+  - path: resources/templates/constraints.md
+    sha256: 246585db2aa1b7a3095c76e7b8e9b615d10258d1cd235e3b9293fbf09973c4cf
+    bytes: 442
+  - path: resources/templates/critical-flows.md
+    sha256: f2f0af4678f04151196a52fb6c9f91b9ecef481670c7fb05e0eadc53ac1bdbd7
+    bytes: 376
+  - path: resources/templates/dependency-map.yaml
+    sha256: 42cd76683e928b65dcdbe69c2c556ca484e10be02e4b674ea7349f5c38d2d7e4
+    bytes: 39
+  - path: resources/templates/evidence-providers.yaml
+    sha256: b5b0a050e1c8c5f32b701935170b319761449cf5866c0f517784029f5eafc4b7
+    bytes: 4914
+  - path: resources/templates/evolution-assessment.md
+    sha256: d39026ed1ce2a3ab94200c38aeb3391cda24e0f5a4ad5189b7f83d4456b3b962
+    bytes: 1709
+  - path: resources/templates/gate-policy.yaml
+    sha256: e56a5027f0f9c4cb290ce889d2e39d3463962edeb93c9d89aee6ee11f412617b
+    bytes: 1755
+  - path: resources/templates/github-architecture-gate.yml
+    sha256: 462babb7712a552a3c71aca5f35a3f9dc6e0d3d10f74801601ef7f72b9a5adf8
+    bytes: 4637
+  - path: resources/templates/governance-run-manifest.yaml
+    sha256: 636c32a5340659d3dc3d01da7ab00ede1f9f2e1dbcdc10693a40b53ba95e1572
+    bytes: 642
+  - path: resources/templates/knowledge-context.yaml
+    sha256: 38781aaf80015490edbbbd58381bcd044fa843476dec85fd63875165d3083fd0
+    bytes: 471
+  - path: resources/templates/knowledge-selection.yaml
+    sha256: 8c125229add74613ce4d355d881f5379d1a68437029cf6f95d94b3bd9167c91c
+    bytes: 3770
+  - path: resources/templates/portfolio-gate-policy.yaml
+    sha256: 6b9d90ac7cad8ee289274bc3292868f8a56379ab576ecea0e9b7c30352dd7aff
+    bytes: 1586
+  - path: resources/templates/portfolio-review.yaml
+    sha256: 56f82c342b5f7802d8771a0157978dc6c4a59ccd7e65c171c9bb684bbc9c089b
+    bytes: 1970
+  - path: resources/templates/portfolio.yaml
+    sha256: 03cb19062dc86bb5a601151917682447d97611251c2b635eb7fb03503e437f12
+    bytes: 406
+  - path: resources/templates/profile.yaml
+    sha256: f7c51dbe959f14cd5a937d627749ae92116d6685e187723483f9dd19e3457419
+    bytes: 2827
+  - path: resources/templates/remediation-plan.yaml
+    sha256: 16af12ec9a28dc4c2b17362df0687891987d1c173b5fcc8fe6b1bcf655019ff9
+    bytes: 5920
+  - path: resources/templates/review.yaml
+    sha256: ad108e44f06ae27d91853b782026c3279df40a3add1c4dab38dedf1bac36cfb2
+    bytes: 3533
+  - path: resources/templates/risk-acceptances.yaml
+    sha256: ec585c5580e99eea6a7cb21d7b1969e3c46dbe9a7e6441e8c08e8ae27a9a8788
+    bytes: 38
+  - path: resources/templates/shared-capabilities.yaml
+    sha256: 6edd9b2afb87bc420a8688c270d703d8d335b21e34333cf288eb43f2018c95a5
+    bytes: 39
+  - path: resources/templates/technology-catalog.yaml
+    sha256: ab1811bd74a6d1d37e91e466c6eb6a4b4f02f7ec5fdd6ee638c43655faa9a0d8
+    bytes: 39
+  - path: scripts/audit_licenses.py
+    sha256: ffd04b1eaf2d51b6032b62bfe8b02fbb9b6fb22095ee95b6d56d49dfe73faacf
+    bytes: 4148
+  - path: scripts/check_changed_coverage.py
+    sha256: 84266fe86558853d95358f857b5e6807fe2d0ac0b8ddbe7aa3f5b12c38919696
+    bytes: 5163
+  - path: scripts/codex_benchmark_adapter.py
+    sha256: 6ca80c51b03c6999cc78068f88d1b3203d2f345a511afdfc35459f34c2161ffe
+    bytes: 14343
+  - path: scripts/curate_golden_knowledge.py
+    sha256: 3b1027fa2cdb55ef5272d2c743a9e38161550c2b0830885b8cd813f726fce118
+    bytes: 84832
+  - path: scripts/evaluate_ci_gate.py
+    sha256: 00729000bff8f45b924eda40ad84f660f48621286e7c5a081462903b98e03867
+    bytes: 1478
+  - path: scripts/generate_sbom.py
+    sha256: 169f98752a36dc01e28773519334623a4966612c1833bddcf55866a3109f810f
+    bytes: 9622
+  - path: scripts/generate_target_knowledge.py
+    sha256: 05334ae932e6c243b1774d3e3256897a22b9e5dc2f1162c7f9695a7cff47f39e
+    bytes: 41541
+  - path: scripts/migrate_legacy_knowledge.py
+    sha256: c2ef7ce23640daf5f57221da77d9bbd88dc2bea7353d5699efad2491d64e8419
+    bytes: 8447
+  - path: scripts/package_plugin.py
+    sha256: c72c997e71c6b1febac38b5a2ba5b6c74ca2252047b10cb25c8eb685d545d2da
+    bytes: 11231
+  - path: scripts/publish_release.py
+    sha256: 025331b8599f24c92daa1098c89dedc889ef1a7f82d4254412e71466371703b5
+    bytes: 14240
+  - path: scripts/run_behavior_benchmark.py
+    sha256: cf3af58f746ba0a2e2d2bd85ee5f6bed1a401e0bc5cdbd9d2f8630e1469e1dc0
+    bytes: 34670
+  - path: scripts/run_test_evidence.py
+    sha256: d40ce9ced7647aebc5f76545ca259a29a4f15b8b4746ec65f7b7cb765b2c2b3c
+    bytes: 528
+  - path: scripts/smoke_test_package.py
+    sha256: 9a5705a5a3595cc0067cc9f0192623c77ea53037dceec9e069edd1fca9468ac1
+    bytes: 10290
+  - path: scripts/validate_repository.py
+    sha256: cab62abcb2ca7a7d8aa3c3394bea2824aa8d1affdc58dc2a5982242e87150b12
+    bytes: 48239
+  - path: scripts/verify_checksum.py
+    sha256: 4be9ac05c8a59e026dce0412e04d5110190dcded813c2c7266be9470b8a7a1b3
+    bytes: 1503
+  - path: tests/test_ai_agent_depth.py
+    sha256: e1ea96df8ad4f4e8f7b70f68838cc9acad0a04d49f348ae07e1b2ce38c189bdf
+    bytes: 2443
+  - path: tests/test_architecture_cli_dispatch.py
+    sha256: 49ca260bfaa8bb04d2ef8ebb9cc71d2082ca9c298e1c6c57cf184e9fbc0062e4
+    bytes: 4715
+  - path: tests/test_architecture_tool.py
+    sha256: e1a4fed019ea19226e8fa292fcf332ce8b274834eb17cbe8568ecb8b0502b7c9
+    bytes: 131168
+  - path: tests/test_behavior_benchmark.py
+    sha256: 3e830cf63ff1fca4081385ad7f3e69e7ea7eb5f0ca72a8faeb5fd20dce179af3
+    bytes: 25252
+  - path: tests/test_changed_coverage.py
+    sha256: 484c3c47f0b1f63994b1cb5fc076135c9410cc0f9165069adcd1930ebfae7cfd
+    bytes: 9742
+  - path: tests/test_ci_gate.py
+    sha256: a594393c679098bad008178afb04a2cbb2a5a07d3620e05d1cf9956ddad5e304
+    bytes: 5130
+  - path: tests/test_cli_wrappers.py
+    sha256: 6dc59ee43171ef8df1fb40affe3826cee0fda79df8f4be7c599e2b3b6511a553
+    bytes: 8130
+  - path: tests/test_codex_benchmark_adapter.py
+    sha256: 3e9bdbd47cbf055e128c467b805b99634b71aa4bf51c6f54920db5a03f1de6bd
+    bytes: 6973
+  - path: tests/test_constrained_target_architecture.py
+    sha256: 3d36966f839d6102ff4f7d5e7061b8c841063e16523f65a5612c62a1e34a6927
+    bytes: 37232
+  - path: tests/test_context_execution.py
+    sha256: 992eb4b46fac5e04fb0260d0ff7918065ab74971f0ec731af425095d4a633dcb
+    bytes: 5074
+  - path: tests/test_evidence_provider_catalog.py
+    sha256: 1a227c022af013ec785d96a1f8ca156d261a47b91671351a6d2a4ea19c27d596
+    bytes: 4887
+  - path: tests/test_evolution_navigation.py
+    sha256: cf1530304bb08a6b6784fb3e5c7ea0314e03e23ff1c9a4235823d6b5d73dfe5f
+    bytes: 13146
+  - path: tests/test_package_plugin.py
+    sha256: 005ed42ca7d37708d8118b1cd7908def0faab7ec934167cb2f7132b4ec8bb19c
+    bytes: 10900
+  - path: tests/test_release_publication.py
+    sha256: 9324d93070332f04880fccee2a13ad203a905da919fed3635f8ca3402d89d10d
+    bytes: 25780
+  - path: tests/test_repository_contract.py
+    sha256: 35c0806c61dd0c89f37f57937825426aac6dd8aac73cb545d3265dcba2f810f1
+    bytes: 12240
+  - path: tests/test_review_execution.py
+    sha256: bc91514790a6e36c43d2e1d806c00cf629c8f692d0ccd34dc52f44872feba06c
+    bytes: 11929
+  - path: tests/test_site_contract.py
+    sha256: 974b203f3ecc87286349b0710023037053ae41528dbeb49dd4e83abc4a5f18aa
+    bytes: 2708
+  - path: tests/test_supply_chain.py
+    sha256: abc0101570469296a3fad4196e57fb2038fa4a1cb2be5930762b4542138ecdb7
+    bytes: 12058
+  - path: tests/test_target_architecture.py
+    sha256: 9fd3e3812dfc0e9ba42af1575873dbe5f8775cbeb67511ce72fda184eb0dac23
+    bytes: 33670
+  dependency_inputs_after:
+  - path: .architecture/evidence-providers.yaml
+    sha256: 9aa8a377dc1f8cfbf16e383270cf1c17a5349cae1569660bbe9d5f29a85c42d2
+    bytes: 3407
+  - path: pyproject.toml
+    sha256: a0bd6824dd0c35936ba93817fce1a6a9a9ac008e9927203fdfb50bca01f973df
+    bytes: 808
+  - path: requirements-dev.lock
+    sha256: c2f0862f99caed178f7cb0bd422bf4337273ce67e46019c0dc95931cd13fbd73
+    bytes: 87716
+  - path: resources/evidence-providers/catalog.yaml
+    sha256: 10c2539964a7ba2ded48c735df6134e0bad6dadef090fa8345bf71533cab21b7
+    bytes: 7386
+  - path: resources/knowledge/anti-patterns/cache-without-invalidation.md
+    sha256: cb6c751d04c1b9a5eb89e420fa448d8c7fc0fd7bad2c9ef422028edfdddf69c3
+    bytes: 2743
+  - path: resources/knowledge/anti-patterns/distributed-monolith.md
+    sha256: 5492ddd2c0b07b52effdb9069b3658e76e45f94d4da95f8d5248ed209f97d969
+    bytes: 2755
+  - path: resources/knowledge/anti-patterns/event-sourcing-for-crud.md
+    sha256: 3e5df46fcfddb879c83002933514c0d9a865fca084bc6a177e6a5881ed89e48d
+    bytes: 2762
+  - path: resources/knowledge/anti-patterns/multi-agent-for-workflow.md
+    sha256: c38a11b01e023d1ec78ebae148ff36a3edba3dd6d8b561610954c4c54e3a4421
+    bytes: 2725
+  - path: resources/knowledge/anti-patterns/premature-generic-platform.md
+    sha256: 9443605c07920df10626b3d51fee80dd6828adb7a53f2da562cce3344bdd354f
+    bytes: 2792
+  - path: resources/knowledge/anti-patterns/queue-as-default.md
+    sha256: f08393a8f202aaed4dcbdd35c88f7b1a6a44cdd6e24c5bf3d5ddc5dcb58bba5b
+    bytes: 2670
+  - path: resources/knowledge/anti-patterns/redis-everywhere.md
+    sha256: 94e15aac452594ad5741e526f698014786c50b4a48d3ce380e4b984794d297e0
+    bytes: 2736
+  - path: resources/knowledge/anti-patterns/repository-layer-everywhere.md
+    sha256: c65cada6a3d9a4ae49cc8e8b2856eab654e0b667395af696273eca1abdba6ee1
+    bytes: 2707
+  - path: resources/knowledge/anti-patterns/shared-database-microservices.md
+    sha256: 8fed0fad18ac900c7b19af041f6d31a4b8ac051ec413101f7ea1d59b64337956
+    bytes: 2705
+  - path: resources/knowledge/anti-patterns/websocket-for-rare-updates.md
+    sha256: e53f3f694e01eaaa0c1b6596c776a55565421c01259ee47c721dd3554b0b4309
+    bytes: 2701
+  - path: resources/knowledge/architecture-styles/actor-model.md
+    sha256: 1ac880f7b7fe556888cbb81444700dff5565a46e99ef8cb4067228ad49b40861
+    bytes: 2168
+  - path: resources/knowledge/architecture-styles/catalog.yaml
+    sha256: 836baa29ac1924ccc2bedd6b1ab0624ab1910ae73eb1de71dce05ac1c7327c4d
+    bytes: 12884
+  - path: resources/knowledge/architecture-styles/cell-based.md
+    sha256: 1c137de8e2ad8e3d96b65dfc95e7100ffba0daa9e799b3e8026db2e17550e5c6
+    bytes: 2250
+  - path: resources/knowledge/architecture-styles/clean-architecture.md
+    sha256: 14452abbc18d59b3316f442ad2d49edac7e06f4277606fb3d5c9c5b7c552e2aa
+    bytes: 2784
+  - path: resources/knowledge/architecture-styles/data-mesh.md
+    sha256: f78a8c4e8eb51340658e77c8d4c1560c4b26d773a5f34368e15ba87a331c510c
+    bytes: 2426
+  - path: resources/knowledge/architecture-styles/durable-workflow.md
+    sha256: ecf4dc9fb8529f4ab7950c6bca6043a16bbbc0af8937a08b33abdfb870e6be9d
+    bytes: 3884
+  - path: resources/knowledge/architecture-styles/event-driven.md
+    sha256: abb9d414a5acdb85c8f4f7cdedd81cf7dc774a163a0b6bd4db62449b495b19de
+    bytes: 2303
+  - path: resources/knowledge/architecture-styles/hexagonal.md
+    sha256: 184a3ddcd1483bd4156b319b86dc9114b52de20a8eb5508b71416c66f4a39ca4
+    bytes: 2238
+  - path: resources/knowledge/architecture-styles/layered-monolith.md
+    sha256: 22b1080faccbab7f5cc64021c7f0f843887c5ba48a098f03033c42b82f3c0bf7
+    bytes: 2233
+  - path: resources/knowledge/architecture-styles/microservices.md
+    sha256: 0533dbcda24b99313c8fe8fccd64ea2ce08bd020e60571ad561c04a800ececf6
+    bytes: 2244
+  - path: resources/knowledge/architecture-styles/modular-monolith.md
+    sha256: 3f97c548665d8e6c4159c5f6ecee4a5d099a2ac4def69fba2b0a5d6d6703c3c0
+    bytes: 2235
+  - path: resources/knowledge/architecture-styles/multi-tenant-saas.md
+    sha256: ac1d5df4cdf3436e7329ee260f49e9c4f66fdbcdc1576d3c1fa15902e449e10a
+    bytes: 2805
+  - path: resources/knowledge/architecture-styles/offline-first.md
+    sha256: 1befa375e479fd311849eb47e658fe1bbdd359f0d4265bb5ff2d4f211ca199bf
+    bytes: 2252
+  - path: resources/knowledge/architecture-styles/pipe-and-filter.md
+    sha256: a9e8ce39127ce8c4a4c79ac549734fcf29794e0de1066b79e47bde3ed779e1b7
+    bytes: 2382
+  - path: resources/knowledge/architecture-styles/plugin-architecture.md
+    sha256: 9d72e896b0154e8ee979474c6d47579889705c751a32a172f4b1b72bdef13a8a
+    bytes: 2258
+  - path: resources/knowledge/architecture-styles/serverless.md
+    sha256: 213ab4fed7022f5e9aa8f82e115af6adcc6bc0e53b4c09a8f53d45159d55b5a2
+    bytes: 2172
+  - path: resources/knowledge/architecture-styles/space-based.md
+    sha256: 5b7982b399df352f9858aca74aa8db9effa95189d9b7fd5998af3a2a5b722c13
+    bytes: 2337
+  - path: resources/knowledge/architecture-styles/web-queue-worker.md
+    sha256: 45ea90ec6cb781bb95a8ec0a746e7e71f171c89f32e90a0ac9a389fdd6971855
+    bytes: 2257
+  - path: resources/knowledge/case-studies/queue-worker-before-workflow.md
+    sha256: c136b2d15ee59068b4c14f3d8bbb5d044f01df369ed867f97f2b62266551bd30
+    bytes: 2737
+  - path: resources/knowledge/case-studies/server-cache-not-local-first.md
+    sha256: f9c07f51140357f40b9a973cc44f6f88bd5e328939d2f6473267c51372e6c951
+    bytes: 2763
+  - path: resources/knowledge/case-studies/single-agent-is-sufficient.md
+    sha256: 5a6bfc949f2f2d91711dc86ec6abb911821fddf2a624ad40421ca9e6171622ac
+    bytes: 2742
+  - path: resources/knowledge/case-studies/small-team-modular-saas.md
+    sha256: 358980e0bdd5b0a88b2288bd0e0f7f121bcdfa8d94719cb3de6511c3f2f51e97
+    bytes: 2817
+  - path: resources/knowledge/case-studies/sqlite-is-appropriate.md
+    sha256: 4a9a57c11a815b2a8b1b4e331150c4967baf0e6225c845ab6b9ed289cf1d4ef4
+    bytes: 2706
+  - path: resources/knowledge/case-studies/sse-task-progress.md
+    sha256: cc426d1e2a29143d9a9b23053cf42f0a73d2ad008674e5d9979b3a7149de8bf5
+    bytes: 2702
+  - path: resources/knowledge/decision-guides/agent-orchestration-selection.md
+    sha256: 7bb4341f473aab91178ea33a70ccf9a80d60bc25a6170cbd9494f54c92fbcad2
+    bytes: 2763
+  - path: resources/knowledge/decision-guides/build-vs-adopt.md
+    sha256: e03ef8a45322addd565dd8be17bc1d75e0c1d9de2a1f627d3fbc97d8c4097449
+    bytes: 2758
+  - path: resources/knowledge/decision-guides/cache-strategy.md
+    sha256: c6a0df6a66cc23048d674421c871e0d0dc60742b9e306bfe10433b47892d868d
+    bytes: 4278
+  - path: resources/knowledge/decision-guides/client-data-model-selection.md
+    sha256: 00f5e397c5fa94ab7afe24b9b947cbaf9e8df9ef86fdd43196d80ba822911798
+    bytes: 2704
+  - path: resources/knowledge/decision-guides/data-loading-and-refresh.md
+    sha256: 78e010395003ad579fb5a31a468fc88cea493065e0ca5fd1ca4fbb9f81591844
+    bytes: 4591
+  - path: resources/knowledge/decision-guides/data-store-selection.md
+    sha256: f31e7f021925fe265d89a05692ee26e7087fac8ad8102101040bf1ee63611dde
+    bytes: 2779
+  - path: resources/knowledge/decision-guides/database-selection.md
+    sha256: cfe185b25924899c8e275b3f132ee1a816dc0aac613aa6a9699d40b25fd308a0
+    bytes: 4646
+  - path: resources/knowledge/decision-guides/integration-style-selection.md
+    sha256: 8f512dcaab1da2ca17e8768339b5dfa2d5bf2d92d0771c3f88316fa78837c17f
+    bytes: 2808
+  - path: resources/knowledge/decision-guides/layered-vs-modular-monolith.md
+    sha256: c4d1f142585644ef6c42eacb2e7ee6fb1b379204a35a5e7666b3f87de85e36c5
+    bytes: 2774
+  - path: resources/knowledge/decision-guides/local-first-vs-server-first.md
+    sha256: e240200929e13e48276dc33d036e5f2547c00911b712a9a45fe2f2a0012540c8
+    bytes: 4556
+  - path: resources/knowledge/decision-guides/message-system-selection.md
+    sha256: bb692596da5c55080f50730a588ecd83155790654d6450a7f76939dad6f38051
+    bytes: 4587
+  - path: resources/knowledge/decision-guides/monolith-vs-microservices.md
+    sha256: f1f4e093d5a2ca19780e296798fd3016bd1730b92a26c74339737999db8e1cb0
+    bytes: 4738
+  - path: resources/knowledge/decision-guides/optimistic-vs-pessimistic-update.md
+    sha256: 935e92047bb3a9ce3b4ba8484b5cecc28c5c981a1c61453aff31bb892854ff64
+    bytes: 4615
+  - path: resources/knowledge/decision-guides/polling-vs-sse-vs-websocket.md
+    sha256: 2d0486ec0cf1526dd65b5739125a27d9e89e52b908b18f742c2caa1187bbbe1e
+    bytes: 4443
+  - path: resources/knowledge/decision-guides/relational-vs-document-vs-graph.md
+    sha256: 4c46d31c86cb748f0c9566be502b7941bbdb9b1bd0a2d9ebd90a94527d32a092
+    bytes: 4600
+  - path: resources/knowledge/decision-guides/request-vs-background-job.md
+    sha256: b54da8477e8dd3c64d074a728729ce169a7830bbac48b73491b5537e61a88a43
+    bytes: 4092
+  - path: resources/knowledge/decision-guides/rest-vs-graphql-vs-grpc.md
+    sha256: 4729753c88fe2635059df1803d715fed5538d24bff8dd26b343a22229033a20f
+    bytes: 4732
+  - path: resources/knowledge/decision-guides/single-agent-vs-multi-agent.md
+    sha256: c45be66e4d490f31c66e912f96d9b36f284cf6e91336ea462110beeabe4cefec
+    bytes: 4618
+  - path: resources/knowledge/decision-guides/ssr-vs-csr-vs-ssg.md
+    sha256: a6563559891ae896817ed6f50889f6c719a4111b8fe69f89e043fd7c39bf99d2
+    bytes: 4818
+  - path: resources/knowledge/decision-guides/state-management.md
+    sha256: 486710b4fc5f052821b04c3706c133dac7cd25f6965b8fcf23d9faf2764baa66
+    bytes: 4501
+  - path: resources/knowledge/decision-guides/sync-vs-async.md
+    sha256: 14c441bec1a112719eea8a8e0a4f855ff3e3053ea7aa274cca7c9b2331403fcf
+    bytes: 4200
+  - path: resources/knowledge/decision-guides/system-style-selection.md
+    sha256: a7eefc3a3c2a1394dee92d873fa30cd53ef22bf6d274aeed7df2c4fec341a71a
+    bytes: 3316
+  - path: resources/knowledge/decision-guides/system-style-selection.yaml
+    sha256: 430f9a2211b1bddc57242b8b0dab24a302d596fbaa1fa02cbe1b1cbcc5481c67
+    bytes: 7984
+  - path: resources/knowledge/decision-guides/workflow-vs-agent.md
+    sha256: f8fc79dfd6cbe7824c9bafe120e116dd1e7c681dd84f27806dbed4bf5bf9b36d
+    bytes: 4581
+  - path: resources/knowledge/domains/ai-agent/overview.md
+    sha256: c9d283d3d804f06b66eb80520a6f09c5e0ddf95900958625b2e4101f975ad4dd
+    bytes: 3906
+  - path: resources/knowledge/domains/backend-api/overview.md
+    sha256: ea716865510106db441623d39045b2ca26f66c4424ed18fb15383938614ac4b4
+    bytes: 2337
+  - path: resources/knowledge/domains/catalog.yaml
+    sha256: 265ab92b6f715c616e4793075a4946f969f0e5b56372a5ecc24704e06db23e48
+    bytes: 13152
+  - path: resources/knowledge/domains/cloud-native-platform/overview.md
+    sha256: 37ee84809a4162ff3e49a04a82433786efe762f7440dc5273232cb7b5b612c9c
+    bytes: 2354
+  - path: resources/knowledge/domains/data-platform/overview.md
+    sha256: 72dc109fdb28d74df5f947bf615017bd80d655a7e9c5b3fde7df53cff2fc6364
+    bytes: 2319
+  - path: resources/knowledge/domains/desktop-application/overview.md
+    sha256: c662229e6e86021611a4d730fc4a6d7abc9998699446aa2572d67248d21ed995
+    bytes: 2312
+  - path: resources/knowledge/domains/financial-trading/overview.md
+    sha256: 5a0a97a14993c0aef22bd82ce2189aeef3e24a1345a45d68e2a578be6161cb3c
+    bytes: 2352
+  - path: resources/knowledge/domains/identity/overview.md
+    sha256: ea71711f1ddc69b08f9124c36da67a59a9001245ae134317c68f172d1e10834e
+    bytes: 2250
+  - path: resources/knowledge/domains/iot-edge/overview.md
+    sha256: 13d59617cb29d6df286e910da56b1eb782a621f7feb46b131ee6095d668f142f
+    bytes: 2264
+  - path: resources/knowledge/domains/local-first-application/overview.md
+    sha256: 5e93c4e4186eee37b0a88e6ddf9835a6640eebd959e4bbab538015b575ca634b
+    bytes: 2321
+  - path: resources/knowledge/domains/mobile/overview.md
+    sha256: 2ea2e6bc0a933063138793d9e3f657a100605f05411fc8fe4b1235b72f578a2b
+    bytes: 2273
+  - path: resources/knowledge/domains/multi-tenant-saas/overview.md
+    sha256: 6f29f25363327f0b6ea6ad8cd134c7c16258c09c85a1c4c47abbd410f0c7815a
+    bytes: 2266
+  - path: resources/knowledge/domains/plugin-platform/overview.md
+    sha256: b72a0e3b6959464b32c9a4d44b50baa40b4baf13b5b14f65f99d094f301bf58c
+    bytes: 2298
+  - path: resources/knowledge/domains/real-time-system/overview.md
+    sha256: 00acd4c0be719d8bc5ae140d13f6adbd4a0fc5f234bf9424b3dd2387e462875c
+    bytes: 2300
+  - path: resources/knowledge/domains/search-recommendation/overview.md
+    sha256: 84217f6c94c319e657ed908a746e6693f46c75dbf0cb987c3d8e338d660218d2
+    bytes: 2355
+  - path: resources/knowledge/domains/streaming-media/overview.md
+    sha256: ece41335fb2444cd42460df6e611a84bf7226e706afe062d9c6494ccbb1e9482
+    bytes: 2277
+  - path: resources/knowledge/domains/test-automation-platform/overview.md
+    sha256: 7ce2621239bad831f4a6689a1718b5dd1cdbbf1d6d2e3bb9a6d043457a70e016
+    bytes: 2338
+  - path: resources/knowledge/domains/web-frontend/overview.md
+    sha256: ce8f519876db182bb8e6a2ca75db64135828c758d2722e2086bfd9641cd1f302
+    bytes: 2365
+  - path: resources/knowledge/foundations/architecture-principles.md
+    sha256: 9394a24578d7e7ec483c68ab78bfe6192451411552ee92401744b7e87e56ca1f
+    bytes: 2744
+  - path: resources/knowledge/foundations/aws-well-architected.md
+    sha256: d1c7119725f7f419ffd37472922e65976ff8f9ac6a74a6bfe4580b66c8000162
+    bytes: 2504
+  - path: resources/knowledge/foundations/azure-well-architected.md
+    sha256: e200a38cd313d40aa2330740540c050a06e309f4cb73c9396943070ad033d14a
+    bytes: 2442
+  - path: resources/knowledge/foundations/compatibility.md
+    sha256: 17d8e8c8557969246fe2e9a62e8a645aeac171c9c9d2cbeb5d0bdfc27e51330b
+    bytes: 2161
+  - path: resources/knowledge/foundations/data-ownership.md
+    sha256: 260f240ec9782f5a42a68481652912532cfcd6a0b07fdc5366d44388cc3d0204
+    bytes: 2676
+  - path: resources/knowledge/foundations/evidence-reasoning.md
+    sha256: e3c370e04b8a9be5e64ea0d107281043652b1cdba3393fb61b57efd77262650f
+    bytes: 2714
+  - path: resources/knowledge/foundations/evolutionary-architecture.md
+    sha256: b9b125fa34bdeb346145f926210f7052d60d8f3b5f4e225cf1aa0fdb6a7888e5
+    bytes: 3739
+  - path: resources/knowledge/foundations/flexibility.md
+    sha256: f19738e3ca5272292834c5548fcc387d492750e5e366b6c8dd88fc9f6eed2c87
+    bytes: 2065
+  - path: resources/knowledge/foundations/functional-suitability.md
+    sha256: bb0aad55ea1166e27c2f5d938bc40269a35cc33bdb6312d46d2a6e57477afacc
+    bytes: 2244
+  - path: resources/knowledge/foundations/google-cloud-well-architected.md
+    sha256: 32518e83df10d07ae31329aa31a14d4b0eff4007f0f73bed137f8fd1ac5d6ba8
+    bytes: 2505
+  - path: resources/knowledge/foundations/interaction-capability.md
+    sha256: 12506a0f8ea7482fc54e914f1c54c937fa9be198c053cbbca4d51caa9d060a3a
+    bytes: 2211
+  - path: resources/knowledge/foundations/maintainability.md
+    sha256: 84ac29ee75bfb409091ae5af6ccc6b51d68c571147e8718df991c4b6af63914e
+    bytes: 2124
+  - path: resources/knowledge/foundations/performance-efficiency.md
+    sha256: 92c8ada167b80a1fa870d87d56a8922f5a43cfe7aa0c7cd2a3590b92321f9516
+    bytes: 2199
+  - path: resources/knowledge/foundations/proportional-design.md
+    sha256: ccfa63d523fab3503c47dbf73fc7a9ae85c7fc516856bcf422322c0d92a409df
+    bytes: 2764
+  - path: resources/knowledge/foundations/quality-attribute-scenario.md
+    sha256: 5ac5810dc0f9f168080d03ee43270407bd8ed0945fafd73de32e0447c22ffe42
+    bytes: 2307
+  - path: resources/knowledge/foundations/quality-attributes.md
+    sha256: 50d92ab7563d70605408ba4592d9445f79f6eb0cecb50195471b56e42418b680
+    bytes: 2816
+  - path: resources/knowledge/foundations/reliability.md
+    sha256: 11b11648b8f5b97834894d80746a4ecbf5a147a499460cd3528b51732b30954c
+    bytes: 2166
+  - path: resources/knowledge/foundations/safety.md
+    sha256: a68a9ec40c59a1fa5a457721f3c87af73c45c0760f258b9628a8c3399068b823
+    bytes: 2093
+  - path: resources/knowledge/foundations/security.md
+    sha256: 193298c1142616fc40785b279e00d3664c7b4df6d17b96f62268370dedf4c8d2
+    bytes: 2166
+  - path: resources/knowledge/foundations/system-boundaries.md
+    sha256: a326964ec74303e0f08f3e7207e4836a0ff04c93c7f8516e6190b47925ec06db
+    bytes: 2758
+  - path: resources/knowledge/foundations/technology-selection.md
+    sha256: ce43c17d29cc79ad65c0f1a551a938f3fec642d1e75070b98d4aa3336ddf882d
+    bytes: 3759
+  - path: resources/knowledge/foundations/tradeoff-analysis.md
+    sha256: 058c9756ba4d9306f42e0fb49365aff3564f3545e103c05812040ce2c9f8b9d5
+    bytes: 2779
+  - path: resources/knowledge/manifest.yaml
+    sha256: 73797e90b8216cf970c13dc08a882e2facd1e6c45e3519d28d29e864a0025189
+    bytes: 1031
+  - path: resources/knowledge/migration-guides/batch-to-incremental-stream.md
+    sha256: 9394e6c8ef4db9de83bb7091f8fed10b3d9c15c53133233f3f3c27b24bf95326
+    bytes: 2324
+  - path: resources/knowledge/migration-guides/cache-introduction.md
+    sha256: f0b1c62a45ad4ebfca804a55e2db16360481b582e08c325fb3ec5920ed63a2ef
+    bytes: 2296
+  - path: resources/knowledge/migration-guides/client-only-to-hybrid-rendering.md
+    sha256: e61d2253819b54093b07789111fcc3efc131705e6b666294ca34a7ae429ae991
+    bytes: 2763
+  - path: resources/knowledge/migration-guides/direct-write-to-outbox.md
+    sha256: 9d8d6bd72c99d36870bd0fbd3e573fe071b0cb5fe3f0b0c4472a8b4edbf2210b
+    bytes: 2778
+  - path: resources/knowledge/migration-guides/expand-contract-migration.md
+    sha256: a8eb79105f44d4960dea1dad466ba84039611108586144c0c3d215ec73dd39d1
+    bytes: 2228
+  - path: resources/knowledge/migration-guides/internal-extension-to-plugin.md
+    sha256: a54900d935353aa5f91741743a936e2b7f2967fdbdfaecbce6cde6f7847215f2
+    bytes: 2427
+  - path: resources/knowledge/migration-guides/layered-monolith-to-modular.md
+    sha256: 3017c377c06e2d19654ccf0b07f6431a1dfb5854e135ea8c4ec58117aab64bb9
+    bytes: 2245
+  - path: resources/knowledge/migration-guides/offset-to-cursor-pagination.md
+    sha256: 5c56beb3ddeb00c3525e88cacf25c68e99f0d5280b6119d405094b0f2c602e3c
+    bytes: 2745
+  - path: resources/knowledge/migration-guides/polling-to-sse.md
+    sha256: 241ee91194c0754c00a86def2c1b44585218a098c0be4c25403ca4db30a1af10
+    bytes: 2751
+  - path: resources/knowledge/migration-guides/queue-to-durable-workflow.md
+    sha256: f8b4e11ff287f9a4ebea3d5c66d4b92dd10a7cd9810955597bd4736fa4e5fc62
+    bytes: 2300
+  - path: resources/knowledge/migration-guides/server-first-to-offline-capable.md
+    sha256: 93cad2f3b23462460691214ede964ef679a6f466210a00113b446e7fdcaf8fc6
+    bytes: 2775
+  - path: resources/knowledge/migration-guides/server-first-to-offline-first.md
+    sha256: 0e163790fd0d31e8054a49e1f0be6fd00011c18da0b7ce60c6f7f8e843477fb7
+    bytes: 2349
+  - path: resources/knowledge/migration-guides/shared-database-to-owned-data.md
+    sha256: 23dca5cb577537339da5676361423fa0d3b52577c8011ad01f983cac7a74d7a9
+    bytes: 2379
+  - path: resources/knowledge/migration-guides/shared-saas-to-cells.md
+    sha256: 1fde0cc7b872fd7cdc1fce3ecb10a7614f45ae6e27ec4c243c75869e59d9ed9d
+    bytes: 2316
+  - path: resources/knowledge/migration-guides/single-region-to-multi-region.md
+    sha256: 19b209a9521d49584bef2d1191993b06c27df5faaa7a8a55fdfd78588933a675
+    bytes: 2414
+  - path: resources/knowledge/migration-guides/strangler-migration.md
+    sha256: 3eba32d79fd8412946ce4863dd201e0f69273211b68a87127b19ae2b97aae20a
+    bytes: 2251
+  - path: resources/knowledge/migration-guides/sync-to-event-integration.md
+    sha256: 5a74a79f30232192cd9cbb16885785f739144e252ba3677ae7906c2edda78cad
+    bytes: 2354
+  - path: resources/knowledge/migration-guides/synchronous-to-background-job.md
+    sha256: 3fc839ed3fbe936ee8c70930b97b237df269684f01a832b8c94a8802ae3e1ad9
+    bytes: 2755
+  - path: resources/knowledge/migrations/catalog.yaml
+    sha256: b2b6e3124560ef7110a4dafa0123d4254eea2cc273da57c60dd3fe561c97c4f1
+    bytes: 11384
+  - path: resources/knowledge/patterns/anti-corruption-layer.md
+    sha256: a6953e107cfc8420ccce879557dd3f2819543176865ab7ae7455d458648fd428
+    bytes: 2143
+  - path: resources/knowledge/patterns/api-aggregation.md
+    sha256: 90d8648b9a612b3494a6e2cb59ce6fe078cbf2a91967f4470538d2c30981535f
+    bytes: 2739
+  - path: resources/knowledge/patterns/api-gateway.md
+    sha256: 35ce6282da1e8c6f7f144fd8166186f7f81e610100cbda6db601b2501a7d98eb
+    bytes: 2287
+  - path: resources/knowledge/patterns/backend-for-frontend.md
+    sha256: c48ef6b05167f41992d1d6507adbcf8438b076ac6bbad4ef0ffc9b38ee4c8e14
+    bytes: 3674
+  - path: resources/knowledge/patterns/branch-by-abstraction.md
+    sha256: 5128ed8a315076c07676a36b044545f57c40eeb12ebb10f9688d8b750c512400
+    bytes: 2327
+  - path: resources/knowledge/patterns/bulkhead.md
+    sha256: f6b94f58c28fbe80cb460e23f065c01c97991412f899aeefd5c911123cfd6417
+    bytes: 2116
+  - path: resources/knowledge/patterns/cache-aside.md
+    sha256: dd81aeb91ef3c1f3d2faad988a0b3b1bd96a7c39db4ca81e6d069aacc9f82672
+    bytes: 2163
+  - path: resources/knowledge/patterns/catalog.yaml
+    sha256: c2157d6b9b68e955e11757c58e0b7651fbf5e9742e13afc45b9386da99ea16e0
+    bytes: 18246
+  - path: resources/knowledge/patterns/change-data-capture.md
+    sha256: ef7b49b743c5563c0c20471dd2ad0c99ef25d8e5d138ffbf2f863cfa21cc7f5a
+    bytes: 2164
+  - path: resources/knowledge/patterns/circuit-breaker.md
+    sha256: 1de18be8eec0d86dcb8e00e284efa27e09a7f168228544d1f88b9dbfd5b584f8
+    bytes: 2178
+  - path: resources/knowledge/patterns/compensating-transaction.md
+    sha256: f87d067942f71f7e750617c0355ba4ade9332919ae6ef00aeb308c47ff819e62
+    bytes: 2350
+  - path: resources/knowledge/patterns/cqrs-event-sourcing.md
+    sha256: 626345a003dbc3ac51817d1233eafe97a13d180e4ebf4541d791122ade0d3c11
+    bytes: 2358
+  - path: resources/knowledge/patterns/cursor-pagination.md
+    sha256: 033b4b72638d46938c650284d57dafcd2008b6c67d4fa83aabac007f9c14edcb
+    bytes: 2725
+  - path: resources/knowledge/patterns/dead-letter-replay.md
+    sha256: da66f177f5a6a5768f1f1436a0b82d5557b1ea41f76703c55053f1679e5062e2
+    bytes: 2337
+  - path: resources/knowledge/patterns/expand-contract.md
+    sha256: 6a076465719b5f0112c893537cbcc070f030fcb2e9a976689aff95711855d1a4
+    bytes: 2142
+  - path: resources/knowledge/patterns/feature-flag.md
+    sha256: d873b6eb4fad0b98bcbbadd024b242db8c61ee8678247f8346382940bfc12dbb
+    bytes: 2161
+  - path: resources/knowledge/patterns/idempotency-key.md
+    sha256: 468592aed0baefffd8c287cee02e55c557671a810576633c833375e387822e1a
+    bytes: 2181
+  - path: resources/knowledge/patterns/inbox.md
+    sha256: b070256799803a69b48ade05657298ec2a41bee130af02ffbc2c5dcd6dd40c63
+    bytes: 2175
+  - path: resources/knowledge/patterns/leader-election.md
+    sha256: 8206558f6d2fac4cd16fea9f514ae948093894f11951121dd90fc2d1493eee78
+    bytes: 2249
+  - path: resources/knowledge/patterns/lease.md
+    sha256: d53af0d4ad3ed0d201cf20aaf0aeba3be1d4904edf8fee248d6853daed3be93a
+    bytes: 2072
+  - path: resources/knowledge/patterns/load-shedding.md
+    sha256: fd9ab124547bfecb8e28e0377588112e16f4f6e3852f10a6f60d6072fad9b1d1
+    bytes: 2765
+  - path: resources/knowledge/patterns/materialized-view.md
+    sha256: 4a50e9b46004f2eb68e8b5123da1d77653aea169f3fa6870447a374d30d57fdf
+    bytes: 3646
+  - path: resources/knowledge/patterns/outbox.md
+    sha256: 935122061e095ded8962e899fed700239caa17cca743c6876e5806dd7ae9bde5
+    bytes: 3792
+  - path: resources/knowledge/patterns/read-replica.md
+    sha256: f4627e55fb1c542da729fb3dff71fdcb94948a13e34ccaf6606b6611438fe3bc
+    bytes: 2296
+  - path: resources/knowledge/patterns/retry-timeout.md
+    sha256: e880903f97cab092ff31e75bdd28bc458e1c4b32d8d43e19e5d1fe7a5f14cf75
+    bytes: 2198
+  - path: resources/knowledge/patterns/retry-with-backoff.md
+    sha256: eb092082bd06267bb24e85a90183395788a798d25ee905677d984fa2358e3a9a
+    bytes: 2733
+  - path: resources/knowledge/patterns/saga.md
+    sha256: a5d7d07da26bf9696d3935f58e4c3ebad20551d4c9398f4e7ebc6eb2bd20bdbf
+    bytes: 2210
+  - path: resources/knowledge/patterns/schema-registry.md
+    sha256: e4253c2001c75153e8135597cef7f5ec3df56293b56561bc673820cb8d97151a
+    bytes: 2225
+  - path: resources/knowledge/patterns/sharding.md
+    sha256: a3a8ba9c877119dc1ded21ebc71e8aa51e44f3717f1df95fd8370da3232bdaa4
+    bytes: 2303
+  - path: resources/knowledge/patterns/stale-while-revalidate.md
+    sha256: cee6ad49172b527c9abf39edd06b5fe35ce6c0c8c7ab5f7882b1d6ea5548567f
+    bytes: 2750
+  - path: resources/knowledge/patterns/strangler.md
+    sha256: 487485138723ed150f120394d2211631fa87901c4857ec4b922f6a865cfe0c2c
+    bytes: 2189
+  - path: resources/knowledge/quality-models/core.yaml
+    sha256: 98fd690680e5c875254d40da4e50445ded96ebdf18af53fced5c1792c7a47123
+    bytes: 8941
+  - path: resources/knowledge/reference-architectures/catalog.yaml
+    sha256: 7077ec665b876a364a58855fc7d7f6b62cb130d988165bf8e26ab2a839b58279
+    bytes: 11345
+  - path: resources/knowledge/reference-architectures/cell-based-saas.md
+    sha256: a75a4187269d3298cfee2c22d61263807ac46017a082b0b3710583b24717c4fc
+    bytes: 2311
+  - path: resources/knowledge/reference-architectures/cloud-native-service-platform.md
+    sha256: 39e8eb4407a6deef217d74e61e2f840d6be32afb528c39588ddfac83da699bee
+    bytes: 2441
+  - path: resources/knowledge/reference-architectures/durable-agent-workflow.md
+    sha256: 064e439f82bf7721cc98e34c1192d8b956290729d39c42c89eabd1d5a6c854e8
+    bytes: 2333
+  - path: resources/knowledge/reference-architectures/event-driven-integration.md
+    sha256: eaa1631516f1741bdef349f7248df69a6c5b382d672b599d11a31c98d7e4b13a
+    bytes: 2363
+  - path: resources/knowledge/reference-architectures/modular-monolith-service.md
+    sha256: 4b05c2f7ddca828c10a6bda5336eb75af7c7a0463e6b4752d398748a3fd6d163
+    bytes: 2341
+  - path: resources/knowledge/reference-architectures/multi-tenant-knowledge-base.md
+    sha256: ace133a78ae8ea2b495194aa60988d540cffda73346bf19acc4fa8dd2072f791
+    bytes: 2771
+  - path: resources/knowledge/reference-architectures/multi-tenant-saas.md
+    sha256: ea30a930ad2f2bd30a8fe8a32b8f079bf69ab0fe3b22cf33f90c86429e8e80a6
+    bytes: 2309
+  - path: resources/knowledge/reference-architectures/offline-first-mobile.md
+    sha256: c36b24295804ebaff9b601513cd08f67ce489e2a87e41f2a1f9c54ad97493cd1
+    bytes: 2256
+  - path: resources/knowledge/reference-architectures/react-fastapi-postgresql.md
+    sha256: b608586a1f21f1bc4b56f337f0675e691344857fda9634b7328a42de7b7c43c8
+    bytes: 2832
+  - path: resources/knowledge/reference-architectures/real-time-stream-processing.md
+    sha256: 8386d256c2d3b2eefa5a320ef1f25760be1d702eb6da6d3ae3bb9d4ca63de484
+    bytes: 2380
+  - path: resources/knowledge/reference-architectures/real-time-task-status.md
+    sha256: ee1d2af3b7c414429e9de85eafeafe6ddf300949abee62200b2ffa0471623486
+    bytes: 2752
+  - path: resources/knowledge/reference-architectures/retrieval-augmented-agent.md
+    sha256: 15c3fa76ef6453d9f7bfec2a28bf1aba72339dcb1326fad8f02c750b72d15d07
+    bytes: 2417
+  - path: resources/knowledge/reference-architectures/secure-plugin-host.md
+    sha256: d6809643199d8352d5dd241c5a5a3e2cffbf5c8584bc0ae5fbd6e75d3ad8c79a
+    bytes: 2357
+  - path: resources/knowledge/reference-architectures/server-first-mobile-client.md
+    sha256: ff0f447457daf54af850f6eee1399a3fbbef71d74faf4ddc193347fadc4f9cfb
+    bytes: 2786
+  - path: resources/knowledge/reference-architectures/web-queue-worker-ai.md
+    sha256: e24d8dc169d6a80c85aab39bbbbaac1eae36ce6facd3fbb3f0661694efacd999
+    bytes: 2299
+  - path: resources/knowledge/technology-profiles/apache-kafka.md
+    sha256: 8dc8e36849a5434cb8910bff6a0c0cf8b7957a3e379acd979fc71566fab523ab
+    bytes: 2490
+  - path: resources/knowledge/technology-profiles/apache-pulsar.md
+    sha256: 79259cd79556a08598a51ef024cf0636f63cf80342b58ede9a902972b9daf907
+    bytes: 2444
+  - path: resources/knowledge/technology-profiles/archunit.md
+    sha256: 3cee4fc509bd97f1f591962761266502eac7862f4db545ad3bb149037e78e3c6
+    bytes: 2196
+  - path: resources/knowledge/technology-profiles/aspnet-core.md
+    sha256: 7ca9257f3efaa0795f256ce950af1b19a3d25a51278fc2581294dcb4b7a6f6bd
+    bytes: 2894
+  - path: resources/knowledge/technology-profiles/astro.md
+    sha256: cc4defabd2fbe95e782975d082c0a7b9e5ace079eccf9d62fac28bdc856f6a17
+    bytes: 2835
+  - path: resources/knowledge/technology-profiles/aws-sqs.md
+    sha256: 230b512d9d6c7789b5aa67b33454ed9fbb94038901307c96953ddec41b10f3ad
+    bytes: 2413
+  - path: resources/knowledge/technology-profiles/aws-step-functions.md
+    sha256: 92515968b50413ab14d476e49e9913243a4f657f9717425a5e01356e4caeb6aa
+    bytes: 2552
+  - path: resources/knowledge/technology-profiles/azure-durable-functions.md
+    sha256: 10ba1a9b3c920b7f93e0cd754e5363e57a21b7428cf8b4c5f79218ef275d356c
+    bytes: 2529
+  - path: resources/knowledge/technology-profiles/caddy.md
+    sha256: a330c31435ff76d4b2d2cee54fb1ab065af29794372d73a25d947e90926d3fb0
+    bytes: 2845
+  - path: resources/knowledge/technology-profiles/catalog.yaml
+    sha256: e5128e10d10c13b3520bb7dccb42cc659a913eaaf2569d903f93f6356f199b70
+    bytes: 29179
+  - path: resources/knowledge/technology-profiles/dapr-workflow.md
+    sha256: d458eaa2a7e3958b378ce0334f8d2baa9ad0ed0130629b7f70e758804ff5acad
+    bytes: 2528
+  - path: resources/knowledge/technology-profiles/dapr.md
+    sha256: 3c3455c101e6982a83cb0478772c3770038bbb8aff8412f47298e1c952e22364
+    bytes: 2450
+  - path: resources/knowledge/technology-profiles/dependency-cruiser.md
+    sha256: fe4a638d8f858e6f6b3b91991126322e324694a428be848d2023f66a9968796e
+    bytes: 2265
+  - path: resources/knowledge/technology-profiles/django.md
+    sha256: 90a00faaec61eec4da3650f2885eefe8b65a15a3c5c8b9228524e872b0ea06c5
+    bytes: 2841
+  - path: resources/knowledge/technology-profiles/docker.md
+    sha256: 1255b40a084f9283fbee7ba2abba2d2d960300d6e38e54be66c262141b327a90
+    bytes: 2837
+  - path: resources/knowledge/technology-profiles/elasticsearch-opensearch.md
+    sha256: 9e5576789528ad010e878a681408ab42524730eef75405495ba531ee947d8089
+    bytes: 2622
+  - path: resources/knowledge/technology-profiles/fastapi.md
+    sha256: feb8ff63fe866c89575be127317b8925ed51b32238ecdc436fb85904372cfbc6
+    bytes: 4392
+  - path: resources/knowledge/technology-profiles/google-workflows.md
+    sha256: 5d93714dd952c067f9826dd1adad68e56be45ec05464e80ed951f8e6f8c8b858
+    bytes: 2459
+  - path: resources/knowledge/technology-profiles/import-linter.md
+    sha256: 8a1dd4ac1887df7f0236750899809449062448196851b76a86e3bd9979eb17ee
+    bytes: 2218
+  - path: resources/knowledge/technology-profiles/kubernetes.md
+    sha256: 212d9ebb21002ceee27c8d30cf5defef064e2862c5a74a7d979d8a5df39b1580
+    bytes: 2448
+  - path: resources/knowledge/technology-profiles/langgraph.md
+    sha256: ca5d166439fd3ed515cae87414dc0016676feadfa4d7ea5ded14909ad1208141
+    bytes: 2390
+  - path: resources/knowledge/technology-profiles/microsoft-agent-framework.md
+    sha256: f24166f6e8166cf3534191a6cc3b8ae2c620d519a73a9107852202f810672cb4
+    bytes: 2562
+  - path: resources/knowledge/technology-profiles/milvus.md
+    sha256: 3be781ea6c097e125cb7ecaa1484d90e5a664ff2d90f1f13eb9baa7c1a5a1443
+    bytes: 2428
+  - path: resources/knowledge/technology-profiles/mongodb.md
+    sha256: e6d643d9100be951b1a7e07285abe437a6369f7f56aff72c13637bcff6df0e31
+    bytes: 2424
+  - path: resources/knowledge/technology-profiles/mysql.md
+    sha256: f367f2d2742950cb478480d34ad65fdc79a67fa1833af080b1084b4436873048
+    bytes: 2353
+  - path: resources/knowledge/technology-profiles/nats.md
+    sha256: 58f530e8b15176f7db754443918d9143b4acc9c904335a5b167b5bb88cf51482
+    bytes: 2831
+  - path: resources/knowledge/technology-profiles/neo4j.md
+    sha256: 0b348b1af60a8ec7f16b25fbf50914e12bc96b238e84944bfa26a4cf844415d4
+    bytes: 2377
+  - path: resources/knowledge/technology-profiles/nestjs.md
+    sha256: ee7ebd5b4a0aa8364926a7d9ba6596e9a0c21820975cb99f912854fc37af50f5
+    bytes: 2835
+  - path: resources/knowledge/technology-profiles/nextjs.md
+    sha256: b4d701ab66d604a3f8752814e7f6ac86030fd53c881e9b313ab1a3b91c499038
+    bytes: 2841
+  - path: resources/knowledge/technology-profiles/nginx.md
+    sha256: b9ecf7148fea6f736983af85597677a6be9f452c5ee004257db3b6f9b248cde1
+    bytes: 2842
+  - path: resources/knowledge/technology-profiles/openai-agents-sdk.md
+    sha256: 7b84ad375ad0dfc965b08dd85cadd4a4ae7645088b2d262d6c0798dda60c2693
+    bytes: 2374
+  - path: resources/knowledge/technology-profiles/opentelemetry.md
+    sha256: 2468da619e2ad051d805e04085c1c390d669743f715a0fbb62d575d0b3d8bda1
+    bytes: 2300
+  - path: resources/knowledge/technology-profiles/pgvector.md
+    sha256: c8f63f9cb095e744c8ef784b50975d84e91770038afbcdb6167697fda44237e0
+    bytes: 2472
+  - path: resources/knowledge/technology-profiles/postgresql.md
+    sha256: 77aed8013b5ea4f06c88ba53cfbd1340545b1e1a2b9c7aba3d0c49956d27adab
+    bytes: 2428
+  - path: resources/knowledge/technology-profiles/prometheus.md
+    sha256: f11d2717d2b09d00e89d0b199552fa527fe25870cff8926a88ef68f45bb73396
+    bytes: 2449
+  - path: resources/knowledge/technology-profiles/rabbitmq.md
+    sha256: 94dc6612eb0e61f57169f4a1796a4492dd44a680bfe73ab5f0b543d68471e67f
+    bytes: 2390
+  - path: resources/knowledge/technology-profiles/react.md
+    sha256: b6015bf240d44fb7daa6d661deba91df7ff09ca9276b13e495693934687e58e2
+    bytes: 2818
+  - path: resources/knowledge/technology-profiles/redis-streams.md
+    sha256: 75c64f4660193348ac646bd8b0cf06bd44b0a5090ee9999dee208b189d855451
+    bytes: 2926
+  - path: resources/knowledge/technology-profiles/redis-valkey.md
+    sha256: 6e8f845ea52ed8b7877a6929fd15a19e4448f417b01c7e92cd183487488c0515
+    bytes: 2572
+  - path: resources/knowledge/technology-profiles/redis.md
+    sha256: 45281222aa991c21a3860609646a3396e216c8972f915566ca4c94c371a73377
+    bytes: 2827
+  - path: resources/knowledge/technology-profiles/service-mesh.md
+    sha256: 041d3a47e6b32e33691ee5890e568587f69f7c91dfd73d5c70895f03e420a9a2
+    bytes: 2501
+  - path: resources/knowledge/technology-profiles/spring-boot.md
+    sha256: 66e7a54c8b74108ed8cebfa0b8b952c6b91cf3523744c203a65c02d5f6c5c46d
+    bytes: 2886
+  - path: resources/knowledge/technology-profiles/spring-modulith.md
+    sha256: a9bef69df73e57a07ad64b651d81ffabdbf63e6ae4bafbe8402c98a60a293a95
+    bytes: 2305
+  - path: resources/knowledge/technology-profiles/sqlite.md
+    sha256: 423e78baa0fd9b93bf7b6677fa15421a1bf870a4d16ee8a79496e1d44e07682c
+    bytes: 2849
+  - path: resources/knowledge/technology-profiles/temporal.md
+    sha256: 70b8c71d0280d416f03c03355506ba688005193029c9a86f190b0c7936b98bbc
+    bytes: 2298
+  - path: resources/knowledge/technology-profiles/timescaledb.md
+    sha256: e940fc108eb776aa4f0cd33bc1c472fe003edd22ebd53e5c223abdfef39a408f
+    bytes: 2425
+  - path: resources/knowledge/technology-profiles/vite.md
+    sha256: a12480cc8eb92d73359b9f3c86b724ab595841e49255bb14cbd37a2fafad079a
+    bytes: 2831
+  - path: resources/knowledge/technology-profiles/vue.md
+    sha256: 5619c7146dcc5250f7ded9ddd29c4de8275a745967099a50bfed07365abf7df5
+    bytes: 2810
+  - path: resources/references/ai-agent-rules.md
+    sha256: 0e3330b1497bfe9bf46a710fc8387dff106c027b886979baf584c7aeabead771
+    bytes: 6596
+  - path: resources/references/evidence-provider-contract.md
+    sha256: f5fef5d8e79564b82103921766ed5784682a0fd85679c11b79f4558b82be84d4
+    bytes: 6282
+  - path: resources/references/knowledge-contract.md
+    sha256: f14709b384b408c19bcf9371a00e168969703cfb21f6b7aa96495b8e2c9c6662
+    bytes: 3041
+  - path: resources/references/mobile-rules.md
+    sha256: a3d533441c45cf7b19cd688b0026e5c5579294655f3d38c68eaf558a90f98cac
+    bytes: 2918
+  - path: resources/references/portfolio-rules.md
+    sha256: 6dc22e4c94b10e12366730788299756e765e2a0cab991968a3acfba04b5a8e07
+    bytes: 3458
+  - path: resources/references/profile-guide.md
+    sha256: 74e993b0201166c85193d8d409b26ddaf3acabfcd9f996a3ad30eab72e052b24
+    bytes: 6133
+  - path: resources/references/project-rules.md
+    sha256: d9b5526460544350361ef0ac36242a4a0aa954ad58171d53505a0479ae18e7cd
+    bytes: 3655
+  - path: resources/references/quality-gate.md
+    sha256: b616b76e8553346a6203406da44752a0ff78a5e207aadd8b70ba49a7b717e89c
+    bytes: 4444
+  - path: resources/references/remediation-contract.md
+    sha256: 8f807b7b12abb7093f62d82d14c985ef7c0ebe2fa6ebb4359da191f74457fc45
+    bytes: 4381
+  - path: resources/references/review-contract.md
+    sha256: e86a62c637aa24a0b8b194916af1dac850346a7e10d8b7ae6b2c0e7ce1cc9a5b
+    bytes: 10168
+  - path: resources/references/solution-decision-contract.md
+    sha256: d7497c7253117d8bcfba247fcd6b1611b4fadca70c67a1806b732a097e38f609
+    bytes: 6710
+  - path: resources/rules/ai-agent-core.yaml
+    sha256: faffb7f98cd5147b9a68caa78a80eaf5b280f23658fa1c5267d82256377daba5
+    bytes: 9648
+  - path: resources/rules/backend-api.yaml
+    sha256: 37a01e3cfe6c2c6278e517a469efcd4d3c2e9ed02726903efaa1f9d92b31d04f
+    bytes: 1663
+  - path: resources/rules/cloud-native-platform.yaml
+    sha256: c112fd3ca5aeff62e044e205f64a582b828d93ceb8a62e24f4efb65d3747b4d4
+    bytes: 1639
+  - path: resources/rules/data-platform.yaml
+    sha256: 931eedce4530966c29f0e401d8793253bb337bdab5b5fc2eef77651122c39735
+    bytes: 1665
+  - path: resources/rules/desktop-application.yaml
+    sha256: 40d64121b31cd1ff51d0858c7ddf7733803e265e04e9e71fe23e0f42a209203b
+    bytes: 1654
+  - path: resources/rules/financial-trading.yaml
+    sha256: b38953e779da042b1feb3d53894e5b306180680c58d3702941b06612564245c5
+    bytes: 1637
+  - path: resources/rules/identity-authorization.yaml
+    sha256: 7042ec119fd31d065692c06b9ce831d2fe400c29bb3b0ef9bc3adf8f45645003
+    bytes: 1613
+  - path: resources/rules/iot-edge.yaml
+    sha256: 04c2b77985b4fe6fa6330eb8756406000c0040f20451ee82f3bf3bed71f16791
+    bytes: 1541
+  - path: resources/rules/local-first.yaml
+    sha256: 829fe2b028ad10419e82305c0bbd2cc564cddaf09cd4819aff372d537520ecb1
+    bytes: 1600
+  - path: resources/rules/mobile-core.yaml
+    sha256: 767c49a56f4b9d425cdc0002d5d2e891c9268ee6a84be3f27d5700c5967f4d05
+    bytes: 3309
+  - path: resources/rules/multi-tenant-saas.yaml
+    sha256: 888c7d953d7fa4602e22aab3d8847d3d1d1ccb7905fdb4101887fdbb5eff2e42
+    bytes: 1573
+  - path: resources/rules/plugin-platform.yaml
+    sha256: 7ae17488df7a78ce1b857d3f842bd51b87de4ec30576fbe250cfa991472b3700
+    bytes: 1598
+  - path: resources/rules/portfolio-core.yaml
+    sha256: 646a869ecfffd62bb11df6eb32580baa88e23ebda7de36f8f8c12f823dcd9aed
+    bytes: 3140
+  - path: resources/rules/project-core.yaml
+    sha256: b211d548ad5fe367b9dab8416051c43f3a206da81bd2a8e7596cd788ed3f100c
+    bytes: 6360
+  - path: resources/rules/real-time-system.yaml
+    sha256: 8c95aa387a22642599d20374ef7add7540468143d05c0e66edab0cfc03c7c9d4
+    bytes: 1608
+  - path: resources/rules/search-recommendation.yaml
+    sha256: dcb3f82e0d3c21528096fa0cb5dbfd5e4989010fa535d20ebdc6752a336e291b
+    bytes: 1584
+  - path: resources/rules/streaming-media.yaml
+    sha256: a53876f6e35f11b95d94fbcab4e293570033c570b65ebe4c7229c6eb4ac20fdc
+    bytes: 1606
+  - path: resources/rules/test-automation-platform.yaml
+    sha256: 23efb3c02cd9e4e2ec2cb83d1505b30dd780aff2a9ac7157506b361cb783c5aa
+    bytes: 1596
+  - path: resources/rules/web-frontend.yaml
+    sha256: 923f8b7252da751ff10ee508d61be751d993b2862e5c6f04cd13c3a47c754e48
+    bytes: 1677
+  - path: resources/schemas/architecture-decision.schema.json
+    sha256: 73e458724bd1cd6ec358e7b9c1c5cf621b1d8c9ed517027e2240141e1f10b712
+    bytes: 35326
+  - path: resources/schemas/architecture-design-brief.schema.json
+    sha256: aad11367a1634a5032a4bba5534f71c145f89bb1adda6720065d61212011dd41
+    bytes: 11215
+  - path: resources/schemas/baseline.schema.json
+    sha256: 14461dd858af7a8cb578047ec206ab617cf821c7f4adf00e9e3ed7ee74617c8e
+    bytes: 1522
+  - path: resources/schemas/benchmark-context-manifest.schema.json
+    sha256: 5332f3e472c27eec8a60f7ce91e6d7c11b92dbd171f92514aa1702ec1d13ae95
+    bytes: 2421
+  - path: resources/schemas/benchmark-observation.schema.json
+    sha256: 41a653c9943e18a418c19320950d1afd8dcc5048a5fafdb705f88f6bd9996b3e
+    bytes: 3324
+  - path: resources/schemas/benchmark.schema.json
+    sha256: f9411d66fd599abfe8439037ac67323be6c21d4aa4d3d0d69724a975c01bfe63
+    bytes: 19349
+  - path: resources/schemas/dependency-map.schema.json
+    sha256: 9119aca900d4a88004e554c082e16ead9b37f8ea78476125f5c19f7806794613
+    bytes: 1687
+  - path: resources/schemas/evidence-provider-config.schema.json
+    sha256: 4900cff274480adc36d9a770583aa1c033d4185bf62fbc041c838a17ac749280
+    bytes: 2661
+  - path: resources/schemas/evidence-provider.schema.json
+    sha256: 2d3fc33f17e746a6fc53905e74759aafadba2de3c9431f570ac196213d11c751
+    bytes: 1517
+  - path: resources/schemas/evidence-run.schema.json
+    sha256: 301891114e3509ca64f2cec1cb7908db46810c03fb03fd230197758e4ed6c4c6
+    bytes: 6097
+  - path: resources/schemas/finding.schema.json
+    sha256: 6827e3cbfc353a86c8b8efabd22850943ee8bd16f9289928857cf6bf3e6603fa
+    bytes: 8635
+  - path: resources/schemas/gate-policy.schema.json
+    sha256: 6d32a352ab24c80e8870fb806b72fe09cc3435fad60881d78dcb9e8471b763c2
+    bytes: 9883
+  - path: resources/schemas/governance-run-manifest.schema.json
+    sha256: 75f74e4f85b3cd07fdf20c3cea7bfb0d94c35eeffd3135004487f88fb747fa84
+    bytes: 7735
+  - path: resources/schemas/knowledge-catalog.schema.json
+    sha256: fcfb8fe2305d8dc14291bc9e1c18a46f4334f9111fc8a4cabcfef30e09360a8b
+    bytes: 3777
+  - path: resources/schemas/knowledge-context.schema.json
+    sha256: 01b8faec0add535eaeb099c8153804c21ffc39146397d3c04ce98cc4320425b9
+    bytes: 2713
+  - path: resources/schemas/knowledge-entry.schema.json
+    sha256: 3d803431f729c580e860f0bfb0fed1d59e9eb37678fd6ec45f6dbb3b86f2f69a
+    bytes: 4850
+  - path: resources/schemas/knowledge-manifest.schema.json
+    sha256: 397c1d77934bfb12176bedb35ecc16d1a927a2ad23163e9cea19cd2251db223d
+    bytes: 2048
+  - path: resources/schemas/knowledge-selection.schema.json
+    sha256: 600347c4ad9c0958f1cacdaa8550bc9e90fe706d6df7fab2938f1287b8c10331
+    bytes: 12661
+  - path: resources/schemas/portfolio.schema.json
+    sha256: b45c56afbaba0d9719fd09399e8a1ee23ce4793eea5501d4381ed838274d2fef
+    bytes: 3133
+  - path: resources/schemas/project-profile.schema.json
+    sha256: 5108edc799679eb04e5a1fccf41324d9de295e4fdf78f2b8d0f8cddd72de96a4
+    bytes: 10918
+  - path: resources/schemas/remediation-plan.schema.json
+    sha256: d97e22f43706a6040952014407325f1fb456408d65acbf016bd1e2707335bd4b
+    bytes: 16837
+  - path: resources/schemas/repository-facts.schema.json
+    sha256: d4e95057ac7c0497f1f19d47bffe8d3c68dc165c38b2dee7f56e71b4c4eebd8d
+    bytes: 4190
+  - path: resources/schemas/review.schema.json
+    sha256: fbf912e292baca1bd1169a857966457dc9369a88ff649b103ad2b55eae978fb0
+    bytes: 12087
+  - path: resources/schemas/risk-acceptance.schema.json
+    sha256: 9b0cd5d32e3da8f8ecb3762affdcb96e459b9980ea60199f9afebcfac2fa7c2f
+    bytes: 1826
+  - path: resources/schemas/rule-pack.schema.json
+    sha256: ba3c8b83d8a5e73ff31cd05f39fdabcef31589521f069907783101e0c4909f33
+    bytes: 1502
+  - path: resources/schemas/selector-source.schema.json
+    sha256: 465a0f92b2644895b3ab272b5b640c21e29bb9dd311d6253af3e57b6ac13c0a7
+    bytes: 745
+  - path: resources/schemas/shared-capabilities.schema.json
+    sha256: 9ad9ce32300f9489f28cf7df0c03a96ec351c86e246c1ccc4769cf71169b4212
+    bytes: 2202
+  - path: resources/schemas/technology-catalog.schema.json
+    sha256: b3f28c0e6eb560ec4e54c30fc21991e63049a2301d3aec428cb2d83704e5751a
+    bytes: 1634
+  - path: resources/scripts/architecture_tool.py
+    sha256: 955c13ff6bd0864edc0a774dd84d0b63a8c7e88eebba535d55330be11ecea200
+    bytes: 373166
+  - path: resources/scripts/artifact_types.py
+    sha256: d0e2b9ff2b834b00e8d05229f7b364a540395a8e4cec84723ecb14f848f955cf
+    bytes: 2510
+  - path: resources/scripts/build_project_profile.py
+    sha256: 08722272bcc5be14c13881752e5354fdac92dde825571667bab6f09c73027aa1
+    bytes: 15150
+  - path: resources/scripts/fingerprint_artifact.py
+    sha256: 053b419dec8d1d0ead70c31ff8c9afe0a99ab8dbe6dc787578120bfecae7d7f6
+    bytes: 3084
+  - path: resources/scripts/inspect_repository.py
+    sha256: 576c75bee779622634c7373ccfc4164de7b44f996028dab50b5e7a3c19edcb61
+    bytes: 22882
+  - path: resources/scripts/knowledge_model.py
+    sha256: 72d63011a69b3a0519c403dfd7f8ac5c065f46e501909b62c4669a2976a2bd5f
+    bytes: 17925
+  - path: resources/scripts/migrate_artifacts.py
+    sha256: 4b5455a4a337f8037a2c27ea0ff3ceff8aa864975a0bc207a58f5d6cd9e54c8b
+    bytes: 12073
+  - path: resources/scripts/select_knowledge.py
+    sha256: 5c01431bbffd79d79bb5d15eb21f39fb8c8ecb9e81063896750bada3b3f74778
+    bytes: 34264
+  - path: resources/scripts/validate_coverage.py
+    sha256: 72f22de715a869016acadc5e05d6495d98e576ed701758d42077574dd0d13c31
+    bytes: 2475
+  - path: resources/scripts/validate_knowledge.py
+    sha256: 73864bedfc45058277560b6ebcc30d743efa7399aaadf7e1fbf5fef9d3903549
+    bytes: 1511
+  - path: resources/selector-source.json
+    sha256: 96322401db0cf3a6e9f480827b3520529b197c87e32beaa6077da4dfb3b2317e
+    bytes: 171
+  - path: resources/supply-chain/runtime-licenses.json
+    sha256: cd9cf9b0dba1688f929a491eb5690397d0769df2dbd4ac9789d5e1bd7a21c4c8
+    bytes: 849
+  - path: resources/templates/architecture-decision.yaml
+    sha256: c63410661c860ccbf4c35fa8d4775a7c9d6d8457ba63ad3717a6e64181a82bd9
+    bytes: 22554
+  - path: resources/templates/architecture-design-brief.yaml
+    sha256: 4b17c07bc0efdf1887b330cc362f7ad87a08498690b700a5c2b67cf1a91ec007
+    bytes: 7684
+  - path: resources/templates/assetkeeper-profile.example.yaml
+    sha256: 2ba4e8cb4ee03cccb2783a49c8c3175cfed814302609e2f305f566a91f55e9af
+    bytes: 4169
+  - path: resources/templates/baseline.yaml
+    sha256: 4b7d7ba3388ebbe88f379c1de9b66494a3a542fa9ddd67160ecb01d9d5a0c5ec
+    bytes: 35
+  - path: resources/templates/cognera-profile.example.yaml
+    sha256: 3f702b3b6054189fbd0d0dfea72f2c0c1277e127e777fabb2f86d700fab6718f
+    bytes: 4507
+  - path: resources/templates/constraints.md
+    sha256: 246585db2aa1b7a3095c76e7b8e9b615d10258d1cd235e3b9293fbf09973c4cf
+    bytes: 442
+  - path: resources/templates/critical-flows.md
+    sha256: f2f0af4678f04151196a52fb6c9f91b9ecef481670c7fb05e0eadc53ac1bdbd7
+    bytes: 376
+  - path: resources/templates/dependency-map.yaml
+    sha256: 42cd76683e928b65dcdbe69c2c556ca484e10be02e4b674ea7349f5c38d2d7e4
+    bytes: 39
+  - path: resources/templates/evidence-providers.yaml
+    sha256: b5b0a050e1c8c5f32b701935170b319761449cf5866c0f517784029f5eafc4b7
+    bytes: 4914
+  - path: resources/templates/evolution-assessment.md
+    sha256: d39026ed1ce2a3ab94200c38aeb3391cda24e0f5a4ad5189b7f83d4456b3b962
+    bytes: 1709
+  - path: resources/templates/gate-policy.yaml
+    sha256: e56a5027f0f9c4cb290ce889d2e39d3463962edeb93c9d89aee6ee11f412617b
+    bytes: 1755
+  - path: resources/templates/github-architecture-gate.yml
+    sha256: 462babb7712a552a3c71aca5f35a3f9dc6e0d3d10f74801601ef7f72b9a5adf8
+    bytes: 4637
+  - path: resources/templates/governance-run-manifest.yaml
+    sha256: 636c32a5340659d3dc3d01da7ab00ede1f9f2e1dbcdc10693a40b53ba95e1572
+    bytes: 642
+  - path: resources/templates/knowledge-context.yaml
+    sha256: 38781aaf80015490edbbbd58381bcd044fa843476dec85fd63875165d3083fd0
+    bytes: 471
+  - path: resources/templates/knowledge-selection.yaml
+    sha256: 8c125229add74613ce4d355d881f5379d1a68437029cf6f95d94b3bd9167c91c
+    bytes: 3770
+  - path: resources/templates/portfolio-gate-policy.yaml
+    sha256: 6b9d90ac7cad8ee289274bc3292868f8a56379ab576ecea0e9b7c30352dd7aff
+    bytes: 1586
+  - path: resources/templates/portfolio-review.yaml
+    sha256: 56f82c342b5f7802d8771a0157978dc6c4a59ccd7e65c171c9bb684bbc9c089b
+    bytes: 1970
+  - path: resources/templates/portfolio.yaml
+    sha256: 03cb19062dc86bb5a601151917682447d97611251c2b635eb7fb03503e437f12
+    bytes: 406
+  - path: resources/templates/profile.yaml
+    sha256: f7c51dbe959f14cd5a937d627749ae92116d6685e187723483f9dd19e3457419
+    bytes: 2827
+  - path: resources/templates/remediation-plan.yaml
+    sha256: 16af12ec9a28dc4c2b17362df0687891987d1c173b5fcc8fe6b1bcf655019ff9
+    bytes: 5920
+  - path: resources/templates/review.yaml
+    sha256: ad108e44f06ae27d91853b782026c3279df40a3add1c4dab38dedf1bac36cfb2
+    bytes: 3533
+  - path: resources/templates/risk-acceptances.yaml
+    sha256: ec585c5580e99eea6a7cb21d7b1969e3c46dbe9a7e6441e8c08e8ae27a9a8788
+    bytes: 38
+  - path: resources/templates/shared-capabilities.yaml
+    sha256: 6edd9b2afb87bc420a8688c270d703d8d335b21e34333cf288eb43f2018c95a5
+    bytes: 39
+  - path: resources/templates/technology-catalog.yaml
+    sha256: ab1811bd74a6d1d37e91e466c6eb6a4b4f02f7ec5fdd6ee638c43655faa9a0d8
+    bytes: 39
+  - path: scripts/audit_licenses.py
+    sha256: ffd04b1eaf2d51b6032b62bfe8b02fbb9b6fb22095ee95b6d56d49dfe73faacf
+    bytes: 4148
+  - path: scripts/check_changed_coverage.py
+    sha256: 84266fe86558853d95358f857b5e6807fe2d0ac0b8ddbe7aa3f5b12c38919696
+    bytes: 5163
+  - path: scripts/codex_benchmark_adapter.py
+    sha256: 6ca80c51b03c6999cc78068f88d1b3203d2f345a511afdfc35459f34c2161ffe
+    bytes: 14343
+  - path: scripts/curate_golden_knowledge.py
+    sha256: 3b1027fa2cdb55ef5272d2c743a9e38161550c2b0830885b8cd813f726fce118
+    bytes: 84832
+  - path: scripts/evaluate_ci_gate.py
+    sha256: 00729000bff8f45b924eda40ad84f660f48621286e7c5a081462903b98e03867
+    bytes: 1478
+  - path: scripts/generate_sbom.py
+    sha256: 169f98752a36dc01e28773519334623a4966612c1833bddcf55866a3109f810f
+    bytes: 9622
+  - path: scripts/generate_target_knowledge.py
+    sha256: 05334ae932e6c243b1774d3e3256897a22b9e5dc2f1162c7f9695a7cff47f39e
+    bytes: 41541
+  - path: scripts/migrate_legacy_knowledge.py
+    sha256: c2ef7ce23640daf5f57221da77d9bbd88dc2bea7353d5699efad2491d64e8419
+    bytes: 8447
+  - path: scripts/package_plugin.py
+    sha256: c72c997e71c6b1febac38b5a2ba5b6c74ca2252047b10cb25c8eb685d545d2da
+    bytes: 11231
+  - path: scripts/publish_release.py
+    sha256: 025331b8599f24c92daa1098c89dedc889ef1a7f82d4254412e71466371703b5
+    bytes: 14240
+  - path: scripts/run_behavior_benchmark.py
+    sha256: cf3af58f746ba0a2e2d2bd85ee5f6bed1a401e0bc5cdbd9d2f8630e1469e1dc0
+    bytes: 34670
+  - path: scripts/run_test_evidence.py
+    sha256: d40ce9ced7647aebc5f76545ca259a29a4f15b8b4746ec65f7b7cb765b2c2b3c
+    bytes: 528
+  - path: scripts/smoke_test_package.py
+    sha256: 9a5705a5a3595cc0067cc9f0192623c77ea53037dceec9e069edd1fca9468ac1
+    bytes: 10290
+  - path: scripts/validate_repository.py
+    sha256: cab62abcb2ca7a7d8aa3c3394bea2824aa8d1affdc58dc2a5982242e87150b12
+    bytes: 48239
+  - path: scripts/verify_checksum.py
+    sha256: 4be9ac05c8a59e026dce0412e04d5110190dcded813c2c7266be9470b8a7a1b3
+    bytes: 1503
+  - path: tests/test_ai_agent_depth.py
+    sha256: e1ea96df8ad4f4e8f7b70f68838cc9acad0a04d49f348ae07e1b2ce38c189bdf
+    bytes: 2443
+  - path: tests/test_architecture_cli_dispatch.py
+    sha256: 49ca260bfaa8bb04d2ef8ebb9cc71d2082ca9c298e1c6c57cf184e9fbc0062e4
+    bytes: 4715
+  - path: tests/test_architecture_tool.py
+    sha256: e1a4fed019ea19226e8fa292fcf332ce8b274834eb17cbe8568ecb8b0502b7c9
+    bytes: 131168
+  - path: tests/test_behavior_benchmark.py
+    sha256: 3e830cf63ff1fca4081385ad7f3e69e7ea7eb5f0ca72a8faeb5fd20dce179af3
+    bytes: 25252
+  - path: tests/test_changed_coverage.py
+    sha256: 484c3c47f0b1f63994b1cb5fc076135c9410cc0f9165069adcd1930ebfae7cfd
+    bytes: 9742
+  - path: tests/test_ci_gate.py
+    sha256: a594393c679098bad008178afb04a2cbb2a5a07d3620e05d1cf9956ddad5e304
+    bytes: 5130
+  - path: tests/test_cli_wrappers.py
+    sha256: 6dc59ee43171ef8df1fb40affe3826cee0fda79df8f4be7c599e2b3b6511a553
+    bytes: 8130
+  - path: tests/test_codex_benchmark_adapter.py
+    sha256: 3e9bdbd47cbf055e128c467b805b99634b71aa4bf51c6f54920db5a03f1de6bd
+    bytes: 6973
+  - path: tests/test_constrained_target_architecture.py
+    sha256: 3d36966f839d6102ff4f7d5e7061b8c841063e16523f65a5612c62a1e34a6927
+    bytes: 37232
+  - path: tests/test_context_execution.py
+    sha256: 992eb4b46fac5e04fb0260d0ff7918065ab74971f0ec731af425095d4a633dcb
+    bytes: 5074
+  - path: tests/test_evidence_provider_catalog.py
+    sha256: 1a227c022af013ec785d96a1f8ca156d261a47b91671351a6d2a4ea19c27d596
+    bytes: 4887
+  - path: tests/test_evolution_navigation.py
+    sha256: cf1530304bb08a6b6784fb3e5c7ea0314e03e23ff1c9a4235823d6b5d73dfe5f
+    bytes: 13146
+  - path: tests/test_package_plugin.py
+    sha256: 005ed42ca7d37708d8118b1cd7908def0faab7ec934167cb2f7132b4ec8bb19c
+    bytes: 10900
+  - path: tests/test_release_publication.py
+    sha256: 9324d93070332f04880fccee2a13ad203a905da919fed3635f8ca3402d89d10d
+    bytes: 25780
+  - path: tests/test_repository_contract.py
+    sha256: 35c0806c61dd0c89f37f57937825426aac6dd8aac73cb545d3265dcba2f810f1
+    bytes: 12240
+  - path: tests/test_review_execution.py
+    sha256: bc91514790a6e36c43d2e1d806c00cf629c8f692d0ccd34dc52f44872feba06c
+    bytes: 11929
+  - path: tests/test_site_contract.py
+    sha256: 974b203f3ecc87286349b0710023037053ae41528dbeb49dd4e83abc4a5f18aa
+    bytes: 2708
+  - path: tests/test_supply_chain.py
+    sha256: abc0101570469296a3fad4196e57fb2038fa4a1cb2be5930762b4542138ecdb7
+    bytes: 12058
+  - path: tests/test_target_architecture.py
+    sha256: 9fd3e3812dfc0e9ba42af1575873dbe5f8775cbeb67511ce72fda184eb0dac23
+    bytes: 33670
+  cache_mode: isolated
+result:
+  status: passed
+  exit_code: 0
+  output_format: junit
+  content_validation: valid
+  stdout:
+    path: .architecture/evidence/test-results-20260828t222941714479z-db27b78a5de7.stdout
+    sha256: 7f00b92f09d74862db0e8b88e277e1526360165e8554a6c24bcc596b47403c44
+    bytes: 286
+  stderr:
+    path: .architecture/evidence/test-results-20260828t222941714479z-db27b78a5de7.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    bytes: 0
+  structured_output:
+    path: .architecture/evidence/test-results-20260828t222941714479z-db27b78a5de7.result
+    sha256: c807b4ecf163ede1a672ec20e5b60575062f959bf32a73845dbff9b597d17379
+    bytes: 31795

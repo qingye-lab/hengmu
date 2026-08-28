@@ -1,0 +1,202 @@
+schema_version: '1.2'
+review:
+  id: hengmu-20260828-v1-1-1-release-recovery-project-candidates
+  kind: project
+  workflow: project-architecture
+  subject:
+    id: hengmu
+    name: Hengmu
+    repository: .
+  performed_at: '2026-08-28T22:32:19+00:00'
+  commit: db27b78a5de7502e294078aec603c0c8b9de10a5
+  scope: ['.']
+  verification_state: candidates
+  reviewers: [architecture-auditor]
+  profile: .architecture/reviews/inputs/2026-08-28-v1-1-1-release-recovery-profile.yaml
+  repository_identity: hengmu
+  profile_sha256: 06d5e4f3398c65ae11543af85983c33bd30373a722b305be4cae1dfa731a9e34
+  dirty_tree: false
+  rule_packs:
+    - {id: project-core, version: 1.0.0, sha256: b211d548ad5fe367b9dab8416051c43f3a206da81bd2a8e7596cd788ed3f100c}
+    - {id: plugin-platform, version: 1.0.0, sha256: 7ae17488df7a78ce1b857d3f842bd51b87de4ec30576fbe250cfa991472b3700}
+    - {id: test-automation-platform, version: 1.0.0, sha256: 23efb3c02cd9e4e2ec2cb83d1505b30dd780aff2a9ac7157506b361cb783c5aa}
+  scope_manifest: ['.']
+summary:
+  architecture: >-
+    Hengmu 1.1.1 is a narrowly scoped release-recovery patch for the local,
+    distributable architecture-governance plugin. The local CI definition now
+    makes the tag draft job eligible only when the workflow is not cancelled,
+    the stable Quality gate succeeds, and the ref is a v-prefixed tag; its
+    truth-table tests cover failed, cancelled, skipped, branch, and non-v-tag
+    counterexamples. Native and portable manifests, selector metadata, template,
+    benchmark default, documentation, and tests align on 1.1.1 while the public
+    Skill, Rule Pack, Knowledge, release asset, permission, and two-stage immutable
+    publication contracts remain unchanged. Deterministic local evidence passes;
+    the real hosted tag path and remote release controls remain unverified.
+  raw_findings: 0
+  confirmed: 0
+  rejected: 0
+  needs_evidence: 0
+coverage:
+  - rule_id: PROJECT.BOUNDARY.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - &router {path: skills/hengmu/SKILL.md, commit: db27b78a5de7502e294078aec603c0c8b9de10a5, blob_sha: 19f859ecd6778d7da2b19cfb65d2f2ded5b4f102, line_start: 8, line_end: 47, observation: "The stable public entry still routes each intent to one focused workflow without reimplementing the routed procedure."}
+  - rule_id: PROJECT.DEPENDENCY.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - &provider_execution {path: resources/scripts/architecture_tool.py, commit: db27b78a5de7502e294078aec603c0c8b9de10a5, blob_sha: 161f45604abcf2a9f120f4b7c6b0adb625784ef6, line_start: 1349, line_end: 1590, observation: "Evidence Provider execution resolves a cataloged executable, bounds environment and time, isolates caches, records dependency closure, and validates structured output."}
+      - &package_boundary {path: scripts/package_plugin.py, commit: db27b78a5de7502e294078aec603c0c8b9de10a5, blob_sha: 2f9a23f6aea9d2b2fa157f1833e18c4ee93b3640, line_start: 168, line_end: 273, observation: "Packaging derives a sorted runtime allowlist, rejects unsafe entries, and emits deterministic archives without changing the runtime boundary for 1.1.1."}
+  - {rule_id: PROJECT.COHESION.001, status: assessed, finding_ids: [], evidence: [*router, *package_boundary]}
+  - {rule_id: PROJECT.FRONTEND.001, status: not_applicable, finding_ids: [], reason: "Hengmu has no frontend/backend request boundary or client-owned authoritative business invariant."}
+  - rule_id: PROJECT.DATA.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - &decision_contract {path: resources/scripts/architecture_tool.py, commit: db27b78a5de7502e294078aec603c0c8b9de10a5, blob_sha: 161f45604abcf2a9f120f4b7c6b0adb625784ef6, line_start: 3404, line_end: 3580, observation: "Decision validation binds acceptance, source artifacts, Knowledge Selection, and remediation authority to validated identities and hashes."}
+  - {rule_id: PROJECT.OWNERSHIP.001, status: assessed, finding_ids: [], evidence: [*decision_contract]}
+  - rule_id: PROJECT.CONTRACT.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - &review_schema {path: resources/schemas/review.schema.json, commit: db27b78a5de7502e294078aec603c0c8b9de10a5, blob_sha: fb65714fe2a3261ed327a52ed8c92d4af7bb2673, line_start: 1, line_end: 310, observation: "Review schema 1.2 defines identity, coverage, source, Knowledge, critical-flow, tool-evidence, and candidate lifecycle bindings."}
+      - &artifact_contract {path: resources/scripts/artifact_types.py, commit: db27b78a5de7502e294078aec603c0c8b9de10a5, blob_sha: ddbef89631529eaf14327b084bc368d079d26c3d, line_start: 1, line_end: 50, observation: "Internal Review types remain explicitly post-schema-validation views of the authoritative artifact schema."}
+  - {rule_id: PROJECT.TRANSACTION.001, status: not_applicable, finding_ids: [], reason: "The product has no cross-system business transaction; local artifacts and release assets use bounded state transitions."}
+  - rule_id: PROJECT.IDEMPOTENCY.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - &release_state {path: scripts/publish_release.py, commit: db27b78a5de7502e294078aec603c0c8b9de10a5, blob_sha: a3ce9288ad9d2baad33142b8bfa80e9c5051b077, line_start: 103, line_end: 254, observation: "The unchanged two-stage state machine prepares absent or draft state and permits publication only from an exact draft after immutable administration preflight."}
+      - &init_safety {path: resources/scripts/architecture_tool.py, commit: db27b78a5de7502e294078aec603c0c8b9de10a5, blob_sha: 161f45604abcf2a9f120f4b7c6b0adb625784ef6, line_start: 4886, line_end: 4955, observation: "Project-audit preparation validates existing control-plane state and bounded initialization refuses overwrite."}
+  - rule_id: PROJECT.RELIABILITY.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - &ci_guard {path: .github/workflows/ci.yml, commit: db27b78a5de7502e294078aec603c0c8b9de10a5, blob_sha: 61ab2d7db43d032f3a696dd20a4d05e53600d422, line_start: 169, line_end: 196, observation: "The local workflow keeps an always-running Quality gate and makes draft preparation contingent on not-cancelled, successful summary-gate, and v-tag predicates."}
+      - &ci_guard_tests {path: tests/test_ci_gate.py, commit: db27b78a5de7502e294078aec603c0c8b9de10a5, blob_sha: 19b745f07f3b9fa6bbba39bf9359052e5d1ce5dd, line_start: 23, line_end: 100, observation: "Tests bind the exact guard and exercise success plus gate failure, cancellation, skip, branch push, and non-v-tag counterexamples without modeling a nonexistent tag event."}
+      - &release_tests {path: tests/test_release_publication.py, commit: db27b78a5de7502e294078aec603c0c8b9de10a5, blob_sha: 59915e2ccc6a5e1c15f8e97a8fea97c7b3300ecf, line_start: 124, line_end: 487, observation: "Release tests cover draft preparation, unsafe inventory, immutable preflight, one-time publish, immutable readback, read-only published state, and bounded retry failure."}
+      - *provider_execution
+  - {rule_id: PROJECT.STATE.001, status: assessed, finding_ids: [], evidence: [*release_state, *release_tests, *ci_guard]}
+  - rule_id: PROJECT.SECURITY.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - &actions_validator {path: scripts/validate_repository.py, commit: db27b78a5de7502e294078aec603c0c8b9de10a5, blob_sha: 379d4947459ffd7e39c71b9f6965b0a98504bdbb, line_start: 958, line_end: 1001, observation: "Workflow uses scalars are parsed and only repository-local actions or GitHub-owned actions pinned to lowercase 40-hex commits are accepted."}
+      - *release_state
+  - rule_id: PROJECT.PRIVACY.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - &host_boundary {path: docs/host-compatibility.md, commit: db27b78a5de7502e294078aec603c0c8b9de10a5, blob_sha: 22cf86f104444b216ebcdcd48cdb01f3e825117a, line_start: 30, line_end: 70, observation: "The portable host contract excludes silent installation, permission changes, hooks, and unconfigured provider execution."}
+  - {rule_id: PROJECT.OBSERVABILITY.001, status: assessed, finding_ids: [], evidence: [*provider_execution, *release_tests, *ci_guard_tests]}
+  - rule_id: PROJECT.CONFIG.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - &contract_tests {path: tests/test_repository_contract.py, commit: db27b78a5de7502e294078aec603c0c8b9de10a5, blob_sha: bc6dff6a7b455e859d0e0c8608806b310386b766, line_start: 27, line_end: 169, observation: "Repository contract tests bind supported Python endpoints, two-tree coverage, action references, Review typing, and current plugin/selector/template version alignment."}
+      - &benchmark_default {path: tests/test_behavior_benchmark.py, commit: db27b78a5de7502e294078aec603c0c8b9de10a5, blob_sha: 5d729982b10f165240985d1ee0bad480dde3153a, line_start: 27, line_end: 59, observation: "The benchmark parser is exercised directly to prove its omitted skill-version argument resolves to the current manifest version without running a benchmark."}
+      - *actions_validator
+  - rule_id: PROJECT.PERFORMANCE.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - &benchmark_report {path: benchmarks/reports/1.0.3-model-behavior.md, commit: db27b78a5de7502e294078aec603c0c8b9de10a5, blob_sha: 13349180b3f711ba3a11cfb6e5bb0cb78a56b863, line_start: 5, line_end: 66, observation: "The retained behavioral benchmark identifies models, trials, duration, immutable source context, and run bindings without converting missing usage into a performance claim."}
+  - {rule_id: PROJECT.TEST.001, status: assessed, finding_ids: [], evidence: [*ci_guard_tests, *benchmark_default, *release_tests, *contract_tests, *provider_execution]}
+  - rule_id: PROJECT.DEPLOY.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - *ci_guard
+      - &release_workflow {path: .github/workflows/release.yml, commit: db27b78a5de7502e294078aec603c0c8b9de10a5, blob_sha: 8398b98ce9e3a047114c4f32f77a51f87868b081, line_start: 139, line_end: 164, observation: "The unchanged reusable workflow attests both archives and SBOMs and invokes only prepare for the exact draft; it does not publish."}
+      - *package_boundary
+  - rule_id: PROJECT.CHANGE.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - &manifests {path: .codex-plugin/plugin.json, commit: db27b78a5de7502e294078aec603c0c8b9de10a5, blob_sha: e0154ac4540f8747a623654d3ad229a711a8277f, line_start: 1, line_end: 41, observation: "The native manifest declares Hengmu 1.1.1 and Python 3.11 through 3.14 while retaining the existing Skill surface and capabilities."}
+      - {path: plugin.json, commit: db27b78a5de7502e294078aec603c0c8b9de10a5, blob_sha: c086661a1cc451792a890b9754725127bd2ab033, line_start: 1, line_end: 24, observation: "The portable manifest declares the aligned Hengmu 1.1.1 identity under Agent Plugins schema 1.0."}
+      - &selector {path: resources/selector-source.json, commit: db27b78a5de7502e294078aec603c0c8b9de10a5, blob_sha: b221d391fb1d4f6907a799dc25aead20ee2032b9, line_start: 1, line_end: 6, observation: "Selector metadata declares plugin version 1.1.1 and anchors its source to the independently reviewed implementation commit 306af53e692b1b2147fb362d821dbaf9ff3ff782."}
+      - &selection_template {path: resources/templates/knowledge-selection.yaml, commit: db27b78a5de7502e294078aec603c0c8b9de10a5, blob_sha: ab897fa40782cce04194ace79ddb7bd59821bd57, line_start: 39, line_end: 45, observation: "The distributable Knowledge Selection template declares plugin version 1.1.1 and remains aligned with both manifests and selector metadata."}
+  - {rule_id: PROJECT.DEBT.001, status: assessed, finding_ids: [], evidence: [*contract_tests, *release_tests, *ci_guard_tests]}
+  - {rule_id: PROJECT.DESIGN.001, status: assessed, finding_ids: [], evidence: [*router, *release_state, *ci_guard]}
+  - {rule_id: PLUGIN.MANIFEST.001, status: assessed, finding_ids: [], evidence: [*manifests, *selector, *selection_template]}
+  - rule_id: PLUGIN.AUTHORITY.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - &release_docs {path: docs/releasing.md, commit: db27b78a5de7502e294078aec603c0c8b9de10a5, blob_sha: fc1dac385dd7c1e7874524d1a8721270e50f325a, line_start: 84, line_end: 127, observation: "Release documentation keeps immutable enablement and publication as separately authorized administrator actions after hosted draft preparation."}
+      - *host_boundary
+  - {rule_id: PLUGIN.ISOLATION.001, status: assessed, finding_ids: [], evidence: [*provider_execution, *package_boundary]}
+  - {rule_id: PLUGIN.LIFECYCLE.001, status: assessed, finding_ids: [], evidence: [*manifests, *contract_tests, *release_docs]}
+  - {rule_id: PLUGIN.SUPPLYCHAIN.001, status: assessed, finding_ids: [], evidence: [*ci_guard, *release_workflow, *release_state, *actions_validator, *package_boundary]}
+  - {rule_id: TESTPLATFORM.RUN.001, status: assessed, finding_ids: [], evidence: [*provider_execution, *ci_guard]}
+  - {rule_id: TESTPLATFORM.ISOLATION.001, status: assessed, finding_ids: [], evidence: [*provider_execution, *package_boundary]}
+  - {rule_id: TESTPLATFORM.EVIDENCE.001, status: assessed, finding_ids: [], evidence: [*provider_execution, *contract_tests, *release_tests, *ci_guard_tests]}
+  - {rule_id: TESTPLATFORM.SCHEDULE.001, status: not_applicable, finding_ids: [], reason: "Hengmu has synchronous local validation and bounded GitHub workflow jobs, not a shared scheduler, worker pool, tenancy model, lease, or abandoned-work queue."}
+  - {rule_id: TESTPLATFORM.FLAKE.001, status: assessed, finding_ids: [], evidence: [*benchmark_report, *provider_execution, *ci_guard]}
+findings: []
+evidence_sources:
+  - .architecture/evidence/test-results-20260828t222941714479z-db27b78a5de7.yaml
+  - .architecture/reviews/inputs/2026-08-28-v1-1-1-release-recovery-knowledge-context.yaml
+  - .architecture/reviews/inputs/2026-08-28-v1-1-1-release-recovery-knowledge-selection.yaml
+  - .architecture/reviews/inputs/2026-08-28-v1-1-1-release-recovery-profile.yaml
+  - .architecture/reviews/inputs/2026-08-28-v1-1-1-release-recovery-repository-facts.yaml
+  - .codex-plugin/plugin.json
+  - .github/workflows/ci.yml
+  - .github/workflows/release.yml
+  - benchmarks/reports/1.0.3-model-behavior.md
+  - docs/host-compatibility.md
+  - docs/releasing.md
+  - plugin.json
+  - resources/schemas/review.schema.json
+  - resources/scripts/architecture_tool.py
+  - resources/scripts/artifact_types.py
+  - resources/selector-source.json
+  - resources/templates/knowledge-selection.yaml
+  - scripts/package_plugin.py
+  - scripts/publish_release.py
+  - scripts/validate_repository.py
+  - skills/hengmu/SKILL.md
+  - tests/test_behavior_benchmark.py
+  - tests/test_ci_gate.py
+  - tests/test_release_publication.py
+  - tests/test_repository_contract.py
+limitations:
+  - This is a candidate Review only; no independent finding verification has occurred, so it does not claim V3, V4, or V5.
+  - The hosted eight-lane v1.1.1 tag workflow and stable Quality gate have not run for commit db27b78a5de7502e294078aec603c0c8b9de10a5; local configuration and tests do not prove GitHub scheduler behavior.
+  - Hengmu v1.1.0 was tagged but remains unpublished; this Review neither moves that tag nor treats it as a successful Release.
+  - No real v1.1.1 draft, six-asset remote inventory, GitHub provenance attestation, SBOM attestation, immutable publication, or post-publication verification has been observed.
+  - Repository rulesets, GitHub Actions policy settings, v* tag protection, and the remote immutable-releases setting remain unverified by this local audit.
+  - The current Codex host installation, routing, and Knowledge Selection smoke has not been performed for v1.1.1.
+  - The audit Knowledge Context was validated as an exact rendering of the fresh Selection and is listed as evidence context; schema 1.2 trust binds the Selection itself, not a separate Context field.
+coverage_complete: true
+tool_evidence:
+  - provider_id: test-results
+    run_path: .architecture/evidence/test-results-20260828t222941714479z-db27b78a5de7.yaml
+    run_sha256: fa6858fba0a3e4028c13189943c0692b423304d48809015abdb97df19c7c5ce2
+repository_facts:
+  path: .architecture/reviews/inputs/2026-08-28-v1-1-1-release-recovery-repository-facts.yaml
+  sha256: 89a9c4d25a941075b48f8419476238e6313e7cea4d78f4e27e5b2970fb6f3e20
+knowledge_selection:
+  path: .architecture/reviews/inputs/2026-08-28-v1-1-1-release-recovery-knowledge-selection.yaml
+  sha256: 1359662a41d84837fb7413add29b8afd9138f8c4e3b2415337136e70e0665dcf
+selected_knowledge:
+  - {id: foundation.data-ownership, version: 1.0.0, sha256: 260f240ec9782f5a42a68481652912532cfcd6a0b07fdc5366d44388cc3d0204}
+  - {id: foundation.evidence-reasoning, version: 1.0.0, sha256: e3c370e04b8a9be5e64ea0d107281043652b1cdba3393fb61b57efd77262650f}
+  - {id: foundation.proportional-design, version: 1.0.0, sha256: ccfa63d523fab3503c47dbf73fc7a9ae85c7fc516856bcf422322c0d92a409df}
+  - {id: foundation.quality-attributes, version: 1.0.0, sha256: 50d92ab7563d70605408ba4592d9445f79f6eb0cecb50195471b56e42418b680}
+  - {id: foundation.system-boundaries, version: 1.0.0, sha256: a326964ec74303e0f08f3e7207e4836a0ff04c93c7f8516e6190b47925ec06db}
+  - {id: domain.plugin-platform, version: 1.0.0, sha256: b72a0e3b6959464b32c9a4d44b50baa40b4baf13b5b14f65f99d094f301bf58c}
+  - {id: domain.test-automation-platform, version: 1.0.0, sha256: 7ce2621239bad831f4a6689a1718b5dd1cdbbf1d6d2e3bb9a6d043457a70e016}
+critical_flow_coverage:
+  - {id: plugin-discovery-and-skill-execution, status: assessed, reason: "Both 1.1.1 manifest forms, the selector anchor, stable router, and deterministic package boundary were inspected; current-host smoke remains a limitation.", evidence: [*manifests, *selector, *router, *package_boundary]}
+  - {id: finding-verification-and-policy-enforcement, status: assessed, reason: "Review and Decision trust bindings plus deterministic clean provider execution remain schema- and hash-bound.", evidence: [*review_schema, *artifact_contract, *decision_contract, *provider_execution]}
+  - {id: architecture-knowledge-and-behavior-evaluation, status: assessed, reason: "The fresh seven-entry audit Selection, exact Context, aligned 1.1.1 template, benchmark default, retained benchmark report, and clean passing provider run were inspected.", evidence: [*selection_template, *benchmark_default, *benchmark_report, *provider_execution]}
+  - {id: greenfield-architecture-decision, status: assessed, reason: "Decision validation continues to distinguish Design Brief authority from remediation Review authority and requires bound Knowledge.", evidence: [*decision_contract]}
+  - {id: safe-project-initialization, status: assessed, reason: "Preparation reuses valid control-plane state and initialization remains overwrite-refusing.", evidence: [*init_safety]}
+  - {id: deterministic-release-packaging, status: assessed, reason: "The local package boundary, corrected CI guard, truth-table tests, unchanged prepare-only workflow, two-stage publication state machine, and action-pin validation were inspected; hosted execution and remote Release outcomes remain limitations.", evidence: [*package_boundary, *ci_guard, *ci_guard_tests, *release_workflow, *release_state, *release_tests, *actions_validator]}
+unknowns:
+  - Hosted v1.1.1 tag results and remote repository controls remain unknown until independently observed for this commit.
+  - Real draft creation, remote asset verification, attestations, immutable publication, and current-host smoke remain unknown.

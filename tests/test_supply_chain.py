@@ -175,7 +175,8 @@ class SupplyChainTests(unittest.TestCase):
         self.assertEqual(publish["needs"], ["quality-gate"])
         self.assertEqual(
             publish["if"],
-            "startsWith(github.ref, 'refs/tags/v')",
+            "${{ !cancelled() && needs.quality-gate.result == 'success' "
+            "&& startsWith(github.ref, 'refs/tags/v') }}",
         )
         self.assertEqual(publish["uses"], "./.github/workflows/release.yml")
         self.assertEqual(

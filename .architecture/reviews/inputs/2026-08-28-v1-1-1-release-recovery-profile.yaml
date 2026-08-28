@@ -1,0 +1,155 @@
+schema_version: '1.1'
+project:
+  id: hengmu
+  name: Hengmu
+  type:
+  - architecture-governance
+  - agent-plugins-package
+  - codex-plugin
+  - developer-tooling
+  lifecycle: active
+  criticality: high
+  owners:
+  - Qingye Open Source
+  critical_qualities:
+  - compatibility
+  - deterministic-enforcement
+  - maintainability
+  - reproducibility
+  - safety
+  - traceability
+  quality_attributes:
+  - id: compatibility
+    priority: critical
+    rationale: Public Skills, artifact schemas, and CLI behavior require deliberate
+      migration.
+    target:
+      legacy_artifact_readability: supported
+    evidence:
+    - Compatibility and migration tests
+    scenario:
+      source: A plugin consumer upgrades from a supported prior schema.
+      trigger: A public Skill, CLI, or artifact contract changes.
+      environment: Upgrade validation against retained 1.0 artifacts.
+      target: Public plugin and artifact compatibility boundaries.
+      response: Legacy artifacts remain readable, trusted Reviews use 1.2, and new
+        Knowledge selections use source-anchored Runtime Manifest 1.4 without invalidating
+        historical records.
+      measure: Compatibility and migration tests pass without silent contract change.
+  - id: reliability.deterministic-enforcement
+    priority: critical
+    rationale: Identical trusted artifacts and policy must produce the same gate result.
+    target:
+      deterministic_gate: required
+    evidence:
+    - Gate unit and contract tests
+    scenario:
+      source: CI evaluates a trusted review and policy.
+      trigger: The same artifact bytes and evaluation date are supplied repeatedly.
+      environment: Any supported operating system and Python version.
+      target: The deterministic architecture gate.
+      response: The gate produces the same status, reasons, and exit code.
+      measure: Cross-platform tests observe identical policy outcomes.
+  - id: security.traceability
+    priority: critical
+    rationale: Verification, evidence, decisions, and risk acceptance must bind to
+      identity and source.
+    target:
+      trusted_artifact_schema: '1.2'
+    evidence:
+    - Hash, identity, and evidence-resolution tests
+    scenario:
+      source: An actor changes evidence, review semantics, or approval metadata.
+      trigger: A trusted artifact is validated or gated.
+      environment: Local or CI enforcement.
+      target: Review, evidence, decision, and risk-acceptance trust chain.
+      response: Stale, unauthorized, escaped, or mismatched inputs are rejected.
+      measure: Negative trust-boundary tests fail with exit code 2 or policy failure.
+  - id: maintainability
+    priority: high
+    rationale: Knowledge, Skills, schemas, and tooling must remain independently evolvable.
+    target:
+      repository_contract_gate: required
+    evidence:
+    - Repository validator and Skill eval coverage
+    scenario:
+      source: A maintainer changes one Skill, schema, rule, or knowledge catalog.
+      trigger: The repository quality gate runs.
+      environment: Supported development and CI environments.
+      target: The changed governance module and its references.
+      response: Contracts and references validate without unrelated runtime coupling.
+      measure: Repository validation and all 45 public Skill routing cases remain
+        complete.
+  business_context:
+    product_stage: early
+    team_count: 1
+    ownership_model: Maintainer-owned open-source project.
+    operational_maturity: medium
+    distributed_system_experience: experienced
+    on_call: false
+    change_frequency: frequent
+    regulatory_constraints: []
+    user_scale: Early open-source adopters.
+    throughput: Local CLI invocations rather than a hosted request path.
+    latency_targets: Validation should complete within normal CI budgets.
+    availability_target: No hosted runtime availability target.
+    data_volume: Repository-scale YAML, JSON, Markdown, and source evidence.
+    consistency: Artifact hashes and deterministic policy are authoritative.
+    offline_requirement: full
+    deployment_model: Installable Codex and Agent Plugins packages plus a local Python
+      CLI.
+    budget: constrained
+    deadlines: Release only after all local and CI contracts pass.
+    required_stack:
+    - Python 3.11 through 3.14
+    - Codex plugin and Agent Plugins Skill formats
+    prohibited_services:
+    - Required hosted runtime
+    migration_limits:
+    - Read legacy 1.0 and trusted 1.1 artifacts; require 1.2 for new project review
+      chains.
+  required_knowledge_domains:
+  - plugin-platform
+  - test-automation-platform
+  repository_facts:
+    path: .architecture/reviews/inputs/2026-08-28-v1-1-1-release-recovery-repository-facts.yaml
+    sha256: 89a9c4d25a941075b48f8419476238e6313e7cea4d78f4e27e5b2970fb6f3e20
+  profile_sources:
+    detected:
+    - .architecture/repository-facts.yaml
+    - .architecture/reviews/inputs/2026-08-28-v1-1-1-release-recovery-repository-facts.yaml
+    declared:
+    - .architecture/constraints.md
+    - .architecture/critical-flows.md
+    - .architecture/profile.yaml
+    inferred:
+    - inference: Python is the governance runtime; Swift occurs only in a mobile benchmark
+        fixture.
+      confidence: 1.0
+      basis:
+      - resources/scripts/architecture_tool.py
+      - benchmarks/fixtures/mobile-record-editor/Repository.swift
+    - inference: Plugin, test automation, and architecture governance are declared
+        product domains rather than dependency-derived technology facts.
+      confidence: 1.0
+      basis:
+      - .codex-plugin/plugin.json
+      - plugin.json
+      - .architecture/constraints.md
+  required_reviews:
+  - project-architecture
+  review_requirements:
+  - id: project-architecture
+    kind: project
+    rule_packs:
+    - project-core
+    - plugin-platform
+    - test-automation-platform
+  rule_packs:
+  - project-core
+  - plugin-platform
+  - test-automation-platform
+  data_classification: public
+  constraints_file: .architecture/constraints.md
+  critical_flows_file: .architecture/critical-flows.md
+  review_output: .architecture/reviews

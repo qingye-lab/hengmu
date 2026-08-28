@@ -1,0 +1,229 @@
+schema_version: '1.2'
+decision:
+  id: ADR-HENGMU-V1.1.1-RELEASE-RECOVERY-001
+  source_review: hengmu-20260828-v1-1-1-release-recovery-project-verified
+  source_review_sha256: a5929e9692efd213ffb74638d502467bf80c196b09524d60c467b9ba5fdb2dd9
+  decided_at: '2026-08-28T22:42:00Z'
+  decision_makers: [architecture-owner]
+  status: accepted
+  supersedes: ADR-HENGMU-V1.1-ENGINEERING-TRUST-001
+  knowledge_selection_path: .architecture/reviews/inputs/2026-08-28-v1-1-1-release-recovery-decision-knowledge-selection.yaml
+  knowledge_selection_sha256: 066dfe3b450852b101289e27ef2ad9483c3b2e956d4215e725edd076e8be4c0d
+problem:
+  quality_attributes:
+    - compatibility
+    - deterministic-enforcement
+    - safety
+    - traceability
+  constraints:
+    - Retain the independently verified v1.1.1 release-recovery patch and its source ancestry without broadening its release or runtime scope.
+    - Require the hosted eight-lane matrix, stable Quality gate, and real v1.1.1 tag run to pass before draft progression.
+    - Preserve the exact six-asset prepare-only hosted workflow and separately authorized local immutable publication boundary.
+    - Never move or republish v1.1.0, and never add privileged hosted credentials or expand workflow permissions.
+    - Keep public Skills, Rule Packs, Knowledge entries, schemas, release assets, package boundaries, and historical artifact behavior unchanged.
+  finding_ids: []
+  assumptions:
+    - The independently verified source commit remains the intended v1.1.1 recovery candidate while external release gates are pending.
+    - GitHub remains the authorized hosted CI, draft, attestation, and immutable Release environment.
+  known_facts:
+    - The independent verified Review reports zero Findings across 31 Rule coverage rows, six assessed critical flows, and seven audit Knowledge entries.
+    - The clean source-matched test-results Evidence Provider at commit db27b78a5de7502e294078aec603c0c8b9de10a5 records 207 passing tests and 67 passing subtests with dirty_tree and dirty_tree_after both false.
+    - The reviewed CI source requires a non-cancelled workflow, a successful stable Quality gate, and a v-prefixed tag before the reusable prepare-only release workflow is eligible.
+    - Local contract tests cover successful tag eligibility plus failed, cancelled, skipped, branch, and non-v-tag counterexamples, while real hosted scheduling remains unobserved.
+    - Native and portable manifests, selector metadata, Knowledge Selection template, and benchmark defaults identify v1.1.1 without changing the Rule Pack or Knowledge-entry versions.
+    - The existing release workflow and publication implementation retain the prepare-only hosted phase, exact six-asset inventory, immutable readback, separately authorized publish, and bounded verification behavior.
+  unknowns:
+    - The hosted eight-lane matrix, stable Quality gate, and real v1.1.1 tag workflow have not been observed for the reviewed commit.
+    - Remote repository rulesets, Actions policy, v* tag protection, and immutable-release enablement and readback have not been verified for this release attempt.
+    - A real v1.1.1 draft, exact six-asset remote inventory, provenance and SBOM attestations, immutable publication, and post-publication verification have not been observed.
+    - Installation, routing, and Knowledge Selection smoke on the current Codex host have not been observed for the v1.1.1 packages.
+knowledge_snapshot:
+  - {id: foundation.evolutionary-architecture, version: 1.0.0, sha256: b9b125fa34bdeb346145f926210f7052d60d8f3b5f4e225cf1aa0fdb6a7888e5}
+  - {id: foundation.proportional-design, version: 1.0.0, sha256: ccfa63d523fab3503c47dbf73fc7a9ae85c7fc516856bcf422322c0d92a409df}
+  - {id: foundation.quality-attributes, version: 1.0.0, sha256: 50d92ab7563d70605408ba4592d9445f79f6eb0cecb50195471b56e42418b680}
+  - {id: foundation.technology-selection, version: 1.0.0, sha256: ce43c17d29cc79ad65c0f1a551a938f3fec642d1e75070b98d4aa3336ddf882d}
+  - {id: foundation.tradeoff-analysis, version: 1.0.0, sha256: 058c9756ba4d9306f42e0fb49365aff3564f3545e103c05812040ce2c9f8b9d5}
+  - {id: domain.plugin-platform, version: 1.0.0, sha256: b72a0e3b6959464b32c9a4d44b50baa40b4baf13b5b14f65f99d094f301bf58c}
+  - {id: domain.test-automation-platform, version: 1.0.0, sha256: 7ce2621239bad831f4a6689a1718b5dd1cdbbf1d6d2e3bb9a6d043457a70e016}
+options:
+  - id: keep-current
+    title: Retain the governed v1.1.1 recovery and proceed only through its external release gates
+    complexity_tier: keep-current
+    architecture_styles: []
+    patterns: []
+    technologies: []
+    benefits:
+      - Preserves the independently verified minimal correction and all public, persisted, packaging, release, and credential boundaries.
+      - Allows the real hosted tag run, exact draft, attestations, immutable publication, and current-host smoke to remain blocking evidence gates.
+      - Corrects the observed release orchestration defect through v1.1.1 without rewriting or moving v1.1.0 history.
+    liabilities:
+      - Completion remains blocked until hosted and administrative gates produce successful external evidence.
+      - Publication still requires a separately authorized local administrator after hosted draft preparation.
+    assumptions:
+      - External gates can validate the reviewed commit without another source or contract change.
+    quality_attribute_effects:
+      - {attribute: compatibility, effect: improves, rationale: 'A new patch version preserves v1.1.0 history and retains all public runtime and artifact contracts.'}
+      - {attribute: deterministic-enforcement, effect: improves, rationale: 'The summary-gate result and tag guard is explicit, locally truth-table tested, and leaves exact prepare and publish state transitions intact.'}
+      - {attribute: safety, effect: improves, rationale: 'No privileged hosted credential is added and immutable publication remains separately authorized and fail closed.'}
+      - {attribute: traceability, effect: improves, rationale: 'The source, selector anchor, clean provider, candidate, independent verification, Decision, hosted gates, and Release outcomes remain separately bound.'}
+    business_fit: Completes the authorized recovery path using the smallest verified patch while leaving external evidence as hard release gates.
+    team_fit: Uses the existing single-maintainer GitHub and local-administrator operating model without credential expansion.
+    evolution_fit: Preserves additive patch recovery and immutable published-release history.
+    implementation_complexity: low
+    operational_complexity: medium
+    migration_risk: low
+    reversibility: easy
+    cost: low
+    technical_maturity: mature
+    lock_in: none
+    tradeoff_scores: {business_fit: 2, quality_fit: 2, team_fit: 2, implementation: 2, operations: 0, migration: 2, reversibility: 2, cost: 2, maturity: 2, lock_in: 2, evolution: 2}
+    rejected_reasons: []
+  - id: defer-release
+    title: Retain v1.1.1 but defer hosted and publication progression
+    complexity_tier: low
+    architecture_styles: []
+    patterns: []
+    technologies: []
+    benefits:
+      - Avoids immediate hosted and administrative release operations.
+      - Leaves all existing tags and published releases untouched.
+    liabilities:
+      - Leaves the explicitly authorized release recovery incomplete.
+      - Produces no evidence for the corrected hosted eligibility path, draft assets, attestations, immutable publication, or host compatibility.
+    assumptions:
+      - The reviewed commit and external environment remain available for a later attempt.
+    quality_attribute_effects:
+      - {attribute: compatibility, effect: neutral, rationale: 'No new package is published.'}
+      - {attribute: deterministic-enforcement, effect: degrades, rationale: 'The hosted release-only path remains unexercised after its correction.'}
+      - {attribute: safety, effect: neutral, rationale: 'Deferral avoids mutation but adds no release-safety evidence.'}
+      - {attribute: traceability, effect: degrades, rationale: 'The recovery chain stops before hosted and public Release evidence exists.'}
+    business_fit: Avoids near-term operations but does not complete the authorized recovery.
+    team_fit: Requires the maintainer to repeat the same external-gate preparation later.
+    evolution_fit: Defers rather than resolves the outstanding validation obligations.
+    implementation_complexity: low
+    operational_complexity: low
+    migration_risk: low
+    reversibility: easy
+    cost: medium
+    technical_maturity: mature
+    lock_in: none
+    tradeoff_scores: {business_fit: -2, quality_fit: -1, team_fit: -1, implementation: 2, operations: 2, migration: 2, reversibility: 2, cost: 0, maturity: 2, lock_in: 2, evolution: -1}
+    rejected_reasons:
+      - It leaves the authorized recovery and every external release proof incomplete without reducing a verified implementation risk.
+  - id: manual-publish-v1-1-0
+    title: Manually publish the existing v1.1.0 tag
+    complexity_tier: low
+    architecture_styles: []
+    patterns: []
+    technologies: []
+    benefits:
+      - Avoids creating a new public patch version.
+    liabilities:
+      - Uses the tag whose observed workflow did not execute the release job.
+      - Has no successful hosted draft provenance or SBOM attestations for a compliant publication chain.
+      - Bypasses the reviewed v1.1.1 correction and its required real tag-run evidence.
+    assumptions:
+      - Local assets could be manufactured and uploaded without the missing hosted run.
+    quality_attribute_effects:
+      - {attribute: compatibility, effect: degrades, rationale: 'It publishes a version known not to contain the release-orchestration correction.'}
+      - {attribute: deterministic-enforcement, effect: degrades, rationale: 'It bypasses the hosted prepare and attestation path whose eligibility defect triggered recovery.'}
+      - {attribute: safety, effect: degrades, rationale: 'Manual publication would proceed without the required hosted provenance and SBOM attestation evidence.'}
+      - {attribute: traceability, effect: degrades, rationale: 'The published assets would not bind to the corrected source and required hosted run.'}
+    business_fit: Produces a Release sooner only by violating the accepted evidence and recovery boundary.
+    team_fit: Replaces the governed hosted preparation path with an unsupported manual workaround.
+    evolution_fit: Makes the obsolete tag the public recovery point and obscures why v1.1.1 exists.
+    implementation_complexity: low
+    operational_complexity: medium
+    migration_risk: high
+    reversibility: difficult
+    cost: high
+    technical_maturity: unknown
+    lock_in: medium
+    tradeoff_scores: {business_fit: -2, quality_fit: -2, team_fit: -2, implementation: 2, operations: -1, migration: -2, reversibility: -2, cost: -2, maturity: -2, lock_in: -1, evolution: -2}
+    rejected_reasons:
+      - It lacks hosted provenance and SBOM attestations and would bypass the observed defect rather than publish the verified correction.
+  - id: move-v1-1-0-tag
+    title: Move the v1.1.0 tag onto the corrected source
+    complexity_tier: medium
+    architecture_styles: []
+    patterns: []
+    technologies: []
+    benefits:
+      - Could reuse the existing version label for corrected source.
+    liabilities:
+      - Rewrites a public source identity and violates protected, immutable-history, and no-history-rewrite contracts.
+      - Breaks the tag-to-source provenance users may already have recorded.
+      - Prevents an honest patch-version record of the release recovery.
+    assumptions:
+      - Remote tag controls and consumers would tolerate a moved tag.
+    quality_attribute_effects:
+      - {attribute: compatibility, effect: degrades, rationale: 'The same public tag would identify different source commits over time.'}
+      - {attribute: deterministic-enforcement, effect: degrades, rationale: 'Previously recorded tag and provenance inputs would no longer reproduce the same source.'}
+      - {attribute: safety, effect: degrades, rationale: 'History rewrite bypasses the protected recovery and rollback boundary.'}
+      - {attribute: traceability, effect: degrades, rationale: 'Moving the tag destroys the stable identity required for release evidence.'}
+    business_fit: Avoids a patch number only by invalidating the repository's release trust contract.
+    team_fit: Requires a destructive remote action outside the authorized workflow.
+    evolution_fit: Prevents additive, auditable patch recovery.
+    implementation_complexity: medium
+    operational_complexity: high
+    migration_risk: high
+    reversibility: difficult
+    cost: high
+    technical_maturity: unknown
+    lock_in: high
+    tradeoff_scores: {business_fit: -2, quality_fit: -2, team_fit: -2, implementation: 0, operations: -2, migration: -2, reversibility: -2, cost: -2, maturity: -2, lock_in: -2, evolution: -2}
+    rejected_reasons:
+      - It violates the protected and immutable-history contract and would destroy the stable tag-to-source evidence chain.
+selected_option: keep-current
+rationale: >-
+  The independently verified patch has zero confirmed Findings and is the
+  smallest compatible correction to the observed tag-job skip propagation.
+  Retaining it preserves public contracts, v1.1.0 history, credential separation,
+  the exact hosted draft boundary, and local immutable publication authority while
+  keeping every unobserved hosted, remote, attestation, publication, and host-smoke
+  result as a blocking external gate. Deferral leaves the authorized recovery
+  incomplete; manually publishing or moving v1.1.0 would bypass or destroy the
+  evidence chain.
+revisit_triggers:
+  - Any hosted matrix lane, stable Quality gate, or real v1.1.1 tag workflow fails, cancels, skips unexpectedly, or does not prepare the draft.
+  - Remote immutable-release readback is disabled, missing, malformed, or otherwise cannot satisfy the local publish preflight.
+  - Exact draft inventory, checksum, SBOM, provenance, attestation, immutable publication, or post-publication verification fails.
+  - Current Codex host installation, routing, or Knowledge Selection smoke exposes a public compatibility defect.
+acceptance_evidence:
+  - The repository owner explicitly authorized the v1.1.1 recovery and release route while prohibiting privileged workflow credentials, account-permission expansion, v1.1.0 tag movement, and history rewrite.
+  - The architecture-owner accepts keep-current and requires each hosted, remote, draft, attestation, publication, and current-host gate to pass before its corresponding progression.
+  - The Decision is bound to the independent verified Review with zero Findings and the clean test-results Evidence Provider recording 207 passing tests and 67 passing subtests at commit db27b78a5de7502e294078aec603c0c8b9de10a5.
+migration:
+  affected_paths:
+    - .codex-plugin/plugin.json
+    - .github/workflows/ci.yml
+    - CHANGELOG.md
+    - README.md
+    - README.zh-CN.md
+    - docs/roadmap.md
+    - plugin.json
+    - resources/scripts/architecture_tool.py
+    - resources/selector-source.json
+    - resources/templates/knowledge-selection.yaml
+    - scripts/run_behavior_benchmark.py
+    - tests/test_architecture_tool.py
+    - tests/test_behavior_benchmark.py
+    - tests/test_ci_gate.py
+    - tests/test_constrained_target_architecture.py
+    - tests/test_package_plugin.py
+    - tests/test_repository_contract.py
+    - tests/test_supply_chain.py
+  slices:
+    - Preserve commits 306af53e692b1b2147fb362d821dbaf9ff3ff782 and db27b78a5de7502e294078aec603c0c8b9de10a5 as distinct source and selector-anchor ancestry, open a pull request, and merge with a Merge Commit only after required review and checks pass.
+    - Create an annotated v1.1.1 tag on the merged source and require the real hosted eight-lane matrix, stable Quality gate, and tag-triggered reusable workflow to complete successfully.
+    - Verify the reusable workflow prepared the exact six-asset draft and produced valid archive provenance plus both SPDX SBOM attestations without publishing.
+    - After authorized immutable-release enablement and successful API readback, run the local publish command, verify immutable state and the exact six assets, and preserve bounded verification evidence.
+    - Install both package forms on the current Codex host and record dated discovery, routing, CLI, and Knowledge Selection smoke evidence.
+  rollback: Before immutable v1.1.1 publication, revert the recovery Merge Commit without moving or deleting v1.1.0 and retain any failed workflow, draft, and attestation evidence for diagnosis; after publication, never move the tag or replace or delete immutable assets, and publish any correction as a new patch release.
+  validation:
+    - Validate the exact Candidate and Verified Reviews, accepted Decision, both Knowledge selections and contexts, clean Evidence Provider run, source bindings, repository, project, history anchors, and Knowledge catalogs.
+    - Require focused and full tests, strict mypy, runtime branch and changed-line coverage, Ruff check and format, license and dependency audit, deterministic double build, extracted package smoke, checksum, SPDX SBOM, and archive-boundary verification.
+    - Require the hosted eight-lane matrix and stable Quality gate, including the Python 3.14 dependency-audit lane, to pass without failure, cancellation, or unexpected skip.
+    - Verify authorized repository rulesets, Actions policy, v* tag protection, immutable-release enablement, and successful immutable GET readback without adding privileged hosted credentials.
+    - Verify the real v1.1.1 tag run, exact six-asset draft, provenance and SBOM attestations, local administrative publication, post-publish immutable state, checksums, and bounded remote verification.
+    - Install both v1.1.1 package forms on the current Codex host and record dated installation, routing, CLI, and Knowledge Selection smoke evidence.
