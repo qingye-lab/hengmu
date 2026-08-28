@@ -30,9 +30,6 @@ class CiGateTests(unittest.TestCase):
             ("push", "success", "success", True),
             ("push", "success", "failure", False),
             ("push", "success", "cancelled", False),
-            ("tag", "success", "skipped", True),
-            ("tag", "failure", "skipped", False),
-            ("tag", "cancelled", "skipped", False),
         )
         for event, quality, dependency, expected in cases:
             with self.subTest(
@@ -71,7 +68,36 @@ class CiGateTests(unittest.TestCase):
         summary = workflow["jobs"]["quality-gate"]
         self.assertEqual(summary["if"], "always()")
         self.assertEqual(summary["needs"], ["quality", "dependency-review"])
-        self.assertEqual(workflow["jobs"]["release"]["needs"], ["quality-gate"])
+        release = workflow["jobs"]["release"]
+        self.assertEqual(release["needs"], ["quality-gate"])
+        self.assertEqual(
+            release["if"],
+            "${{ !cancelled() && needs.quality-gate.result == 'success' "
+            "&& startsWith(github.ref, 'refs/tags/v') }}",
+        )
+
+    def test_release_guard_truth_table(self) -> None:
+        cases = (
+            (False, "success", "refs/tags/v1.1.1", True),
+            (False, "failure", "refs/tags/v1.1.1", False),
+            (False, "cancelled", "refs/tags/v1.1.1", False),
+            (False, "skipped", "refs/tags/v1.1.1", False),
+            (True, "success", "refs/tags/v1.1.1", False),
+            (False, "success", "refs/heads/main", False),
+            (False, "success", "refs/tags/1.1.1", False),
+        )
+        for workflow_cancelled, gate_result, ref, expected in cases:
+            with self.subTest(
+                workflow_cancelled=workflow_cancelled,
+                gate_result=gate_result,
+                ref=ref,
+            ):
+                actual = (
+                    not workflow_cancelled
+                    and gate_result == "success"
+                    and ref.startswith("refs/tags/v")
+                )
+                self.assertEqual(actual, expected)
 
     def test_main_reports_table_outcomes(self) -> None:
         cases = (

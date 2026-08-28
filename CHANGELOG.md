@@ -7,7 +7,20 @@ and this project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-08-28
+
+### Fixed
+
+- Tag pushes now evaluate the reusable release job after the successful stable
+  `Quality gate`, even when the pull-request-only dependency review is skipped.
+  The release guard still rejects cancelled workflows, non-success gate
+  results, branch pushes, and tags outside the `v*` namespace.
+
 ## [1.1.0] - 2026-08-27
+
+Release status: tagged but unpublished. The tag workflow completed its quality
+gate, but GitHub skipped the downstream reusable release job before it could
+prepare a draft Release.
 
 ### Added
 

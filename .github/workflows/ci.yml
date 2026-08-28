@@ -186,7 +186,7 @@ jobs:
 
   release:
     name: Prepare verified tag draft
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: ${{ !cancelled() && needs.quality-gate.result == 'success' && startsWith(github.ref, 'refs/tags/v') }}
     needs:
       - quality-gate
     permissions:

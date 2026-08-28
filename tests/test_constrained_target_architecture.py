@@ -201,7 +201,7 @@ class ConstrainedTargetArchitectureTests(unittest.TestCase):
             check=False,
         )
         self.assertEqual(process.returncode, 0, process.stderr)
-        self.assertEqual(process.stdout.strip(), "architecture_tool.py 1.1.0")
+        self.assertEqual(process.stdout.strip(), "architecture_tool.py 1.1.1")
 
     def test_brief_11_constraint_ids_and_open_cardinality(self) -> None:
         duplicate = _brief(

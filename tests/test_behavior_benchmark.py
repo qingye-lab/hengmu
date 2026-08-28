@@ -10,6 +10,7 @@ import tempfile
 import unittest
 from argparse import Namespace
 from pathlib import Path
+from unittest.mock import patch
 
 import yaml
 
@@ -23,6 +24,40 @@ SPEC.loader.exec_module(run_behavior_benchmark)
 
 
 class BehaviorBenchmarkTests(unittest.TestCase):
+    def test_parse_args_uses_default_skill_version(self) -> None:
+        with patch.object(
+            sys,
+            "argv",
+            [
+                str(SCRIPT_PATH),
+                "--output",
+                "benchmark-output.yaml",
+                "--model",
+                "test-model",
+                "--surface",
+                "test-surface",
+                "--",
+                sys.executable,
+                "-c",
+                "pass",
+            ],
+        ):
+            args = run_behavior_benchmark.parse_args()
+
+        self.assertEqual(
+            args.skill_version,
+            run_behavior_benchmark.DEFAULT_SKILL_VERSION,
+        )
+
+    def test_default_skill_version_matches_plugin_version(self) -> None:
+        manifest = json.loads(
+            (ROOT / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(
+            run_behavior_benchmark.DEFAULT_SKILL_VERSION,
+            manifest["version"],
+        )
+
     def test_tree_manifest_uses_portable_case_sensitive_order(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             fixture = Path(temporary)
@@ -114,7 +149,7 @@ class BehaviorBenchmarkTests(unittest.TestCase):
                 corpus_path=corpus_path,
                 corpus=corpus,
                 command=[sys.executable, "-c", "pass"],
-                skill_version="1.1.0",
+                skill_version=run_behavior_benchmark.DEFAULT_SKILL_VERSION,
                 model="test-model",
                 surface=surface,
                 declared_runtimes=[sys.executable],
@@ -159,7 +194,7 @@ class BehaviorBenchmarkTests(unittest.TestCase):
                 output=output,
                 model="test-model",
                 surface=python_surface,
-                skill_version="1.1.0",
+                skill_version=run_behavior_benchmark.DEFAULT_SKILL_VERSION,
                 runtime_executables=[sys.executable],
                 timeout=10,
                 command=[
@@ -399,7 +434,7 @@ class BehaviorBenchmarkTests(unittest.TestCase):
                 surface=(
                     python_version.stdout.strip() or python_version.stderr.strip()
                 ),
-                skill_version="1.1.0",
+                skill_version=run_behavior_benchmark.DEFAULT_SKILL_VERSION,
                 runtime_executables=[sys.executable],
                 timeout=10,
                 repetitions=1,
@@ -454,7 +489,7 @@ class BehaviorBenchmarkTests(unittest.TestCase):
                 output=output,
                 model="test-model",
                 surface="test-surface",
-                skill_version="1.1.0",
+                skill_version=run_behavior_benchmark.DEFAULT_SKILL_VERSION,
                 runtime_executables=[],
                 timeout=10,
                 repetitions=1,

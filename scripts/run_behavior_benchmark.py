@@ -17,6 +17,7 @@ from typing import Any
 import yaml
 from jsonschema import Draft202012Validator, FormatChecker
 
+DEFAULT_SKILL_VERSION = "1.1.1"
 TREATMENT_CONDITIONS = ("base", "full", "compressed")
 
 
@@ -893,7 +894,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--model", required=True)
     parser.add_argument("--surface", required=True)
-    parser.add_argument("--skill-version", default="1.1.0")
+    parser.add_argument("--skill-version", default=DEFAULT_SKILL_VERSION)
     parser.add_argument(
         "--condition",
         choices=["base", "full", "compressed"],

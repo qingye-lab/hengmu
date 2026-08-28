@@ -13,10 +13,12 @@ GitHub Issues may track execution only when they link back to this file.
 - The 2026-08-27 quality-baseline repair aligned the Ruff specification and
   lock and added an Ubuntu Python 3.12 CI lane. It changes development evidence
   only and does not independently justify a release.
+- v1.1.0 was tagged on 2026-08-27 but remained unpublished because GitHub
+  skipped the reusable release job after the successful summary gate.
 
 ## v1.1 engineering trust
 
-Status: in implementation.
+Status: v1.1.1 release recovery.
 
 Required outcomes:
 
@@ -36,14 +38,16 @@ Required outcomes:
 - verify published immutable assets and attestations without modifying a
   published Release.
 
-Done when all local gates pass, the hosted eight-lane matrix and summary gate
-pass, release-stage evidence reaches V4, a future v1.1.0 tag prepares the exact
-six-asset draft, and a separate local administrator publication verifies the
-immutable Release. Repository rulesets and immutable-release settings are
-enabled only as a separately observed remote administration step. Before the
-first v1.1 tag, an administrator must enable immutable releases and the
-maintainer must retain an authenticated GET readback; the tag workflow neither
-enables the setting nor publishes.
+The v1.1.1 patch repairs only tag-job orchestration: it explicitly evaluates the
+release job when the workflow is not cancelled, the stable `Quality gate`
+succeeds, and the ref is a `v*` tag. Done when all local gates pass, the hosted
+eight-lane matrix and summary gate pass, release-stage evidence reaches V4, the
+v1.1.1 tag prepares the exact six-asset draft, and a separate local
+administrator publication verifies the immutable Release. Repository rulesets
+and immutable-release settings are enabled only as a separately observed remote
+administration step. Before the v1.1.1 tag, an administrator must enable
+immutable releases and the maintainer must retain an authenticated GET
+readback; the tag workflow neither enables the setting nor publishes.
 
 ## v1.2 AI Knowledge 2026
 
