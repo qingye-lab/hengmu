@@ -1,0 +1,231 @@
+schema_version: '1.2'
+review:
+  id: hengmu-20260829-v1-3-benchmark-contract-project-verified
+  kind: project
+  workflow: project-architecture
+  subject:
+    id: hengmu
+    name: Hengmu
+    repository: .
+  performed_at: '2026-08-29T13:22:38Z'
+  commit: de4f22703912f1c32011c88469d8c09c0a8ee472
+  scope: ['.']
+  verification_state: verified
+  reviewers: [architecture-verifier]
+  verification_run:
+    id: hengmu-v1-3-benchmark-contract-v2-20260829-132238
+    surface: codex-subagent-read-only
+    started_at: '2026-08-29T13:22:38Z'
+    completed_at: '2026-08-29T13:22:38Z'
+  source_candidate:
+    path: .architecture/reviews/2026-08-29-v1-3-benchmark-contract-project-candidates.yaml
+    review_id: hengmu-20260829-v1-3-benchmark-contract-project-candidates
+    sha256: febabbf71e7739f0fc27a4072370d4e5cca2643f54496182cfeac37025dacb09
+    commit: de4f22703912f1c32011c88469d8c09c0a8ee472
+  profile: .architecture/reviews/inputs/2026-08-29-v1-3-benchmark-contract-profile.yaml
+  repository_identity: hengmu
+  profile_sha256: 1d48f094b871328392e88229b401a8879e21cdcec7e3935ea4c1f5d149f3ef32
+  dirty_tree: false
+  rule_packs:
+    - {id: project-core, version: 1.0.0, sha256: b211d548ad5fe367b9dab8416051c43f3a206da81bd2a8e7596cd788ed3f100c}
+    - {id: plugin-platform, version: 1.0.0, sha256: 7ae17488df7a78ce1b857d3f842bd51b87de4ec30576fbe250cfa991472b3700}
+    - {id: test-automation-platform, version: 1.0.0, sha256: 23efb3c02cd9e4e2ec2cb83d1505b30dd780aff2a9ac7157506b361cb783c5aa}
+  scope_manifest: ['.']
+summary:
+  architecture: >-
+    Hengmu 1.3.0 extends the existing behavior benchmark rather than creating a
+    second runner. The actual 38-path diff adds schema 1.6 trusted command
+    envelopes, harness implementation/configuration identity, per-attempt
+    status and bounded failure classes, actual-model source and fallback
+    fields, retry/correction policy, Wilson intervals, failure counts, and
+    tokens-per-solved. It preserves schema 1.1 through 1.5 readability and a
+    byte-exact 1.0.0 Ground Truth snapshot. Context manifest 1.1 resolves exact
+    case overrides before Skill defaults and rejects ambiguity. Five
+    outcome-neutral fixtures cover protocol-session authority, delegated task
+    ownership, sensitive GenAI traces, extension provenance/permissions, and
+    unbound evaluation/model claims. Scoring re-resolves evidence and
+    provenance, treats every failed trial including negatives as unsolved,
+    rejects schema-valid wrong outcomes and duplicate rejected options, and
+    fail-closes exact 12-attempt canary and 270-attempt matrix identity. Source
+    review repairs separate the command-result schema from plugin manifests,
+    seal failed execution logs, and refuse requested, aliased, missing, or
+    fallback model strings as actual identity. Codex CLI 0.150.1 exposes no
+    documented authoritative actual-model JSONL field, so live canary/full
+    evidence and all v1.3 model-quality or release claims remain blocked. The
+    version and documentation changes claim only source contract and fixture
+    coverage. No public Skill/frontmatter, Knowledge entry, Rule Pack, Evidence
+    Provider, release workflow, publication algorithm, or runtime network
+    boundary changes occur. Independent read-only V2 verification confirms the zero-finding source
+    governance assessment and its full bindings. No global test, deterministic
+    Provider, live model, V4, or release evidence is claimed.
+  raw_findings: 0
+  confirmed: 0
+  rejected: 0
+  needs_evidence: 0
+coverage:
+  - rule_id: PROJECT.CHANGE.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - &native_manifest {path: .codex-plugin/plugin.json, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: 5ab17a3bd2cdf9b82846110d5b77b4431afacc7c, line_start: 1, line_end: 41, observation: "The native plugin identity advances to 1.3.0 while retaining the existing public Skill and Python host contracts."}
+      - &changelog {path: CHANGELOG.md, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: 9aafe8c018148142850a691f7945690851187ad2, line_start: 7, line_end: 25, observation: "The changelog limits v1.3 to benchmark contract, fixtures, and deterministic verification and states that two-model quality evidence is pending."}
+      - &readme {path: README.md, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: 3743e6dc9c99a5d2d5a63627d150681eaf595660, line_start: 16, line_end: 245, observation: "User-visible version and CLI output align to 1.3.0 without changing the public workflow or Python 3.11 through 3.14 boundary."}
+      - &context_manifest {path: benchmarks/ablation/context-manifest.yaml, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: be2c781927934d88a122e2686ab0c90e7420ee59, line_start: 1, line_end: 139, observation: "The ablation manifest preserves outcome-neutral Base/Full/Compressed defaults and adds an exact evaluation-report case override with the same Full/Compressed Knowledge basis."}
+      - &delegated_readme {path: benchmarks/fixtures/delegated-support-flow/README.md, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: e392a6182d0446b202e6e56bd550efee2d9060e0, line_start: 1, line_end: 4, observation: "The delegated-support fixture describes handoff behavior without disclosing expected Rule IDs or outcomes."}
+      - &delegated_source {path: benchmarks/fixtures/delegated-support-flow/flow.py, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: 3b5d8e2da6e8bf4b4d8c816d0d749cf4d32d1d76, line_start: 1, line_end: 12, observation: "The A2A-like handoff fixture exposes current implementation evidence for ownership and authorization review without embedded ground truth."}
+      - &evaluation_readme {path: benchmarks/fixtures/evaluation-report-pipeline/README.md, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: fe32694ed3d99d4eee8e03e31d6e019e9f40a1e1, line_start: 1, line_end: 4, observation: "The evaluation-report fixture stays outcome-neutral and names only the observable reporting flow."}
+      - &evaluation_source {path: benchmarks/fixtures/evaluation-report-pipeline/report.py, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: 3b2fdfc39e923ed006b4fda0ef942578f3da69df, line_start: 1, line_end: 12, observation: "The evaluation fixture exposes unbound quality-report identity for Rule-based assessment without asserting its expected finding."}
+      - &extension_readme {path: benchmarks/fixtures/extension-runtime-loader/README.md, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: 227282ce5662c9a12807d07708369a37da2759b9, line_start: 1, line_end: 4, observation: "The extension fixture description does not reveal expected provenance or permission findings."}
+      - &extension_source {path: benchmarks/fixtures/extension-runtime-loader/loader.py, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: 85398e85355776b1dc0591533c10a5690fceff96, line_start: 1, line_end: 10, observation: "The Agent Skill-like loader provides concrete package-origin and authority behavior for review."}
+      - &protocol_readme {path: benchmarks/fixtures/protocol-session-host/README.md, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: 74c1f3b106f55e56066a557604db0e01b52e82dc, line_start: 1, line_end: 5, observation: "The protocol-session fixture description remains outcome-neutral."}
+      - &protocol_source {path: benchmarks/fixtures/protocol-session-host/host.py, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: d6bfb2be5b8d09d895f8c47627563117ab75059e, line_start: 1, line_end: 9, observation: "The MCP-like session host exposes protocol state and tool authorization behavior without naming ground truth."}
+      - &trace_readme {path: benchmarks/fixtures/trace-export-pipeline/README.md, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: 97fe45c7c97850bb4540e2b3c3e5daeebf162b1a, line_start: 1, line_end: 4, observation: "The trace-export fixture description does not reveal expected secret or observability findings."}
+      - &trace_source {path: benchmarks/fixtures/trace-export-pipeline/exporter.py, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: 3f9746b5a0efa6fb925f817b93e318bce57ecf86, line_start: 1, line_end: 8, observation: "The GenAI-like exporter provides sensitive trace behavior for evidence-backed assessment."}
+      - &legacy_truth {path: benchmarks/ground-truth-1.0.0.yaml, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: c71b533b6ac1c81049f058cf7ff4ed6d02d6b584, line_start: 1, line_end: 129, observation: "The exact prior ten-case Ground Truth is retained as a versioned historical corpus snapshot."}
+      - &current_truth {path: benchmarks/ground-truth.yaml, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: e160d4201794baba9b9c12e814ebe944ff18c632, line_start: 1, line_end: 169, observation: "The current Ground Truth adds five outcome-neutral fixtures with explicit expected Rule presence and forbidden recommendations, bringing the matrix to fifteen cases."}
+      - &results_docs {path: benchmarks/results/README.md, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: a2d24cab9b45b731eca87ac87396c5b35b0657ef, line_start: 1, line_end: 33, observation: "Results documentation requires YAML/log/score preservation and explicitly denies a model-quality claim before live canary and matrix completion."}
+      - &evaluation_docs {path: docs/evaluation.md, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: 6f46a9a4d7c8d8234a03308e5188eec93ee99b58, line_start: 90, line_end: 265, observation: "Evaluation documentation defines trusted envelopes, identity/provenance, case overrides, 12/270 shapes, failed-trial scoring, Wilson/tokens behavior, and the source-versus-model-evidence boundary."}
+      - &migration_docs {path: docs/migrating-to-1.3.md, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: 23d360a49c43f8edae02a422e67325da84caacc4, line_start: 1, line_end: 19, observation: "Migration guidance preserves schemas 1.1 through 1.5, the exact 1.0.0 corpus, one record per attempt, exact context resolution, and fail-closed model identity."}
+      - &roadmap {path: docs/roadmap.md, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: 99f01dac11cf80b8171e1193758fcd6c729aee6f, line_start: 82, line_end: 101, observation: "The roadmap marks source contract implemented but live two-model canary and full behavior evidence pending."}
+      - &portable_manifest {path: plugin.json, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: 1099ce905884cd1cdc41f84e0b2fb02b3c52b523, line_start: 1, line_end: 25, observation: "The portable manifest aligns version identity to 1.3.0 without changing discovery capabilities."}
+      - &command_schema {path: resources/schemas/benchmark-command-result.schema.json, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: 320604dfe0b4fb226aa8cf58bfdccb438a244ffe, line_start: 1, line_end: 103, observation: "The command-result schema owns adapter identity, actual-model source, bounded correction policy, usage, status, and failure class independently from model output."}
+      - &context_schema {path: resources/schemas/benchmark-context-manifest.schema.json, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: fb882c7a62e664e08d0f6e3bfd62f0a1526ba8b1, line_start: 1, line_end: 95, observation: "Context manifest 1.1 permits optional case_id while retaining schema 1.0 items without case-specific fields."}
+      - &observation_schema {path: resources/schemas/benchmark-observation.schema.json, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: 7a80475c43a8851a4e4b6558c7ee4a97b959c0ac, line_start: 1, line_end: 115, observation: "The observation schema adds only rejected-option uniqueness while retaining the model-visible finding and decision contract."}
+      - &score_schema {path: resources/schemas/benchmark-score.schema.json, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: 9b9aed447fdd07e7a31f6e9b3d347564b27e5a74, line_start: 1, line_end: 36, observation: "The score schema requires completed/passed/solved-rate, Wilson bounds, tokens-per-solved, and failure counts for current scores while retaining nullable telemetry."}
+      - &benchmark_schema {path: resources/schemas/benchmark.schema.json, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: 1407bb091a5e0bf0aa4a113338225c14a2565265, line_start: 1, line_end: 802, observation: "Benchmark schema 1.6 adds harness, provenance, selected cases, per-trial completion/failure/model/retry fields, and strict 1.6 requirements while leaving 1.1 through 1.5 readable."}
+      - &architecture_tool {path: resources/scripts/architecture_tool.py, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: dc85d986d8d467626a78290e30574c8a7909547d, line_start: 7240, line_end: 8805, observation: "The scorer and matrix validator resolve provenance, logs, command envelopes, evidence, outcomes, failure taxonomy, actual model, exact shapes, Wilson bounds, and tokens-per-solved fail closed."}
+      - &selector {path: resources/selector-source.json, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: d4757712515f10c9548c414fd810d8d03b616f23, line_start: 1, line_end: 6, observation: "Selector metadata aligns 1.3.0 and anchors source commit 655ade64f703462dc7fd9299c55b405f37561db5 without changing selector implementation."}
+      - &selection_template {path: resources/templates/knowledge-selection.yaml, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: 295e7d90b27e36d77b6f695e08f4412e584a2004, line_start: 39, line_end: 45, observation: "The distributed Selection template aligns only plugin version to 1.3.0."}
+      - &adapter {path: scripts/codex_benchmark_adapter.py, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: 24578e7da75b4ea0f5d9544001bb45c0b130136b, line_start: 1, line_end: 640, observation: "The adapter emits a trusted command envelope, validates fixture evidence, bounds one evidence-only correction, discards model-produced identity metadata, seals failures, and leaves actual_model unavailable for Codex CLI 0.150.1."}
+      - &runner {path: scripts/run_behavior_benchmark.py, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: 8011b8b0a98379c380a97e5e3705e2cbafa88107, line_start: 1, line_end: 1191, observation: "The existing Runner implements exact/default context resolution, per-attempt continuation, safe placeholders, hash-only logs, harness/config/provenance hashes, runtime fingerprints, selected cases, and schema 1.6 output."}
+      - &repository_validator {path: scripts/validate_repository.py, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: 0c1ea54dd52c475d6e896c55abba6e2276d15cc8, line_start: 1, line_end: 1382, observation: "Repository validation registers the new benchmark schemas and enforces current corpus, fixture, context, version, and documentation contracts."}
+      - &architecture_tests {path: tests/test_architecture_tool.py, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: b70b120e1b5f3885eb3bada5f05d067b0d20bd1e, line_start: 3380, line_end: 4080, observation: "Architecture tests cover failed negatives, schema-role separation, wrong-truth scoring, rejected-option identity, Wilson/tokens, provenance tamper checks, and exact canary/full matrix behavior."}
+      - &runner_tests {path: tests/test_behavior_benchmark.py, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: be964af70535d71663827c0fee5d45e642f252bb, line_start: 1, line_end: 884, observation: "Runner tests cover legacy bytes, version/harness hashes, case overrides, no ground-truth leakage, mixed failures, sealed logs, safe arguments, context integrity, and fixture evidence resolution."}
+      - &adapter_tests {path: tests/test_codex_benchmark_adapter.py, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: b5f020e1d4d417bda998394b467b93ae3c5d3009, line_start: 1, line_end: 382, observation: "Adapter tests prove actual-model identity remains unavailable for current CLI JSONL, reject hostile nested model strings, validate exact evidence, prevent context leakage, and seal tool/schema failures."}
+      - &integrated_version_test {path: tests/test_constrained_target_architecture.py, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: 20673c4a18014d72bca0d73d0b15f103bb3d63f4, line_start: 192, line_end: 206, observation: "The integrated CLI version assertion aligns to 1.3.0 without changing Decision compatibility tests."}
+      - &package_test {path: tests/test_package_plugin.py, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: cd5150554a44f429167b311efe962ebd4c6e5e1c, line_start: 90, line_end: 104, observation: "Portable package expectations align the deterministic archive name to 1.3.0 while retaining inventory checks."}
+      - &repository_test {path: tests/test_repository_contract.py, commit: de4f22703912f1c32011c88469d8c09c0a8ee472, blob_sha: f707c71ead701d45b9b84b346896e514b955dfdc, line_start: 136, line_end: 166, observation: "Repository tests require manifest, selector, and Selection template version alignment at 1.3.0 and retain schema validation."}
+  - {rule_id: PROJECT.BOUNDARY.001, status: assessed, finding_ids: [], evidence: [*runner, *adapter, *architecture_tool, *native_manifest, *portable_manifest]}
+  - {rule_id: PROJECT.DEPENDENCY.001, status: assessed, finding_ids: [], evidence: [*runner, *adapter, *command_schema, *benchmark_schema, *repository_validator]}
+  - {rule_id: PROJECT.COHESION.001, status: assessed, finding_ids: [], evidence: [*runner, *adapter, *architecture_tool, *context_manifest]}
+  - {rule_id: PROJECT.FRONTEND.001, status: not_applicable, finding_ids: [], reason: "Hengmu has no frontend/backend business-validation boundary or client-owned authoritative business invariant."}
+  - {rule_id: PROJECT.DATA.001, status: assessed, finding_ids: [], evidence: [*legacy_truth, *current_truth, *benchmark_schema, *score_schema]}
+  - {rule_id: PROJECT.OWNERSHIP.001, status: assessed, finding_ids: [], evidence: [*command_schema, *adapter, *architecture_tool, *evaluation_source]}
+  - {rule_id: PROJECT.CONTRACT.001, status: assessed, finding_ids: [], evidence: [*benchmark_schema, *command_schema, *context_schema, *observation_schema, *score_schema, *migration_docs]}
+  - {rule_id: PROJECT.TRANSACTION.001, status: not_applicable, finding_ids: [], reason: "The benchmark records local attempts and artifacts but adds no cross-system business transaction or authoritative product write."}
+  - {rule_id: PROJECT.IDEMPOTENCY.001, status: assessed, finding_ids: [], evidence: [*runner, *architecture_tool, *runner_tests]}
+  - {rule_id: PROJECT.RELIABILITY.001, status: assessed, finding_ids: [], evidence: [*benchmark_schema, *command_schema, *runner, *architecture_tool, *architecture_tests, *runner_tests]}
+  - {rule_id: PROJECT.STATE.001, status: assessed, finding_ids: [], evidence: [*benchmark_schema, *runner, *architecture_tool, *architecture_tests]}
+  - {rule_id: PROJECT.SECURITY.001, status: assessed, finding_ids: [], evidence: [*adapter, *adapter_tests, *protocol_source, *delegated_source, *extension_source]}
+  - {rule_id: PROJECT.PRIVACY.001, status: assessed, finding_ids: [], evidence: [*trace_source, *adapter, *evaluation_docs]}
+  - {rule_id: PROJECT.OBSERVABILITY.001, status: assessed, finding_ids: [], evidence: [*trace_source, *score_schema, *runner, *architecture_tool]}
+  - {rule_id: PROJECT.CONFIG.001, status: assessed, finding_ids: [], evidence: [*context_manifest, *context_schema, *runner, *runner_tests, *selector, *selection_template]}
+  - {rule_id: PROJECT.PERFORMANCE.001, status: assessed, finding_ids: [], evidence: [*score_schema, *architecture_tool, *evaluation_docs, *architecture_tests]}
+  - {rule_id: PROJECT.TEST.001, status: assessed, finding_ids: [], evidence: [*architecture_tests, *runner_tests, *adapter_tests, *current_truth, *context_manifest]}
+  - {rule_id: PROJECT.DEPLOY.001, status: assessed, finding_ids: [], evidence: [*results_docs, *evaluation_docs, *roadmap, *changelog, *native_manifest, *portable_manifest]}
+  - {rule_id: PROJECT.DEBT.001, status: assessed, finding_ids: [], evidence: [*legacy_truth, *migration_docs, *benchmark_schema, *runner_tests]}
+  - {rule_id: PROJECT.DESIGN.001, status: assessed, finding_ids: [], evidence: [*runner, *adapter, *architecture_tool, *benchmark_schema]}
+  - {rule_id: PLUGIN.MANIFEST.001, status: assessed, finding_ids: [], evidence: [*native_manifest, *portable_manifest, *selector, *selection_template, *repository_test]}
+  - {rule_id: PLUGIN.AUTHORITY.001, status: assessed, finding_ids: [], evidence: [*adapter, *command_schema, *protocol_source, *delegated_source, *extension_source]}
+  - {rule_id: PLUGIN.ISOLATION.001, status: assessed, finding_ids: [], evidence: [*runner, *adapter, *runner_tests, *adapter_tests]}
+  - {rule_id: PLUGIN.LIFECYCLE.001, status: assessed, finding_ids: [], evidence: [*native_manifest, *portable_manifest, *changelog, *migration_docs, *package_test]}
+  - {rule_id: PLUGIN.SUPPLYCHAIN.001, status: assessed, finding_ids: [], evidence: [*runner, *architecture_tool, *results_docs, *repository_validator]}
+  - {rule_id: TESTPLATFORM.RUN.001, status: assessed, finding_ids: [], evidence: [*runner, *command_schema, *runner_tests]}
+  - {rule_id: TESTPLATFORM.ISOLATION.001, status: assessed, finding_ids: [], evidence: [*runner, *adapter, *protocol_source, *delegated_source, *trace_source, *extension_source, *evaluation_source]}
+  - {rule_id: TESTPLATFORM.EVIDENCE.001, status: assessed, finding_ids: [], evidence: [*architecture_tool, *runner, *adapter, *architecture_tests, *runner_tests, *adapter_tests]}
+  - {rule_id: TESTPLATFORM.SCHEDULE.001, status: not_applicable, finding_ids: [], reason: "Hengmu invokes bounded local subprocess trials and matrix verification; it does not implement a shared scheduler, lease, tenancy, or abandoned-work queue."}
+  - {rule_id: TESTPLATFORM.FLAKE.001, status: assessed, finding_ids: [], evidence: [*benchmark_schema, *score_schema, *architecture_tool, *architecture_tests, *evaluation_docs]}
+findings: []
+evidence_sources:
+  - .architecture/reviews/inputs/2026-08-29-v1-3-benchmark-contract-knowledge-context.yaml
+  - .architecture/reviews/inputs/2026-08-29-v1-3-benchmark-contract-knowledge-selection.yaml
+  - .architecture/reviews/inputs/2026-08-29-v1-3-benchmark-contract-profile.yaml
+  - .architecture/reviews/inputs/2026-08-29-v1-3-benchmark-contract-repository-facts.yaml
+  - .codex-plugin/plugin.json
+  - CHANGELOG.md
+  - README.md
+  - benchmarks/ablation/context-manifest.yaml
+  - benchmarks/fixtures/delegated-support-flow/README.md
+  - benchmarks/fixtures/delegated-support-flow/flow.py
+  - benchmarks/fixtures/evaluation-report-pipeline/README.md
+  - benchmarks/fixtures/evaluation-report-pipeline/report.py
+  - benchmarks/fixtures/extension-runtime-loader/README.md
+  - benchmarks/fixtures/extension-runtime-loader/loader.py
+  - benchmarks/fixtures/protocol-session-host/README.md
+  - benchmarks/fixtures/protocol-session-host/host.py
+  - benchmarks/fixtures/trace-export-pipeline/README.md
+  - benchmarks/fixtures/trace-export-pipeline/exporter.py
+  - benchmarks/ground-truth-1.0.0.yaml
+  - benchmarks/ground-truth.yaml
+  - benchmarks/results/README.md
+  - docs/evaluation.md
+  - docs/migrating-to-1.3.md
+  - docs/roadmap.md
+  - plugin.json
+  - resources/schemas/benchmark-command-result.schema.json
+  - resources/schemas/benchmark-context-manifest.schema.json
+  - resources/schemas/benchmark-observation.schema.json
+  - resources/schemas/benchmark-score.schema.json
+  - resources/schemas/benchmark.schema.json
+  - resources/scripts/architecture_tool.py
+  - resources/selector-source.json
+  - resources/templates/knowledge-selection.yaml
+  - scripts/codex_benchmark_adapter.py
+  - scripts/run_behavior_benchmark.py
+  - scripts/validate_repository.py
+  - tests/test_architecture_tool.py
+  - tests/test_behavior_benchmark.py
+  - tests/test_codex_benchmark_adapter.py
+  - tests/test_constrained_target_architecture.py
+  - tests/test_package_plugin.py
+  - tests/test_repository_contract.py
+limitations:
+  - This Verified Review records independent read-only agent verification at V2 only; it is not human V3, deterministic V4, signed V5, independent GitHub approval, hosted, or release verification.
+  - The user explicitly prohibited global local tests. No full pytest suite, branch/changed-line coverage run, package double-build, extracted smoke, checksum, SBOM, dependency audit, license audit, or test-results Evidence Provider was executed in this Phase A.
+  - tool_evidence is intentionally empty. Targeted command outcomes below are local verifier observations and do not become deterministic Provider evidence or release-gate proof.
+  - 'Targeted observation: `python3 -m pytest -p no:cacheprovider tests/test_behavior_benchmark.py tests/test_codex_benchmark_adapter.py` passed 35 tests on macOS arm64/Python 3.13.'
+  - 'Targeted observation: `python3 -m pytest -p no:cacheprovider tests/test_architecture_tool.py -k benchmark` passed 13 selected tests and deselected 54.'
+  - 'Targeted observation: the exact CLI, integrated CLI, and manifest/selector/template version nodes passed 3 tests.'
+  - 'Targeted observation: Ruff check passed and Ruff format reported all 15 changed Python files already formatted; strict mypy reported no issues in the four changed production scripts.'
+  - 'Targeted observation: all five changed benchmark JSON Schemas passed Draft 2020-12 schema checking; repository validation passed 9 public Skills, 45 eval cases, 30 schemas, and 20 templates.'
+  - Codex CLI 0.150.1 has no documented authoritative actual-model JSONL event field. The adapter therefore records actual_model as null/unavailable and exact matrix verification fails closed; the 12-attempt canary and 270-attempt full evaluation cannot produce authoritative model evidence on this surface.
+  - No live model trial was run. Model precision, recall, stability, decision accuracy, over-design, forbidden recommendations, usage, Wilson intervals, tokens-per-solved, and production behavior remain unknown; v1.3 model-quality and release claims are blocked.
+  - Hosted operating-system/Python lanes, GitHub repository controls, exact-six draft, attestations, immutable publication, and current-host package smoke remain unverified.
+  - The fresh sixteen-entry Knowledge Context was validated as an exact rendering of its Selection and is context only; schema 1.2 trust binds the Selection itself.
+  - The four fresh inputs, Candidate, and this Verified Review remain untracked; no Decision, Plan, Provider, commit, or remote action was created.
+coverage_complete: true
+tool_evidence: []
+repository_facts:
+  path: .architecture/reviews/inputs/2026-08-29-v1-3-benchmark-contract-repository-facts.yaml
+  sha256: 4ffc85f3adaf12b11d26529b215f062dbc309e6d1fe679442ee5ee86e6241e73
+knowledge_selection:
+  path: .architecture/reviews/inputs/2026-08-29-v1-3-benchmark-contract-knowledge-selection.yaml
+  sha256: 99003ef062731c5d1887f2e8f039e94c6ec0bc6d74b9042f4b733f11955d5a29
+selected_knowledge:
+  - {id: foundation.data-ownership, version: 1.0.0, sha256: 260f240ec9782f5a42a68481652912532cfcd6a0b07fdc5366d44388cc3d0204}
+  - {id: foundation.evidence-reasoning, version: 1.0.0, sha256: e3c370e04b8a9be5e64ea0d107281043652b1cdba3393fb61b57efd77262650f}
+  - {id: foundation.proportional-design, version: 1.0.0, sha256: ccfa63d523fab3503c47dbf73fc7a9ae85c7fc516856bcf422322c0d92a409df}
+  - {id: foundation.quality-attributes, version: 1.0.0, sha256: 50d92ab7563d70605408ba4592d9445f79f6eb0cecb50195471b56e42418b680}
+  - {id: foundation.system-boundaries, version: 1.0.0, sha256: a326964ec74303e0f08f3e7207e4836a0ff04c93c7f8516e6190b47925ec06db}
+  - {id: domain.plugin-platform, version: 1.0.0, sha256: b72a0e3b6959464b32c9a4d44b50baa40b4baf13b5b14f65f99d094f301bf58c}
+  - {id: domain.test-automation-platform, version: 1.0.0, sha256: 7ce2621239bad831f4a6689a1718b5dd1cdbbf1d6d2e3bb9a6d043457a70e016}
+  - {id: technology.agent-skills, version: 1.0.0, sha256: 571c9390240cb651beeb118191a1e619b80bb50cea0fc9dc3a70011f748392ac}
+  - {id: reference.secure-agent-tool-runtime, version: 1.0.0, sha256: 07963d327ca3dc7abb85d7fa4da41931ad376d7fd283ca259658105a205c101b}
+  - {id: decision.agent-evaluation-design, version: 1.0.0, sha256: 7f8d12324c1eafc7c9493f823d7b502eb587c55e4bf66a502deac75fcd36e1e7}
+  - {id: domain.identity, version: 1.0.0, sha256: ea71711f1ddc69b08f9124c36da67a59a9001245ae134317c68f172d1e10834e}
+  - {id: pattern.schema-registry, version: 1.0.0, sha256: e4253c2001c75153e8135597cef7f5ec3df56293b56561bc673820cb8d97151a}
+  - {id: technology.a2a-protocol, version: 1.0.0, sha256: 6957f28a0878b9bdc0a6ad0f2a88d3cbb09ee4605fe26da1eedcd3ff0ee40978}
+  - {id: technology.model-context-protocol, version: 1.0.0, sha256: 48dec38289808c27a66f50489d796097870420b842d811048901f27cabde2f83}
+  - {id: technology.opentelemetry-genai, version: 1.0.0, sha256: ee20bb9280198bd2219eb074480c6d1ee903e40fb59393b5b854d399a83b4d14}
+  - {id: domain.ai-agent, version: 1.1.0, sha256: c9d283d3d804f06b66eb80520a6f09c5e0ddf95900958625b2e4101f975ad4dd}
+critical_flow_coverage:
+  - {id: plugin-discovery-and-skill-execution, status: assessed, reason: "Both 1.3.0 manifests, selector anchor, Selection template, adapter/runner entry points, and version tests were inspected; package and host smoke remain unverified.", evidence: [*native_manifest, *portable_manifest, *selector, *selection_template, *adapter, *runner, *repository_test]}
+  - {id: finding-verification-and-policy-enforcement, status: assessed, reason: "The scorer re-resolves fixture evidence, exact Rule IDs, severities, decisions, failures, provenance, and logs; targeted tests cover tampering and wrong-but-schema-valid outcomes, but no Provider or V2 evidence exists.", evidence: [*architecture_tool, *benchmark_schema, *architecture_tests, *runner_tests, *adapter_tests]}
+  - {id: architecture-knowledge-and-behavior-evaluation, status: assessed, reason: "Schema 1.6 identity, case overrides, fifteen outcome-neutral cases, 12/270 shapes, trial scoring, telemetry nullability, provenance, and model-identity fail-closed behavior were inspected; live behavior remains blocked.", evidence: [*benchmark_schema, *context_manifest, *current_truth, *runner, *adapter, *architecture_tool, *evaluation_docs]}
+  - {id: greenfield-architecture-decision, status: assessed, reason: "Solution scoring requires selected option, canonical trade-offs, Knowledge IDs, unique rejected options, and migration slices without changing the Decision artifact workflow.", evidence: [*observation_schema, *benchmark_schema, *architecture_tool, *architecture_tests]}
+  - {id: safe-project-initialization, status: assessed, reason: "No initialization path or public project schema changed; repository validation remains the owning contract check.", evidence: [*repository_validator, *repository_test]}
+  - {id: deterministic-release-packaging, status: assessed, reason: "Package identity advances to 1.3.0 and benchmark results require preserved provenance, but package builds, hosted gates, release assets, attestations, publication, and host smoke were intentionally not run in this Phase A.", evidence: [*native_manifest, *portable_manifest, *package_test, *results_docs, *changelog, *roadmap]}
+unknowns:
+  - Whether any supported model can satisfy the exact v1.3 canary and full thresholds remains unknown because Codex CLI 0.150.1 cannot authoritatively identify the actual model in JSONL and no live trials were run.
+  - Full local suite, coverage, package, dependency, license, hosted, release, attestation, immutable publication, and current-host results remain unknown under the explicit Phase A test restriction.
+  - Independent V2 source verification found no Candidate findings, but cross-module behavior outside the targeted impact checks remains unverified without the prohibited full suite or a deterministic Provider.
