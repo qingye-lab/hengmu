@@ -6,7 +6,7 @@
   "additionalProperties": false,
   "required": ["schema_version", "treatments"],
   "properties": {
-    "schema_version": {"const": "1.0"},
+    "schema_version": {"enum": ["1.0", "1.1"]},
     "treatments": {
       "type": "array",
       "minItems": 1,
@@ -14,6 +14,21 @@
       "items": {"$ref": "#/$defs/treatment"}
     }
   },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"schema_version": {"const": "1.0"}},
+        "required": ["schema_version"]
+      },
+      "then": {
+        "properties": {
+          "treatments": {
+            "items": {"properties": {"case_id": false}}
+          }
+        }
+      }
+    }
+  ],
   "$defs": {
     "treatment": {
       "type": "object",
@@ -22,6 +37,10 @@
       "properties": {
         "condition": {"enum": ["base", "full", "compressed"]},
         "skill": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+        "case_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
         "knowledge_basis": {"enum": ["none", "workflow-required"]},
         "skill_metadata": {"$ref": "#/$defs/paths"},
         "skill_body": {"$ref": "#/$defs/paths"},

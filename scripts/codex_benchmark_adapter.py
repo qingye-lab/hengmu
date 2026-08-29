@@ -36,6 +36,30 @@ CANONICAL_TRADEOFFS = (
     "security",
     "team-ownership",
 )
+ADAPTER_NAME = "hengmu-codex-benchmark-adapter"
+ADAPTER_VERSION = "1.3.0"
+# Codex CLI 0.150.1 has no documented JSONL event field that authoritatively
+# identifies the actual model. Keep this map empty until a versioned CLI
+# contract documents an event-type-specific field; requested strings, banners,
+# and nested model/tool/MCP content are never identity evidence.
+AUTHORITATIVE_MODEL_EVENT_FIELDS: dict[str, str] = {}
+USAGE_EVENT_TYPES = {"turn.completed"}
+
+
+class AdapterFailure(RuntimeError):
+    def __init__(
+        self,
+        failure_class: str,
+        *,
+        exit_code: int | None = None,
+        stdout: str = "",
+        stderr: str = "",
+    ) -> None:
+        super().__init__(failure_class)
+        self.failure_class = failure_class
+        self.exit_code = exit_code
+        self.stdout = stdout
+        self.stderr = stderr
 
 
 def within(root: Path, value: Path, label: str) -> Path:
@@ -81,17 +105,39 @@ def treatment_for(
     *,
     condition: str,
     skill: str,
+    case_id: str | None = None,
 ) -> dict[str, Any]:
-    matches = [
+    exact = [
         item
         for item in manifest["treatments"]
-        if item["condition"] == condition and item["skill"] == skill
+        if item["condition"] == condition
+        and item["skill"] == skill
+        and item.get("case_id") == case_id
     ]
-    if len(matches) != 1:
+    if len(exact) > 1:
+        raise ValueError(
+            f"Context manifest defines multiple exact {condition!r} treatments "
+            f"for {skill!r}/{case_id!r}"
+        )
+    if len(exact) == 1:
+        return cast(dict[str, Any], exact[0])
+    defaults = [
+        item
+        for item in manifest["treatments"]
+        if item["condition"] == condition
+        and item["skill"] == skill
+        and item.get("case_id") is None
+    ]
+    if len(defaults) > 1:
+        raise ValueError(
+            f"Context manifest defines multiple default {condition!r} treatments "
+            f"for {skill!r}"
+        )
+    if not defaults:
         raise ValueError(
             f"Context manifest must define one {condition!r} treatment for {skill!r}"
         )
-    return cast(dict[str, Any], matches[0])
+    return cast(dict[str, Any], defaults[0])
 
 
 def resolve_treatment_paths(
@@ -252,6 +298,87 @@ def validate_observation(observation: dict[str, Any], schema: dict[str, Any]) ->
         )
 
 
+def parse_cli_metadata(
+    stdout: str, stderr: str
+) -> tuple[str | None, str, dict[str, Any] | None]:
+    """Read only CLI-emitted identity and telemetry, never model output metadata."""
+    events: list[dict[str, Any]] = []
+    for line in stdout.splitlines():
+        try:
+            payload = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(payload, dict):
+            events.append(payload)
+    model_candidates: list[str] = []
+    usage_candidates: list[dict[str, Any]] = []
+    for event in events:
+        event_type = event.get("type")
+        authoritative_field = (
+            AUTHORITATIVE_MODEL_EVENT_FIELDS.get(event_type)
+            if isinstance(event_type, str)
+            else None
+        )
+        if authoritative_field is not None:
+            value = event.get(authoritative_field)
+            if isinstance(value, str) and value.strip():
+                model_candidates.append(value.strip())
+        usage = event.get("usage")
+        if (
+            event_type in USAGE_EVENT_TYPES
+            and isinstance(usage, dict)
+            and any(
+                key in usage
+                for key in ("input_tokens", "output_tokens", "cost_usd", "tool_calls")
+            )
+        ):
+            usage_candidates.append(usage)
+    actual_model = model_candidates[-1] if model_candidates else None
+    source = "cli-json" if actual_model is not None else "unavailable"
+    del stderr
+    usage_result: dict[str, Any] | None = None
+    if usage_candidates:
+        latest = usage_candidates[-1]
+        usage_result = {
+            key: latest.get(key) if isinstance(latest.get(key), (int, float)) else None
+            for key in ("input_tokens", "output_tokens", "cost_usd", "tool_calls")
+        }
+    return actual_model, source, usage_result
+
+
+def command_envelope(
+    *,
+    requested_model: str,
+    status: str,
+    actual_model: str | None,
+    actual_model_source: str,
+    correction_count: int,
+    usage: dict[str, Any] | None,
+    observation: dict[str, Any] | None,
+    failure_class: str | None = None,
+    exit_code: int | None = None,
+) -> dict[str, Any]:
+    result: dict[str, Any] = {
+        "schema_version": "1.0",
+        "adapter": {"name": ADAPTER_NAME, "version": ADAPTER_VERSION},
+        "status": status,
+        "requested_model": requested_model,
+        "actual_model": actual_model,
+        "actual_model_source": actual_model_source,
+        "model_fallback": False,
+        "retries": {
+            "generic": 0,
+            "evidence_correction_count": correction_count,
+            "evidence_correction_max": 1,
+        },
+        "usage": usage,
+        "observation": observation,
+    }
+    if failure_class is not None:
+        result["failure"] = {"class": failure_class, "exit_code": exit_code}
+    return result
+
+
 def execute_codex(
     *,
     codex: str,
@@ -261,10 +388,11 @@ def execute_codex(
     output_path: Path,
     prompt: str,
     timeout: int,
-) -> dict[str, Any]:
+) -> tuple[dict[str, Any], str | None, str, dict[str, Any] | None]:
     command = [
         codex,
         "exec",
+        "--json",
         "--model",
         model,
         "--cd",
@@ -281,24 +409,40 @@ def execute_codex(
         str(output_path),
         prompt,
     ]
-    process = subprocess.run(
-        command,
-        check=False,
-        capture_output=True,
-        text=True,
-        timeout=timeout,
-    )
+    try:
+        process = subprocess.run(
+            command,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise AdapterFailure("timeout") from exc
+    except OSError as exc:
+        raise AdapterFailure("tool-error") from exc
     if process.returncode != 0:
-        detail = process.stderr.strip() or process.stdout.strip()
-        raise RuntimeError(
-            f"Codex benchmark case failed ({process.returncode}): {detail}"
+        raise AdapterFailure(
+            "nonzero",
+            exit_code=process.returncode,
+            stdout=process.stdout,
+            stderr=process.stderr,
         )
     if not output_path.is_file():
-        raise RuntimeError("Codex did not write a structured observation")
-    payload = json.loads(output_path.read_text(encoding="utf-8"))
+        raise AdapterFailure(
+            "tool-error",
+            exit_code=process.returncode,
+            stdout=process.stdout,
+            stderr=process.stderr,
+        )
+    try:
+        payload = json.loads(output_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise AdapterFailure("schema-invalid", exit_code=process.returncode) from exc
     if not isinstance(payload, dict):
-        raise RuntimeError("Codex structured observation must be an object")
-    return payload
+        raise AdapterFailure("schema-invalid", exit_code=process.returncode)
+    actual_model, source, usage = parse_cli_metadata(process.stdout, process.stderr)
+    return payload, actual_model, source, usage
 
 
 def parse_args() -> argparse.Namespace:
@@ -308,6 +452,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--skill", required=True)
     parser.add_argument("--fixture", type=Path, required=True)
     parser.add_argument("--prompt", required=True)
+    parser.add_argument("--case-id")
     parser.add_argument("--timeout", type=int, default=600)
     parser.add_argument("--codex", default="codex")
     parser.add_argument(
@@ -341,6 +486,7 @@ def main() -> int:
         context_manifest,
         condition=args.condition,
         skill=args.skill,
+        case_id=args.case_id,
     )
     schema_path = within(
         root,
@@ -354,7 +500,22 @@ def main() -> int:
     }
     codex = shutil.which(args.codex)
     if codex is None:
-        raise RuntimeError(f"Codex executable is unavailable: {args.codex}")
+        print(
+            json.dumps(
+                command_envelope(
+                    requested_model=args.model,
+                    status="failed",
+                    actual_model=None,
+                    actual_model_source="unavailable",
+                    correction_count=0,
+                    usage=None,
+                    observation=None,
+                    failure_class="tool-error",
+                    exit_code=None,
+                )
+            )
+        )
+        return 0
     prompt = build_prompt(
         skill_path=skill_path,
         knowledge_root=root / "resources" / "knowledge",
@@ -377,29 +538,49 @@ def main() -> int:
             json.dumps(schema, indent=2, ensure_ascii=False) + "\n",
             encoding="utf-8",
         )
-        observation = {}
-        for attempt in range(2):
-            output_path = temporary_root / f"observation-{attempt + 1}.json"
-            observation = execute_codex(
-                codex=codex,
-                model=args.model,
-                fixture=fixture,
-                schema_path=runtime_schema_path,
-                output_path=output_path,
-                prompt=prompt,
-                timeout=args.timeout,
-            )
-            validate_observation(observation, schema)
-            invalid_evidence = evidence_errors(observation, fixture)
-            if not invalid_evidence:
-                break
-            if attempt == 1:
-                detail = "; ".join(invalid_evidence)
-                raise RuntimeError(
-                    "Codex could not produce exact fixture evidence after one "
-                    f"bounded correction: {detail}"
+        observation: dict[str, Any] | None = None
+        actual_model: str | None = None
+        actual_model_source = "unavailable"
+        usage: dict[str, Any] | None = None
+        correction_count = 0
+        try:
+            for attempt in range(2):
+                output_path = temporary_root / f"observation-{attempt + 1}.json"
+                observation, attempt_model, attempt_source, attempt_usage = (
+                    execute_codex(
+                        codex=codex,
+                        model=args.model,
+                        fixture=fixture,
+                        schema_path=runtime_schema_path,
+                        output_path=output_path,
+                        prompt=prompt,
+                        timeout=args.timeout,
+                    )
                 )
-            prompt = f"""Reread the fixture and correct only the invalid evidence
+                if attempt_model is not None:
+                    if actual_model is not None and attempt_model != actual_model:
+                        raise AdapterFailure("tool-error")
+                    actual_model = attempt_model
+                    actual_model_source = attempt_source
+                if attempt_usage is not None:
+                    if usage is None:
+                        usage = dict.fromkeys(attempt_usage, 0)
+                    for key, value in attempt_usage.items():
+                        if value is None or usage.get(key) is None:
+                            usage[key] = None
+                        else:
+                            usage[key] += value
+                try:
+                    validate_observation(observation, schema)
+                except ValueError as exc:
+                    raise AdapterFailure("schema-invalid") from exc
+                invalid_evidence = evidence_errors(observation, fixture)
+                if not invalid_evidence:
+                    break
+                if attempt == 1:
+                    raise AdapterFailure("schema-invalid")
+                correction_count = 1
+                prompt = f"""Reread the fixture and correct only the invalid evidence
 in this prior observation:
 
 {json.dumps(observation, ensure_ascii=False)}
@@ -411,7 +592,47 @@ Return the complete JSON observation again. Preserve a finding only when a
 fixture-relative, contiguous line range contains its excerpt byte-for-byte.
 Prefer a one-line excerpt and copy leading indentation exactly.
 """
-    print(json.dumps(observation, ensure_ascii=False))
+        except AdapterFailure as exc:
+            failure_model, failure_source, failure_usage = parse_cli_metadata(
+                exc.stdout,
+                exc.stderr,
+            )
+            if failure_model is not None:
+                actual_model = failure_model
+                actual_model_source = failure_source
+            if usage is None:
+                usage = failure_usage
+            print(
+                json.dumps(
+                    command_envelope(
+                        requested_model=args.model,
+                        status="failed",
+                        actual_model=actual_model,
+                        actual_model_source=actual_model_source,
+                        correction_count=correction_count,
+                        usage=usage,
+                        observation=None,
+                        failure_class=exc.failure_class,
+                        exit_code=exc.exit_code,
+                    ),
+                    ensure_ascii=False,
+                )
+            )
+            return 0
+    print(
+        json.dumps(
+            command_envelope(
+                requested_model=args.model,
+                status="completed",
+                actual_model=actual_model,
+                actual_model_source=actual_model_source,
+                correction_count=correction_count,
+                usage=usage,
+                observation=observation,
+            ),
+            ensure_ascii=False,
+        )
+    )
     return 0
 
 

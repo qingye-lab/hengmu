@@ -34,6 +34,7 @@ from select_knowledge import (
 try:
     import yaml
     from jsonschema import Draft202012Validator, FormatChecker
+    from jsonschema.exceptions import SchemaError
 except ModuleNotFoundError as exc:  # pragma: no cover - environment failure
     print(
         f"architecture_tool.py requires PyYAML and jsonschema (missing {exc.name}).",
@@ -63,9 +64,15 @@ VERIFICATION_LEVEL_ORDER = {
     "V4": 4,
     "V5": 5,
 }
-TOOL_VERSION = "1.2.0"
+TOOL_VERSION = "1.3.0"
 TRUSTED_POLICY_VERSIONS = {"1.1", "1.2"}
 BENCHMARK_TREATMENT_CONDITIONS = ("base", "full", "compressed")
+BENCHMARK_COMMAND_RESULT_SCHEMA_PATH = (
+    "resources/schemas/benchmark-command-result.schema.json"
+)
+BENCHMARK_COMMAND_RESULT_SCHEMA_ID = (
+    "https://local.architecture/schemas/benchmark-command-result.schema.json"
+)
 REVIEW_KIND_CORE_PACK = {
     "project": "project-core",
     "ai-agent": "ai-agent-core",
@@ -7291,13 +7298,18 @@ def benchmark_context_text_parts(value: str, path: str) -> tuple[str, str]:
 
 def benchmark_context_treatment_map(
     context_manifest: dict[str, Any],
-) -> dict[tuple[str, str], dict[str, Any]]:
-    treatments: dict[tuple[str, str], dict[str, Any]] = {}
+) -> dict[tuple[str, str, str | None], dict[str, Any]]:
+    treatments: dict[tuple[str, str, str | None], dict[str, Any]] = {}
     for treatment in context_manifest["treatments"]:
-        key = (treatment["condition"], treatment["skill"])
+        key = (
+            treatment["condition"],
+            treatment["skill"],
+            treatment.get("case_id"),
+        )
         if key in treatments:
             raise ArchitectureError(
-                "Benchmark context manifest repeats treatment " + "/".join(key)
+                "Benchmark context manifest repeats treatment "
+                + "/".join(value or "default" for value in key)
             )
         treatments[key] = treatment
     return treatments
@@ -7306,22 +7318,40 @@ def benchmark_context_treatment_map(
 def validate_benchmark_ablation_contract(
     context_manifest: dict[str, Any],
     *,
-    skills: set[str],
-) -> dict[tuple[str, str], dict[str, Any]]:
+    cases: list[dict[str, Any]],
+) -> dict[tuple[str, str, str | None], dict[str, Any]]:
     """Require an unambiguous, comparable A/B/C treatment for every Skill."""
     treatments = benchmark_context_treatment_map(context_manifest)
-    expected = {
-        (condition, skill)
+    skills = {str(case["skill"]) for case in cases}
+    expected_defaults = {
+        (condition, skill, None)
         for condition in BENCHMARK_TREATMENT_CONDITIONS
         for skill in skills
     }
-    if set(treatments) != expected:
+    if not expected_defaults.issubset(treatments):
         raise ArchitectureError(
             "Benchmark context manifest must declare exactly one "
-            "Base/Full/Compressed treatment for every benchmark Skill"
+            "Base/Full/Compressed default treatment for every benchmark Skill"
         )
+    corpus_skills = {str(case["id"]): str(case["skill"]) for case in cases}
+    for _condition, skill, case_id in treatments:
+        if case_id is None:
+            if skill not in skills:
+                raise ArchitectureError(
+                    f"Benchmark context manifest has unknown default Skill {skill!r}"
+                )
+            continue
+        if case_id not in corpus_skills:
+            raise ArchitectureError(
+                f"Benchmark context manifest override has unknown case {case_id!r}"
+            )
+        if corpus_skills[case_id] != skill:
+            raise ArchitectureError(
+                f"Benchmark context manifest override {case_id!r} does not match "
+                f"Skill {skill!r}"
+            )
     for skill in sorted(skills):
-        base = treatments[("base", skill)]
+        base = treatments[("base", skill, None)]
         if base["knowledge_basis"] != "none" or any(
             base[field]
             for field in ("skill_metadata", "skill_body", "references", "knowledge")
@@ -7330,8 +7360,8 @@ def validate_benchmark_ablation_contract(
                 f"Benchmark Base treatment for {skill} must not load Skill, "
                 "reference, or Knowledge content"
             )
-        full = treatments[("full", skill)]
-        compressed = treatments[("compressed", skill)]
+        full = treatments[("full", skill, None)]
+        compressed = treatments[("compressed", skill, None)]
         if (
             full["knowledge_basis"] != "workflow-required"
             or compressed["knowledge_basis"] != "workflow-required"
@@ -7344,6 +7374,27 @@ def validate_benchmark_ablation_contract(
             raise ArchitectureError(
                 f"Benchmark Full and Compressed treatments for {skill} must "
                 "use identical Knowledge inputs"
+            )
+    for case in cases:
+        case_id = str(case["id"])
+        skill = str(case["skill"])
+        resolved = {
+            condition: treatments.get((condition, skill, case_id))
+            or treatments[(condition, skill, None)]
+            for condition in BENCHMARK_TREATMENT_CONDITIONS
+        }
+        base = resolved["base"]
+        if base["knowledge_basis"] != "none" or any(
+            base[field]
+            for field in ("skill_metadata", "skill_body", "references", "knowledge")
+        ):
+            raise ArchitectureError(
+                f"Benchmark resolved Base treatment for {case_id} must be empty"
+            )
+        if resolved["full"]["knowledge"] != resolved["compressed"]["knowledge"]:
+            raise ArchitectureError(
+                f"Benchmark resolved Full and Compressed treatments for {case_id} "
+                "must use identical Knowledge inputs"
             )
     return treatments
 
@@ -7401,14 +7452,17 @@ def validate_benchmark_context_budget(
     }
     treatments = validate_benchmark_ablation_contract(
         context_manifest,
-        skills={str(case["skill"]) for case in observed["cases"]},
+        cases=list(observed["cases"]),
     )
     for case in observed["cases"]:
-        key = (benchmark["condition"], case["skill"])
-        treatment = treatments.get(key)
+        treatment_key = (benchmark["condition"], case["skill"], case["id"])
+        treatment = treatments.get(treatment_key) or treatments.get(
+            (benchmark["condition"], case["skill"], None)
+        )
         if treatment is None:
             raise ArchitectureError(
-                "Benchmark context manifest lacks treatment " + "/".join(key)
+                "Benchmark context manifest lacks treatment "
+                + "/".join(str(value) for value in treatment_key)
             )
         for source_key, target_key in (
             ("skill_metadata", "skill-metadata"),
@@ -7500,6 +7554,52 @@ def validate_benchmark_context_budget(
     }
 
 
+def validate_benchmark_command_envelope(
+    command_result: dict[str, Any],
+    *,
+    validator: Draft202012Validator,
+    case_id: str,
+    trial_index: int,
+) -> None:
+    errors = sorted(
+        validator.iter_errors(command_result),
+        key=lambda error: list(error.path),
+    )
+    if errors:
+        raise ArchitectureError(
+            f"Benchmark command envelope fails source-bound schema: "
+            f"{case_id} trial {trial_index}: {errors[0].message}"
+        )
+
+
+def load_benchmark_command_result_validator(
+    *,
+    root: Path,
+    commit: str,
+    input_record: dict[str, Any],
+) -> Draft202012Validator:
+    if input_record["path"] != BENCHMARK_COMMAND_RESULT_SCHEMA_PATH:
+        raise ArchitectureError(
+            "Benchmark command-result schema role must use its canonical path"
+        )
+    try:
+        schema = json.loads(
+            git_blob_bytes(root, commit, input_record["path"]).decode("utf-8")
+        )
+        if schema.get("$id") != BENCHMARK_COMMAND_RESULT_SCHEMA_ID:
+            raise ArchitectureError(
+                "Benchmark command-result schema has the wrong identity"
+            )
+        Draft202012Validator.check_schema(schema)
+    except ArchitectureError:
+        raise
+    except (UnicodeDecodeError, json.JSONDecodeError, SchemaError) as exc:
+        raise ArchitectureError(
+            "Benchmark command-result provenance schema is invalid"
+        ) from exc
+    return Draft202012Validator(schema, format_checker=FormatChecker())
+
+
 def validate_benchmark_provenance(
     *,
     root: Path,
@@ -7508,9 +7608,9 @@ def validate_benchmark_provenance(
     runtime_verification: str = "strict",
     artifact_commit: str | None = None,
 ) -> dict[str, Any] | None:
-    if observed["schema_version"] not in {"1.3", "1.4", "1.5"}:
+    if observed["schema_version"] not in {"1.3", "1.4", "1.5", "1.6"}:
         return None
-    extended_provenance = observed["schema_version"] in {"1.4", "1.5"}
+    extended_provenance = observed["schema_version"] in {"1.4", "1.5", "1.6"}
     provenance = observed["benchmark"]["provenance"]
     source = provenance["source"]
     commit = source["commit"]
@@ -7556,8 +7656,10 @@ def validate_benchmark_provenance(
     }
     if extended_provenance:
         required_roles.add("plugin-manifest")
-    if observed["schema_version"] == "1.5":
+    if observed["schema_version"] in {"1.5", "1.6"}:
         required_roles.update({"context-manifest", "benchmark-context-schema"})
+    if observed["schema_version"] == "1.6":
+        required_roles.add("command-result-schema")
     inputs = provenance["inputs"]
     roles = [item["role"] for item in inputs]
     if len(roles) != len(set(roles)):
@@ -7571,6 +7673,16 @@ def validate_benchmark_provenance(
             raise ArchitectureError(
                 f"Benchmark provenance input hash mismatch: {item['path']}"
             )
+    command_result_validator: Draft202012Validator | None = None
+    if observed["schema_version"] == "1.6":
+        command_schema_input = next(
+            item for item in inputs if item["role"] == "command-result-schema"
+        )
+        command_result_validator = load_benchmark_command_result_validator(
+            root=root,
+            commit=commit,
+            input_record=command_schema_input,
+        )
     if extended_provenance:
         manifest_item = next(
             item for item in inputs if item["role"] == "plugin-manifest"
@@ -7594,7 +7706,7 @@ def validate_benchmark_provenance(
         command_template = provenance["command_template"]
         if canonical_sha256(command_template) != provenance["command_template_sha256"]:
             raise ArchitectureError("Benchmark command template hash mismatch")
-        if observed["schema_version"] == "1.5" and (
+        if observed["schema_version"] in {"1.5", "1.6"} and (
             not any("{condition}" in argument for argument in command_template)
             or not any(
                 "{context_manifest}" in argument for argument in command_template
@@ -7605,12 +7717,14 @@ def validate_benchmark_provenance(
                 "context manifest"
             )
 
-        runtimes = provenance["runtime_executables"]
+        runtimes = provenance.get("runtime_executables", [])
+        if observed["schema_version"] in {"1.4", "1.5"} and not runtimes:
+            raise ArchitectureError("Benchmark provenance lacks runtime executables")
         runtime_ids = [item["id"] for item in runtimes]
         if len(runtime_ids) != len(set(runtime_ids)):
             raise ArchitectureError("Benchmark provenance has duplicate runtime IDs")
         runtime_roles = {item["role"] for item in runtimes}
-        if runtime_roles != {"command", "model"}:
+        if runtimes and runtime_roles != {"command", "model"}:
             raise ArchitectureError(
                 "Benchmark provenance requires command and model runtimes"
             )
@@ -7692,18 +7806,59 @@ def validate_benchmark_provenance(
         model_versions = {
             item["version_output"] for item in runtimes if item["role"] == "model"
         }
-        if observed["benchmark"]["surface"] not in model_versions:
+        if (
+            observed["schema_version"] in {"1.4", "1.5"}
+            and observed["benchmark"]["surface"] not in model_versions
+        ):
             raise ArchitectureError(
                 "Benchmark surface does not match a model runtime version"
             )
     context_budget = None
-    if observed["schema_version"] == "1.5":
+    if observed["schema_version"] in {"1.5", "1.6"}:
         context_budget = validate_benchmark_context_budget(
             root=root,
             commit=commit,
             observed=observed,
             provenance_inputs=inputs,
         )
+    if observed["schema_version"] == "1.6":
+        benchmark = observed["benchmark"]
+        harness = benchmark["harness"]
+        implementation_paths = (
+            "scripts/run_behavior_benchmark.py",
+            "scripts/codex_benchmark_adapter.py",
+            "resources/schemas/benchmark-observation.schema.json",
+            "resources/schemas/benchmark-command-result.schema.json",
+        )
+        implementation_records = [
+            {
+                "path": path,
+                "sha256": sha256_bytes(git_blob_bytes(root, commit, path)),
+            }
+            for path in sorted(implementation_paths)
+        ]
+        if canonical_sha256(implementation_records) != harness["implementation_sha256"]:
+            raise ArchitectureError("Benchmark harness implementation hash mismatch")
+        config_payload = {
+            "requested_model": benchmark["model"],
+            "actual_model": benchmark["actual_model"],
+            "surface": benchmark["surface"],
+            "condition": benchmark["condition"],
+            "profile": benchmark["profile"],
+            "selected_case_ids": benchmark["selected_case_ids"],
+            "repetitions": benchmark["repetitions"],
+            "trial_timeout_seconds": benchmark["trial_timeout_seconds"],
+            "artifact_timeout_seconds": benchmark["artifact_timeout_seconds"],
+            "command_template": provenance["command_template"],
+            "context_manifest_sha256": benchmark["context_budget"]["manifest_sha256"],
+            "policies": {
+                "generic_retries": 0,
+                "evidence_correction_max": 1,
+                "model_fallback": False,
+            },
+        }
+        if canonical_sha256(config_payload) != harness["config_sha256"]:
+            raise ArchitectureError("Benchmark harness configuration hash mismatch")
 
     tools = provenance["tools"]
     tool_ids = [item["id"] for item in tools]
@@ -7830,7 +7985,7 @@ def validate_benchmark_provenance(
                         f"Benchmark execution command hash mismatch: {case['id']} "
                         f"trial {trial['index']}"
                     )
-                if observed["schema_version"] == "1.5":
+                if observed["schema_version"] in {"1.5", "1.6"}:
                     if not any(
                         value == observed["benchmark"]["condition"]
                         or value.endswith("=" + observed["benchmark"]["condition"])
@@ -7851,7 +8006,93 @@ def validate_benchmark_provenance(
                             f"Benchmark execution does not bind context manifest: "
                             f"{case['id']} trial {trial['index']}"
                         )
+                    if observed["schema_version"] == "1.6" and not any(
+                        value == case["id"] or value.endswith("=" + case["id"])
+                        for value in command
+                    ):
+                        raise ArchitectureError(
+                            f"Benchmark execution does not bind case ID: "
+                            f"{case['id']} trial {trial['index']}"
+                        )
             observation = record.get("observation")
+            if observed["schema_version"] == "1.6":
+                if record.get("status") != trial["status"] or record.get(
+                    "failure_class"
+                ) != trial.get("failure_class"):
+                    raise ArchitectureError(
+                        f"Benchmark execution status mismatch: {case['id']} "
+                        f"trial {trial['index']}"
+                    )
+                command_result = record.get("command_result")
+                if trial["status"] == "completed" and not isinstance(
+                    command_result, dict
+                ):
+                    raise ArchitectureError(
+                        f"Completed benchmark trial lacks command envelope: "
+                        f"{case['id']} trial {trial['index']}"
+                    )
+                if command_result is not None and not isinstance(command_result, dict):
+                    raise ArchitectureError(
+                        f"Benchmark command envelope is not an object: "
+                        f"{case['id']} trial {trial['index']}"
+                    )
+                if command_result_validator is not None and isinstance(
+                    command_result, dict
+                ):
+                    validate_benchmark_command_envelope(
+                        command_result,
+                        validator=command_result_validator,
+                        case_id=case["id"],
+                        trial_index=trial["index"],
+                    )
+                expected_command_result_hash = (
+                    canonical_sha256(command_result)
+                    if isinstance(command_result, dict)
+                    else None
+                )
+                if expected_command_result_hash != execution["command_result_sha256"]:
+                    raise ArchitectureError(
+                        f"Benchmark command result hash mismatch: {case['id']} "
+                        f"trial {trial['index']}"
+                    )
+                if isinstance(command_result, dict):
+                    if (
+                        command_result.get("adapter") != trial["adapter"]
+                        or command_result.get("status") != trial["status"]
+                        or command_result.get("requested_model")
+                        != observed["benchmark"]["model"]
+                        or command_result.get("actual_model") != trial["actual_model"]
+                        or command_result.get("actual_model_source")
+                        != trial["actual_model_source"]
+                        or command_result.get("model_fallback")
+                        != trial["model_fallback"]
+                        or command_result.get("retries") != trial["retries"]
+                        or command_result.get("usage") != trial.get("usage")
+                        or (
+                            trial["status"] == "failed"
+                            and command_result.get("failure", {}).get("class")
+                            != trial["failure_class"]
+                        )
+                    ):
+                        raise ArchitectureError(
+                            f"Benchmark command envelope mismatch: {case['id']} "
+                            f"trial {trial['index']}"
+                        )
+                    if command_result.get("observation") != observation:
+                        raise ArchitectureError(
+                            f"Benchmark command envelope observation mismatch: "
+                            f"{case['id']} trial {trial['index']}"
+                        )
+                if trial["status"] == "failed":
+                    if (
+                        observation is not None
+                        or execution["observation_sha256"] is not None
+                    ):
+                        raise ArchitectureError(
+                            f"Failed benchmark trial preserves an observation: "
+                            f"{case['id']} trial {trial['index']}"
+                        )
+                    continue
             if not isinstance(observation, dict):
                 raise ArchitectureError(
                     f"Benchmark execution observation is missing: {case['id']} "
@@ -7880,7 +8121,10 @@ def validate_benchmark_provenance(
                 != trial["observed_recommendations"]
                 or observation.get("observed_decision")
                 != trial.get("observed_decision")
-                or observation.get("usage") != trial.get("usage")
+                or (
+                    observed["schema_version"] != "1.6"
+                    and observation.get("usage") != trial.get("usage")
+                )
             ):
                 raise ArchitectureError(
                     f"Benchmark logged observation mismatch: {case['id']} trial "
@@ -7912,6 +8156,29 @@ def validate_benchmark_provenance(
     }
 
 
+def wilson_interval(successes: int, attempts: int) -> tuple[float | None, float | None]:
+    if attempts == 0:
+        return None, None
+    z = 1.959963984540054
+    proportion = successes / attempts
+    denominator = 1 + (z * z / attempts)
+    center = (proportion + z * z / (2 * attempts)) / denominator
+    margin = (
+        z
+        * (
+            (
+                proportion * (1 - proportion) / attempts
+                + z * z / (4 * attempts * attempts)
+            )
+            ** 0.5
+        )
+        / denominator
+    )
+    low = 0.0 if successes == 0 else max(0.0, center - margin)
+    high = 1.0 if successes == attempts else min(1.0, center + margin)
+    return low, high
+
+
 def score_benchmark(
     ground_truth_path: Path,
     run_path: Path,
@@ -7919,8 +8186,16 @@ def score_benchmark(
     runtime_verification: str = "strict",
     artifact_commit: str | None = None,
 ) -> dict[str, Any]:
-    truth = validate_file(ground_truth_path, "benchmark.schema.json")
     observed = validate_file(run_path, "benchmark.schema.json")
+    truth = validate_file(ground_truth_path, "benchmark.schema.json")
+    if (
+        truth["benchmark"]["version"] != observed["benchmark"]["version"]
+        and observed["benchmark"]["version"] == "1.0.0"
+    ):
+        legacy_truth_path = ground_truth_path.with_name("ground-truth-1.0.0.yaml")
+        if legacy_truth_path.is_file():
+            ground_truth_path = legacy_truth_path
+            truth = validate_file(ground_truth_path, "benchmark.schema.json")
     if truth["benchmark"]["kind"] != "ground-truth":
         raise ArchitectureError(f"{ground_truth_path} is not ground truth")
     if observed["benchmark"]["kind"] != "run":
@@ -7945,7 +8220,12 @@ def score_benchmark(
         raise ArchitectureError("Benchmark run has duplicate case IDs")
     truth_cases = {case["id"]: case for case in truth["cases"]}
     run_cases = {case["id"]: case for case in observed["cases"]}
-    if set(truth_cases) != set(run_cases):
+    if observed["schema_version"] == "1.6":
+        selected = observed["benchmark"]["selected_case_ids"]
+        if selected != run_case_ids or not set(run_cases).issubset(truth_cases):
+            raise ArchitectureError("Benchmark selected case IDs do not match the run")
+        truth_cases = {case_id: truth_cases[case_id] for case_id in selected}
+    elif set(truth_cases) != set(run_cases):
         raise ArchitectureError("Benchmark run case IDs do not match ground truth")
 
     true_positive = 0
@@ -7957,6 +8237,15 @@ def score_benchmark(
     observed_evidence = 0
     forbidden_hits = 0
     total_trials = 0
+    attempted = 0
+    completed = 0
+    passed = 0
+    failure_counts = {
+        "timeout": 0,
+        "schema-invalid": 0,
+        "tool-error": 0,
+        "nonzero": 0,
+    }
     finding_stability_values: list[float] = []
     stable_severity = 0
     compared_severity_stability = 0
@@ -7997,6 +8286,12 @@ def score_benchmark(
             raise ArchitectureError(
                 f"Benchmark case {case_id} fixture does not match ground truth"
             )
+        if observed["schema_version"] in {"1.5", "1.6"} and run_case.get(
+            "skill"
+        ) != expected_case.get("skill"):
+            raise ArchitectureError(
+                f"Benchmark case {case_id} Skill does not match ground truth"
+            )
         expected_rule_ids = [
             item["rule_id"] for item in expected_case["expected_findings"]
         ]
@@ -8026,17 +8321,23 @@ def score_benchmark(
             raise ArchitectureError(
                 f"Benchmark case {case_id} trial count does not match repetitions"
             )
-        if run_case.get("trials") and (
-            run_case.get("observed_findings") != trials[0]["observed_findings"]
-            or run_case.get("observed_recommendations")
-            != trials[0]["observed_recommendations"]
+        if (
+            observed["schema_version"] != "1.6"
+            and run_case.get("trials")
+            and (
+                run_case.get("observed_findings") != trials[0]["observed_findings"]
+                or run_case.get("observed_recommendations")
+                != trials[0]["observed_recommendations"]
+            )
         ):
             raise ArchitectureError(
                 f"Benchmark case {case_id} summary does not match first trial"
             )
-        if run_case.get("trials") and run_case.get("observed_decision") != trials[
-            0
-        ].get("observed_decision"):
+        if (
+            observed["schema_version"] != "1.6"
+            and run_case.get("trials")
+            and run_case.get("observed_decision") != trials[0].get("observed_decision")
+        ):
             raise ArchitectureError(
                 f"Benchmark case {case_id} decision summary does not match first trial"
             )
@@ -8049,6 +8350,45 @@ def score_benchmark(
             f"benchmark case {case_id} fixture",
         )
         for trial in trials:
+            attempted += 1
+            durations.append(trial["duration_seconds"])
+            usage = trial.get("usage")
+            if usage is not None:
+                usage_trials += 1
+                for field in usage_field_trials:
+                    value = usage.get(field)
+                    if value is None:
+                        continue
+                    usage_field_trials[field] += 1
+                    if field == "input_tokens":
+                        input_tokens += value
+                    elif field == "output_tokens":
+                        output_tokens += value
+                    elif field == "cost_usd":
+                        cost_usd += value
+                    else:
+                        tool_calls += value
+            if observed["schema_version"] == "1.6" and trial["status"] == "failed":
+                failure_counts[trial["failure_class"]] += 1
+                false_negative += len(expected)
+                trial_actuals.append({})
+                expected_decision = expected_case.get("expected_decision")
+                if expected_decision is not None:
+                    decision_trials += 1
+                    trial_decisions.append("<failed>")
+                    required_tradeoffs_total += len(
+                        expected_decision["required_tradeoffs"]
+                    )
+                    required_knowledge_total += len(
+                        expected_decision["required_knowledge_ids"]
+                    )
+                    rejection_explanation_values.append(0.0)
+                    migration_actionability_values.append(
+                        float(expected_decision["minimum_migration_slices"] == 0)
+                    )
+                continue
+            completed += 1
+            trial_solved = True
             observed_rule_ids = [item["rule_id"] for item in trial["observed_findings"]]
             if len(observed_rule_ids) != len(set(observed_rule_ids)):
                 raise ArchitectureError(
@@ -8057,6 +8397,8 @@ def score_benchmark(
                 )
             actual = {item["rule_id"]: item for item in trial["observed_findings"]}
             trial_actuals.append(actual)
+            if set(actual) != set(expected):
+                trial_solved = False
             true_positive += len(set(expected) & set(actual))
             false_negative += len(set(expected) - set(actual))
             false_positive += len(set(actual) - set(expected))
@@ -8064,6 +8406,8 @@ def score_benchmark(
                 severity_compared += 1
                 if expected[rule_id]["severity"] == actual[rule_id]["severity"]:
                     severity_matches += 1
+                else:
+                    trial_solved = False
             for item in actual.values():
                 observed_evidence += 1
                 computed_validity = benchmark_evidence_valid(
@@ -8076,6 +8420,8 @@ def score_benchmark(
                         "match fixture evidence"
                     )
                 valid_evidence += int(computed_validity)
+                if not computed_validity:
+                    trial_solved = False
             recommendations = {
                 value.lower() for value in trial["observed_recommendations"]
             }
@@ -8084,27 +8430,18 @@ def score_benchmark(
                 for forbidden in expected_case["forbidden_recommendations"]
                 if any(forbidden.lower() in value for value in recommendations)
             )
-            durations.append(trial["duration_seconds"])
-            usage = trial.get("usage")
-            if usage is not None:
-                usage_trials += 1
-                if "input_tokens" in usage:
-                    input_tokens += usage["input_tokens"]
-                    usage_field_trials["input_tokens"] += 1
-                if "output_tokens" in usage:
-                    output_tokens += usage["output_tokens"]
-                    usage_field_trials["output_tokens"] += 1
-                if "cost_usd" in usage:
-                    cost_usd += usage["cost_usd"]
-                    usage_field_trials["cost_usd"] += 1
-                if "tool_calls" in usage:
-                    tool_calls += usage["tool_calls"]
-                    usage_field_trials["tool_calls"] += 1
+            if any(
+                forbidden.lower() in recommendation
+                for forbidden in expected_case["forbidden_recommendations"]
+                for recommendation in recommendations
+            ):
+                trial_solved = False
             expected_decision = expected_case.get("expected_decision")
             actual_decision = trial.get("observed_decision")
             if expected_decision is not None:
                 decision_trials += 1
                 if actual_decision is None:
+                    trial_solved = False
                     trial_decisions.append("<missing>")
                     required_tradeoffs_total += len(
                         expected_decision["required_tradeoffs"]
@@ -8124,6 +8461,8 @@ def score_benchmark(
                     *expected_decision.get("acceptable_options", []),
                 }
                 correct_decisions += int(selected in accepted)
+                if selected not in accepted:
+                    trial_solved = False
                 overdesign_decisions += int(
                     selected in set(expected_decision["overdesign_options"])
                 )
@@ -8131,21 +8470,37 @@ def score_benchmark(
                 actual_tradeoffs = set(actual_decision["compared_tradeoffs"])
                 required_tradeoffs_total += len(expected_tradeoffs)
                 required_tradeoffs_seen += len(expected_tradeoffs & actual_tradeoffs)
+                if not expected_tradeoffs.issubset(actual_tradeoffs):
+                    trial_solved = False
                 cited_knowledge = set(actual_decision["knowledge_ids"])
                 knowledge_citations += len(cited_knowledge)
                 valid_knowledge_citations += len(
                     cited_knowledge & set(benchmark_knowledge)
                 )
+                if not cited_knowledge.issubset(benchmark_knowledge):
+                    trial_solved = False
                 expected_knowledge = set(expected_decision["required_knowledge_ids"])
                 required_knowledge_total += len(expected_knowledge)
                 required_knowledge_seen += len(expected_knowledge & cited_knowledge)
+                if not expected_knowledge.issubset(cited_knowledge):
+                    trial_solved = False
                 minimum_rejections = expected_decision["minimum_rejected_options"]
+                rejected_option_ids = [
+                    option["id"] for option in actual_decision["rejected_options"]
+                ]
+                rejected_option_ids_are_valid = len(rejected_option_ids) == len(
+                    set(rejected_option_ids)
+                ) and not (set(rejected_option_ids) & (accepted | {selected}))
                 rejection_explanation_values.append(
                     min(
                         len(actual_decision["rejected_options"]) / minimum_rejections,
                         1.0,
                     )
                 )
+                if len(actual_decision["rejected_options"]) < minimum_rejections:
+                    trial_solved = False
+                if not rejected_option_ids_are_valid:
+                    trial_solved = False
                 minimum_slices = expected_decision["minimum_migration_slices"]
                 migration_actionability_values.append(
                     min(
@@ -8155,6 +8510,10 @@ def score_benchmark(
                     if minimum_slices
                     else 1.0
                 )
+                if len(actual_decision["migration_slices"]) < minimum_slices:
+                    trial_solved = False
+            if trial_solved:
+                passed += 1
         for left_index, left in enumerate(trial_actuals):
             for right in trial_actuals[left_index + 1 :]:
                 union = set(left) | set(right)
@@ -8171,6 +8530,7 @@ def score_benchmark(
 
     precision_denominator = true_positive + false_positive
     recall_denominator = true_positive + false_negative
+    wilson_low, wilson_high = wilson_interval(passed, attempted)
     result: dict[str, Any] = {
         "cases": len(truth_cases),
         "trials": total_trials,
@@ -8252,11 +8612,206 @@ def score_benchmark(
             else 1.0
         ),
     }
+    if observed["schema_version"] == "1.6":
+        if sum(failure_counts.values()) != attempted - completed:
+            raise ArchitectureError(
+                "Benchmark failure counts do not cover failed trials"
+            )
+        has_complete_token_telemetry = (
+            usage_field_trials["input_tokens"] == attempted
+            and usage_field_trials["output_tokens"] == attempted
+        )
+        result.update(
+            {
+                "attempted": attempted,
+                "completed": completed,
+                "passed": passed,
+                "solved_rate": passed / attempted if attempted else 0.0,
+                "solved_rate_wilson_low": wilson_low,
+                "solved_rate_wilson_high": wilson_high,
+                "tokens_per_solved": (
+                    (input_tokens + output_tokens) / passed
+                    if passed and has_complete_token_telemetry
+                    else None
+                ),
+                "failure_counts": failure_counts,
+            }
+        )
     if provenance_summary is not None:
         result["provenance"] = provenance_summary
         if provenance_summary.get("context_budget_proxy") is not None:
             result["context_budget_proxy"] = provenance_summary["context_budget_proxy"]
+    validate_data(result, "benchmark-score.schema.json", Path("<benchmark-score>"))
     return result
+
+
+def resolve_benchmark_required_source_commit(
+    ground_truth_path: Path,
+    explicit_required_commit: str | None = None,
+) -> str:
+    repository_root = ground_truth_path.parent.parent.resolve()
+    selector_path = repository_root / "resources" / "selector-source.json"
+    selector = validate_file(selector_path, "selector-source.schema.json")
+    selector_commit = str(selector["commit"])
+    if (
+        explicit_required_commit is not None
+        and explicit_required_commit != selector_commit
+    ):
+        raise ArchitectureError(
+            "Explicit benchmark source commit does not match governed selector"
+        )
+    return selector_commit
+
+
+def verify_benchmark_matrix(
+    run_paths: list[Path],
+    *,
+    models: list[str],
+    shape: str,
+    ground_truth_path: Path = SHARED_ROOT.parent / "benchmarks" / "ground-truth.yaml",
+    canary_paths: list[Path] | None = None,
+    runtime_verification: str = "strict",
+    artifact_commit: str | None = None,
+    required_source_commit: str | None = None,
+) -> dict[str, Any]:
+    if len(models) != 2 or len(set(models)) != 2:
+        raise ArchitectureError("Benchmark matrix requires two exact model identities")
+    truth = validate_file(ground_truth_path, "benchmark.schema.json")
+    governed_source_commit = resolve_benchmark_required_source_commit(
+        ground_truth_path,
+        required_source_commit,
+    )
+    if truth["benchmark"]["kind"] != "ground-truth":
+        raise ArchitectureError("Benchmark matrix Ground Truth input has wrong kind")
+    truth_cases = {case["id"]: case for case in truth["cases"]}
+    if len(truth_cases) != len(truth["cases"]):
+        raise ArchitectureError("Benchmark matrix Ground Truth has duplicate case IDs")
+    if shape == "canary":
+        expected_cases = {"benign-large-sqlite", "evaluation-report-pipeline"}
+        expected_conditions = {"full"}
+    elif shape == "full":
+        if canary_paths is None:
+            raise ArchitectureError(
+                "Full benchmark matrix requires a validated canary artifact set"
+            )
+        verify_benchmark_matrix(
+            canary_paths,
+            models=models,
+            shape="canary",
+            ground_truth_path=ground_truth_path,
+            runtime_verification=runtime_verification,
+            artifact_commit=artifact_commit,
+            required_source_commit=governed_source_commit,
+        )
+        expected_cases = {str(case["id"]) for case in truth["cases"]}
+        expected_conditions = set(BENCHMARK_TREATMENT_CONDITIONS)
+    else:
+        raise ArchitectureError(f"Unknown benchmark matrix shape: {shape}")
+    expected_artifacts = {
+        (model, condition) for model in models for condition in expected_conditions
+    }
+    artifacts: dict[tuple[str, str], Path] = {}
+    scored_source_commits: set[str] = set()
+    trial_count = 0
+    for run_path in run_paths:
+        run = validate_file(run_path, "benchmark.schema.json")
+        if run["schema_version"] != "1.6" or run["benchmark"]["kind"] != "run":
+            raise ArchitectureError("Benchmark matrix accepts only schema 1.6 runs")
+        benchmark = run["benchmark"]
+        if any(
+            benchmark[field] != truth["benchmark"][field] for field in ("id", "version")
+        ):
+            raise ArchitectureError(
+                "Benchmark matrix artifact does not match Ground Truth identity"
+            )
+        for case in run["cases"]:
+            truth_case = truth_cases.get(case["id"])
+            if truth_case is None:
+                raise ArchitectureError(
+                    f"Benchmark matrix artifact has unknown case: {case['id']}"
+                )
+            if any(case[field] != truth_case[field] for field in ("fixture", "skill")):
+                raise ArchitectureError(
+                    f"Benchmark matrix case binding mismatch: {case['id']}"
+                )
+        score = score_benchmark(
+            ground_truth_path,
+            run_path,
+            runtime_verification=runtime_verification,
+            artifact_commit=artifact_commit,
+        )
+        if not score.get("provenance", {}).get("valid"):
+            raise ArchitectureError(
+                "Benchmark matrix artifact lacks validated scorer provenance"
+            )
+        scored_source_commit = score.get("provenance", {}).get("source_commit")
+        if not isinstance(scored_source_commit, str):
+            raise ArchitectureError(
+                "Benchmark matrix artifact lacks a scored source commit"
+            )
+        scored_source_commits.add(scored_source_commit)
+        key = (benchmark["model"], benchmark["condition"])
+        if key in artifacts:
+            raise ArchitectureError(f"Benchmark matrix has duplicate artifact: {key}")
+        artifacts[key] = run_path
+        if benchmark["actual_model"] is None:
+            raise ArchitectureError(
+                f"Benchmark actual model identity is unavailable: {key}"
+            )
+        if benchmark["actual_model"] != benchmark["model"]:
+            raise ArchitectureError(f"Benchmark actual model identity mismatch: {key}")
+        case_ids = [case["id"] for case in run["cases"]]
+        if len(case_ids) != len(set(case_ids)) or set(case_ids) != expected_cases:
+            raise ArchitectureError(f"Benchmark matrix case shape mismatch: {key}")
+        if benchmark["selected_case_ids"] != case_ids:
+            raise ArchitectureError(f"Benchmark selected cases mismatch: {key}")
+        if benchmark["repetitions"] != 3:
+            raise ArchitectureError(f"Benchmark matrix requires three trials: {key}")
+        for case in run["cases"]:
+            indices = [trial["index"] for trial in case["trials"]]
+            if indices != [1, 2, 3]:
+                raise ArchitectureError(
+                    f"Benchmark matrix trial indices mismatch: {key}/{case['id']}"
+                )
+            for trial in case["trials"]:
+                trial_count += 1
+                if trial["status"] != "completed":
+                    raise ArchitectureError(
+                        "Benchmark matrix artifact has failed trial: "
+                        f"{key}/{case['id']}"
+                    )
+                if trial["model_fallback"]:
+                    raise ArchitectureError("Benchmark matrix forbids model fallback")
+                if (
+                    trial["actual_model"] != benchmark["model"]
+                    or trial["actual_model_source"] == "unavailable"
+                ):
+                    raise ArchitectureError(
+                        "Benchmark trial actual model identity mismatch: "
+                        f"{key}/{case['id']}"
+                    )
+    if len(scored_source_commits) != 1:
+        raise ArchitectureError("Benchmark matrix mixes source commits")
+    if scored_source_commits != {governed_source_commit}:
+        raise ArchitectureError(
+            "Benchmark matrix source commit is obsolete or not governed"
+        )
+    if set(artifacts) != expected_artifacts:
+        raise ArchitectureError(
+            "Benchmark matrix artifacts do not match required models and conditions"
+        )
+    expected_trials = 12 if shape == "canary" else 270
+    if trial_count != expected_trials:
+        raise ArchitectureError(
+            f"Benchmark matrix trial count is {trial_count}, expected {expected_trials}"
+        )
+    return {
+        "shape": shape,
+        "models": models,
+        "artifacts": len(artifacts),
+        "trials": trial_count,
+        "valid": True,
+    }
 
 
 def gate_result_to_sarif(result: dict[str, Any]) -> dict[str, Any]:
@@ -8688,6 +9243,45 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         help="Also write the score as deterministic UTF-8 JSON.",
     )
+    matrix_parser = subparsers.add_parser(
+        "benchmark-verify-matrix",
+        help="Verify the exact v1.3 canary or full benchmark matrix shape.",
+    )
+    matrix_parser.add_argument("--shape", choices=["canary", "full"], required=True)
+    matrix_parser.add_argument("--model", action="append", required=True, dest="models")
+    matrix_parser.add_argument("--run", action="append", required=True, dest="runs")
+    matrix_parser.add_argument(
+        "--canary-run",
+        action="append",
+        default=[],
+        dest="canary_runs",
+        help="Required for full validation; repeat for the two canary artifacts.",
+    )
+    matrix_parser.add_argument(
+        "--ground-truth",
+        required=True,
+    )
+    matrix_parser.add_argument(
+        "--runtime-verification",
+        choices=["strict", "archived"],
+        default="strict",
+        help=(
+            "Require current-host runtime identity, or verify immutable archived "
+            "run/log bytes for every matrix artifact."
+        ),
+    )
+    matrix_parser.add_argument(
+        "--artifact-commit",
+        help="Git commit that immutably contains every run and execution log.",
+    )
+    matrix_parser.add_argument(
+        "--required-source-commit",
+        help=(
+            "Optional explicit governed source commit; it must equal the "
+            "repository selector source commit."
+        ),
+    )
+    matrix_parser.add_argument("--output", type=Path)
 
     gate = subparsers.add_parser(
         "gate",
@@ -9257,6 +9851,27 @@ def run(args: argparse.Namespace) -> int:
             Path(args.run).resolve(),
             runtime_verification=args.runtime_verification,
             artifact_commit=args.artifact_commit,
+        )
+        rendered = json.dumps(result, indent=2, ensure_ascii=False)
+        if args.output:
+            args.output.parent.mkdir(parents=True, exist_ok=True)
+            args.output.write_text(f"{rendered}\n", encoding="utf-8")
+        print(rendered)
+        return 0
+    if args.command == "benchmark-verify-matrix":
+        result = verify_benchmark_matrix(
+            [Path(path).resolve() for path in args.runs],
+            models=args.models,
+            shape=args.shape,
+            ground_truth_path=Path(args.ground_truth).resolve(),
+            canary_paths=(
+                [Path(path).resolve() for path in args.canary_runs]
+                if args.canary_runs
+                else None
+            ),
+            runtime_verification=args.runtime_verification,
+            artifact_commit=args.artifact_commit,
+            required_source_commit=args.required_source_commit,
         )
         rendered = json.dumps(result, indent=2, ensure_ascii=False)
         if args.output:

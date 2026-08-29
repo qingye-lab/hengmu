@@ -7,6 +7,19 @@ and this project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.3.0] - Unreleased
+
+### Added
+
+- Benchmark contract 1.6 with per-attempt completion status, bounded failure
+  taxonomy, trusted command envelopes, harness/configuration hashes, Wilson
+  intervals, tokens-per-solved telemetry, and exact canary/full matrix checks.
+- Five outcome-neutral AI architecture fixtures and case-specific context
+  treatment resolution while retaining the exact 1.0.0 corpus snapshot.
+
+Model-quality evidence remains pending identified two-model canary and full
+benchmark runs; this source change makes no model-quality claim.
+
 ## [1.2.0] - 2026-08-29
 
 Release status: implementation pending hosted and release verification. v1.1.3

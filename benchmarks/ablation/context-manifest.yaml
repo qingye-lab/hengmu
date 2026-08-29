@@ -1,4 +1,4 @@
-schema_version: "1.0"
+schema_version: "1.1"
 treatments:
   # This is an end-to-end package ablation. Base intentionally receives no
   # Skill, reference, or Knowledge input. Full and compressed use the same
@@ -112,3 +112,28 @@ treatments:
     skill: architecture-finding-verifier
     skill_body: [benchmarks/ablation/skills/architecture-finding-verifier.md]
     knowledge: *finding_verifier_knowledge
+
+  # Case-specific treatment resolution is explicit. The runner chooses this
+  # exact case entry before the Skill default above; hidden outcomes never
+  # participate in treatment selection.
+  - <<: *base_project
+    case_id: evaluation-report-pipeline
+    skill: ai-agent-architecture-audit
+  - <<: *full_project
+    case_id: evaluation-report-pipeline
+    skill: ai-agent-architecture-audit
+    skill_metadata: [skills/ai-agent-architecture-audit/SKILL.md]
+    skill_body: [skills/ai-agent-architecture-audit/SKILL.md]
+    references:
+      - resources/references/review-contract.md
+      - resources/references/ai-agent-rules.md
+      - resources/references/knowledge-contract.md
+    knowledge: &evaluation_report_knowledge
+      - resources/knowledge/foundations/evidence-reasoning.md
+      - resources/knowledge/domains/ai-agent/overview.md
+      - resources/knowledge/decision-guides/agent-evaluation-design.md
+  - <<: *compressed_project
+    case_id: evaluation-report-pipeline
+    skill: ai-agent-architecture-audit
+    skill_body: [benchmarks/ablation/skills/ai-agent-architecture-audit.md]
+    knowledge: *evaluation_report_knowledge

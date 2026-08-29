@@ -80,13 +80,18 @@ artifact schemas remain unchanged.
 
 ## v1.3 behavioral assurance
 
-Status: planned; blocked on v1.2.
+Status: source contract implemented; live two-model canary and full evidence pending.
 
 Extend the existing benchmark contract and runner with model/harness identity,
 configuration hashes, trial status and failure taxonomy, confidence intervals,
 and tokens-per-solved. Preserve schemas 1.1 through 1.5 as readable history.
 Run a bounded two-model canary before any full model-behavior evidence and fail
 closed when either named model is unavailable.
+
+The implemented canary shape is two named cases, Full context, two exact model
+identities, and three trials (12 attempts). The full shape is 15 cases by three
+context conditions by two exact models by three trials (270 attempts). Passing
+source validation does not satisfy either live-evaluation gate.
 
 ## v1.4 modular runtime
 

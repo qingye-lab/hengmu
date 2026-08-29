@@ -1,7 +1,7 @@
 schema_version: "1.2"
 benchmark:
   id: architecture-governance-core
-  version: "1.1.0"
+  version: "1.0.0"
   kind: ground-truth
 cases:
   - id: benign-large-sqlite
@@ -127,43 +127,3 @@ cases:
         - case-study.single-agent-is-sufficient
       minimum_rejected_options: 2
       minimum_migration_slices: 1
-  - id: protocol-session-host
-    fixture: benchmarks/fixtures/protocol-session-host
-    skill: ai-agent-architecture-audit
-    prompt: Audit session continuity and tool authorization across protocol messages and worker restarts.
-    expected_findings:
-      - {rule_id: AI.STATE.001, present: true, severity: high}
-      - {rule_id: AI.TOOL.001, present: true, severity: critical}
-    forbidden_recommendations: [prompt wording only]
-  - id: delegated-support-flow
-    fixture: benchmarks/fixtures/delegated-support-flow
-    skill: ai-agent-architecture-audit
-    prompt: Audit worker coordination, shared state ownership, and authorization of requested tools.
-    expected_findings:
-      - {rule_id: AI.MULTIAGENT.001, present: true, severity: high}
-      - {rule_id: AI.TOOL.001, present: true, severity: critical}
-    forbidden_recommendations: [more agents]
-  - id: trace-export-pipeline
-    fixture: benchmarks/fixtures/trace-export-pipeline
-    skill: ai-agent-architecture-audit
-    prompt: Audit the trace export boundary for reconstruction and data exposure risks.
-    expected_findings:
-      - {rule_id: AI.SECRET.001, present: true, severity: critical}
-      - {rule_id: AI.OBSERVABILITY.001, present: true, severity: high}
-    forbidden_recommendations: [disable tracing]
-  - id: extension-runtime-loader
-    fixture: benchmarks/fixtures/extension-runtime-loader
-    skill: ai-agent-architecture-audit
-    prompt: Audit extension provenance and runtime tool authority from download through execution.
-    expected_findings:
-      - {rule_id: AI.PROVENANCE.001, present: true, severity: critical}
-      - {rule_id: AI.TOOL.001, present: true, severity: critical}
-    forbidden_recommendations: [trust the descriptor]
-  - id: evaluation-report-pipeline
-    fixture: benchmarks/fixtures/evaluation-report-pipeline
-    skill: ai-agent-architecture-audit
-    prompt: Audit whether the published evaluation report preserves reproducible model and execution identity.
-    expected_findings:
-      - {rule_id: AI.EVAL.002, present: true, severity: high}
-      - {rule_id: AI.MODEL.001, present: true, severity: high}
-    forbidden_recommendations: [record requested model only]

@@ -77,7 +77,7 @@ as time-bound evidence, not a permanent guarantee.
 
 ## Adversarial architecture benchmark
 
-`benchmarks/ground-truth.yaml` is a separate behavior corpus. Its ten fixtures
+`benchmarks/ground-truth.yaml` is a separate behavior corpus. Its fifteen fixtures
 cover false-positive resistance, modular-monolith proportionality, real data
 ownership conflicts, queue versus durable workflow proportionality, mobile
 client/server ownership, documentation/code contradictions, shared-database
@@ -130,12 +130,13 @@ python3 scripts/run_behavior_benchmark.py \
     --model MODEL --skill '{skill}' \
     --fixture '{fixture}' --prompt '{prompt}' \
     --condition '{condition}' \
-    --context-manifest '{context_manifest}'
+    --context-manifest '{context_manifest}' --case-id '{case_id}'
 ```
 
-The command must emit JSON with `observed_findings` and
-`observed_recommendations`; Solution Advisor cases also require
-`observed_decision`. Every observed Finding supplies repository-relative
+For schema 1.6 the command emits the trusted
+`benchmark-command-result.schema.json` envelope around the unchanged
+observation. Adapter/model/retry/usage/failure fields come from the harness
+boundary; model-produced metadata is discarded. Every observed Finding supplies repository-relative
 `path`, `line_start`, `line_end`, and exact `excerpt` evidence. The harness and
 scorer independently resolve these references inside the fixture; a
 caller-supplied validity assertion is not trusted. Use a clean task per case
@@ -175,7 +176,8 @@ python3 scripts/run_behavior_benchmark.py \
   --output benchmarks/results/full-run.yaml -- \
   python3 scripts/codex_benchmark_adapter.py \
     --model MODEL --skill '{skill}' --fixture '{fixture}' --prompt '{prompt}' \
-    --condition '{condition}' --context-manifest '{context_manifest}'
+    --condition '{condition}' --context-manifest '{context_manifest}' \
+    --case-id '{case_id}'
 ```
 
 Replace `full` in the condition and output path with `base` and `compressed`,
@@ -218,6 +220,34 @@ the recorded command/model runtimes. Cross-platform reviewers may instead use
 requires the exact run YAML and JSONL log bytes to exist in that Git commit,
 keeps all source/log/command checks, and reports current-host runtime mismatch
 without pretending the original runtime was replayed.
+
+## v1.3 assurance sequence
+
+Run one artifact per exact requested model and condition. The canary is exactly
+`benign-large-sqlite` plus `evaluation-report-pipeline`, Full context, two exact
+models, and three trials: 12 attempts. Only after it validates, run all 15 cases
+across Base, Full, and Compressed for both models and three trials: 270 attempts.
+
+```bash
+python3 resources/scripts/architecture_tool.py benchmark-verify-matrix \
+  --ground-truth benchmarks/ground-truth.yaml \
+  --shape canary --model MODEL_A --model MODEL_B \
+  --run MODEL_A_FULL.yaml --run MODEL_B_FULL.yaml
+```
+
+Matrix validation rejects missing or duplicate models, cases, conditions,
+trials, artifacts, failed canary attempts, fallback, and absent, aliased, or
+mismatched actual model identity. A requested model string alone is never
+actual-model evidence. Full matrix verification also requires both validated
+canary artifacts through repeated `--canary-run` arguments. Source/schema
+checks do not establish model quality.
+
+The scorer alone derives `passed`/solved trials using exact Rule IDs and
+severity, recomputed evidence, forbidden recommendations, and complete
+decision/trade-off/Knowledge/rejected-option/migration-slice requirements.
+Failed trials—including negative cases—are unsolved. Wilson bounds use all
+attempts. `tokens_per_solved` is `null` unless every attempted trial reports
+both input and output tokens and at least one trial passes.
 
 ## Release evidence
 

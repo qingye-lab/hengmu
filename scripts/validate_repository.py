@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import ast
+import hashlib
 import json
 import re
 from pathlib import Path
@@ -64,6 +65,7 @@ REQUIRED_FILES = (
     "docs/migrating-to-0.4.md",
     "docs/migrating-to-0.4.2.md",
     "docs/migrating-to-1.0.md",
+    "docs/migrating-to-1.3.md",
     "docs/target-architecture.md",
     "docs/target-architecture-implementation.md",
     "resources/templates/evolution-assessment.md",
@@ -74,6 +76,7 @@ REQUIRED_FILES = (
     "evals/knowledge-selection.yaml",
     "evals/routing.yaml",
     "benchmarks/ground-truth.yaml",
+    "benchmarks/ground-truth-1.0.0.yaml",
     "benchmarks/run-template.yaml",
     "benchmarks/ablation/context-manifest.yaml",
     "benchmarks/ablation/tool-description.md",
@@ -100,8 +103,10 @@ REQUIRED_FILES = (
     "resources/schemas/knowledge-entry.schema.json",
     "resources/schemas/architecture-design-brief.schema.json",
     "resources/schemas/benchmark.schema.json",
+    "resources/schemas/benchmark-command-result.schema.json",
     "resources/schemas/benchmark-context-manifest.schema.json",
     "resources/schemas/benchmark-observation.schema.json",
+    "resources/schemas/benchmark-score.schema.json",
     "resources/schemas/knowledge-context.schema.json",
     "resources/schemas/knowledge-manifest.schema.json",
     "resources/schemas/knowledge-selection.schema.json",
@@ -689,6 +694,25 @@ def validate_schemas_and_yaml(root: Path, errors: list[str]) -> None:
 
     benchmark = load_yaml(root / "benchmarks" / "ground-truth.yaml", errors)
     if isinstance(benchmark, dict):
+        benchmark_schema = load_json(schemas_root / "benchmark.schema.json", errors)
+        if benchmark_schema is not None:
+            for error in Draft202012Validator(
+                benchmark_schema,
+                format_checker=FormatChecker(),
+            ).iter_errors(benchmark):
+                errors.append(
+                    "benchmarks/ground-truth.yaml does not match "
+                    "benchmark.schema.json: " + error.message
+                )
+        if benchmark.get("benchmark", {}).get("version") != "1.1.0":
+            errors.append("benchmarks/ground-truth.yaml version must be '1.1.0'")
+        cases = benchmark.get("cases", [])
+        if not isinstance(cases, list) or len(cases) != 15:
+            errors.append("benchmarks/ground-truth.yaml must contain exactly 15 cases")
+            cases = []
+        case_ids = [case.get("id") for case in cases if isinstance(case, dict)]
+        if len(case_ids) != len(set(case_ids)):
+            errors.append("benchmarks/ground-truth.yaml contains duplicate case IDs")
         for case in benchmark.get("cases", []):
             fixture = root / case.get("fixture", "")
             try:
@@ -698,6 +722,62 @@ def validate_schemas_and_yaml(root: Path, errors: list[str]) -> None:
                 continue
             if not fixture.is_dir():
                 errors.append(f"benchmark fixture is missing: {fixture}")
+        expected_new_rules = {
+            "protocol-session-host": {"AI.STATE.001", "AI.TOOL.001"},
+            "delegated-support-flow": {"AI.MULTIAGENT.001", "AI.TOOL.001"},
+            "trace-export-pipeline": {"AI.SECRET.001", "AI.OBSERVABILITY.001"},
+            "extension-runtime-loader": {"AI.PROVENANCE.001", "AI.TOOL.001"},
+            "evaluation-report-pipeline": {"AI.EVAL.002", "AI.MODEL.001"},
+        }
+        by_id = {
+            case["id"]: case
+            for case in cases
+            if isinstance(case, dict) and isinstance(case.get("id"), str)
+        }
+        for case_id, expected_rules in expected_new_rules.items():
+            case = by_id.get(case_id)
+            if case is None:
+                errors.append(f"benchmark corpus is missing v1.3 case {case_id}")
+                continue
+            actual_rules = {
+                finding.get("rule_id")
+                for finding in case.get("expected_findings", [])
+                if isinstance(finding, dict)
+            }
+            if actual_rules != expected_rules:
+                errors.append(
+                    f"benchmark case {case_id} does not use its approved Rule IDs"
+                )
+            fixture = root / case["fixture"]
+            if fixture.name != case_id:
+                errors.append(
+                    f"benchmark case {case_id} fixture path is not outcome-neutral"
+                )
+            fixture_text = "\n".join(
+                path.read_text(encoding="utf-8").lower()
+                for path in fixture.rglob("*")
+                if path.is_file()
+            )
+            for phrase in (
+                "expected behavior",
+                "expected decision",
+                "do not recommend",
+            ):
+                if phrase in fixture_text:
+                    errors.append(
+                        f"benchmark fixture {case_id} leaks outcome label {phrase!r}"
+                    )
+
+    legacy_path = root / "benchmarks" / "ground-truth-1.0.0.yaml"
+    if legacy_path.is_file():
+        legacy_digest = hashlib.sha256(legacy_path.read_bytes()).hexdigest()
+        if (
+            legacy_digest
+            != "3587088c02f04eb7c20f45ee7b8a6db10a2f20a2c523238ffa8a5f1d3f07b74c"
+        ):
+            errors.append(
+                "benchmarks/ground-truth-1.0.0.yaml is not the exact retained corpus"
+            )
 
 
 def validate_benchmark_ablation(root: Path, errors: list[str]) -> None:
@@ -731,29 +811,50 @@ def validate_benchmark_ablation(root: Path, errors: list[str]) -> None:
         skill = case.get("skill")
         if isinstance(skill, str):
             benchmark_skills.add(skill)
-    expected = {
-        (condition, skill)
+    benchmark_cases = [
+        case for case in truth.get("cases", []) if isinstance(case, dict)
+    ]
+    expected_defaults = {
+        (condition, skill, None)
         for condition in ("base", "full", "compressed")
         for skill in benchmark_skills
     }
     actual = {
-        (item.get("condition"), item.get("skill"))
+        (item.get("condition"), item.get("skill"), item.get("case_id"))
         for item in treatments
         if isinstance(item, dict)
     }
-    if len(actual) != len(treatments) or actual != expected:
+    if len(actual) != len(treatments) or not expected_defaults.issubset(actual):
         errors.append(
             f"{manifest_path} must declare exactly one Base/Full/Compressed "
-            "treatment for every benchmark Skill"
+            "default treatment for every benchmark Skill"
         )
         return
+    corpus_skills = {
+        case.get("id"): case.get("skill")
+        for case in benchmark_cases
+        if isinstance(case.get("id"), str) and isinstance(case.get("skill"), str)
+    }
+    for _condition, skill, case_id in actual:
+        if case_id is None:
+            if skill not in benchmark_skills:
+                errors.append(f"{manifest_path} has unknown default Skill {skill!r}")
+            continue
+        if case_id not in corpus_skills:
+            errors.append(
+                f"{manifest_path} override references unknown case {case_id!r}"
+            )
+        elif corpus_skills[case_id] != skill:
+            errors.append(
+                f"{manifest_path} override {case_id!r} does not match Skill {skill!r}"
+            )
     by_key = {
-        (item["condition"], item["skill"]): item
+        (item["condition"], item["skill"], item.get("case_id")): item
         for item in treatments
         if isinstance(item, dict)
     }
     for skill in sorted(benchmark_skills):
-        base = by_key[("base", skill)]
+        base = by_key[("base", skill, None)]
         if base["knowledge_basis"] != "none" or any(
             base[field]
             for field in ("skill_metadata", "skill_body", "references", "knowledge")
@@ -762,8 +863,8 @@ def validate_benchmark_ablation(root: Path, errors: list[str]) -> None:
                 f"{manifest_path} Base treatment for {skill} must not load "
                 "Skill, reference, or Knowledge content"
             )
-        full = by_key[("full", skill)]
-        compressed = by_key[("compressed", skill)]
+        full = by_key[("full", skill, None)]
+        compressed = by_key[("compressed", skill, None)]
         if (
             full["knowledge_basis"] != "workflow-required"
             or compressed["knowledge_basis"] != "workflow-required"
@@ -776,6 +877,29 @@ def validate_benchmark_ablation(root: Path, errors: list[str]) -> None:
             errors.append(
                 f"{manifest_path} Full and Compressed treatments for {skill} "
                 "must use identical Knowledge inputs"
+            )
+    for case in benchmark_cases:
+        case_id = case.get("id")
+        skill = case.get("skill")
+        if not isinstance(case_id, str) or not isinstance(skill, str):
+            continue
+        resolved = {
+            condition: by_key.get((condition, skill, case_id))
+            or by_key[(condition, skill, None)]
+            for condition in ("base", "full", "compressed")
+        }
+        base = resolved["base"]
+        if base["knowledge_basis"] != "none" or any(
+            base[field]
+            for field in ("skill_metadata", "skill_body", "references", "knowledge")
+        ):
+            errors.append(
+                f"{manifest_path} resolved Base treatment for {case_id} must be empty"
+            )
+        if resolved["full"]["knowledge"] != resolved["compressed"]["knowledge"]:
+            errors.append(
+                f"{manifest_path} resolved Full and Compressed treatments for "
+                f"{case_id} must use identical Knowledge inputs"
             )
 
 

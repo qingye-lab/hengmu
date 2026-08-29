@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.architecture/schemas/benchmark-command-result.schema.json",
+  "title": "Trusted benchmark command envelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "adapter",
+    "status",
+    "requested_model",
+    "actual_model",
+    "actual_model_source",
+    "model_fallback",
+    "retries",
+    "usage",
+    "observation"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "adapter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version"],
+      "properties": {
+        "name": {"const": "hengmu-codex-benchmark-adapter"},
+        "version": {"const": "1.3.0"}
+      }
+    },
+    "status": {"enum": ["completed", "failed"]},
+    "requested_model": {"type": "string", "minLength": 1},
+    "actual_model": {"type": ["string", "null"], "minLength": 1},
+    "actual_model_source": {
+      "enum": ["cli-json", "provider", "unavailable"]
+    },
+    "model_fallback": {"const": false},
+    "retries": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "generic",
+        "evidence_correction_count",
+        "evidence_correction_max"
+      ],
+      "properties": {
+        "generic": {"const": 0},
+        "evidence_correction_count": {"type": "integer", "minimum": 0, "maximum": 1},
+        "evidence_correction_max": {"const": 1}
+      }
+    },
+    "usage": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["input_tokens", "output_tokens", "cost_usd", "tool_calls"],
+          "properties": {
+            "input_tokens": {"type": ["integer", "null"], "minimum": 0},
+            "output_tokens": {"type": ["integer", "null"], "minimum": 0},
+            "cost_usd": {"type": ["number", "null"], "minimum": 0},
+            "tool_calls": {"type": ["integer", "null"], "minimum": 0}
+          }
+        }
+      ]
+    },
+    "observation": {
+      "oneOf": [
+        {"type": "null"},
+        {"type": "object"}
+      ]
+    },
+    "failure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["class", "exit_code"],
+      "properties": {
+        "class": {
+          "enum": ["timeout", "schema-invalid", "tool-error", "nonzero"]
+        },
+        "exit_code": {"type": ["integer", "null"]}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "completed"}}, "required": ["status"]},
+      "then": {
+        "properties": {"observation": {"type": "object"}},
+        "not": {"required": ["failure"]}
+      },
+      "else": {
+        "required": ["failure"],
+        "properties": {"observation": {"type": "null"}}
+      }
+    },
+    {
+      "if": {"properties": {"actual_model": {"type": "null"}}, "required": ["actual_model"]},
+      "then": {"properties": {"actual_model_source": {"const": "unavailable"}}},
+      "else": {"properties": {"actual_model_source": {"enum": ["cli-json", "provider"]}}}
+    }
+  ]
+}

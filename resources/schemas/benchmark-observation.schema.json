@@ -91,6 +91,7 @@
         },
         "rejected_options": {
           "type": "array",
+          "description": "Scoring requires unique option IDs that differ from the selected and accepted options; structural validation intentionally keeps violations as completed but unsolved trials.",
           "items": {
             "type": "object",
             "additionalProperties": false,

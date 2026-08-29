@@ -1,5 +1,15 @@
 # Preserved model runs
 
+Schema 1.6 artifacts are one requested-model plus condition each. Preserve the
+YAML run, sibling JSONL log, and JSON score together. Every attempt remains one
+trial and one JSONL record, including partial and failed attempts.
+
+Run the exact 12-attempt canary before the 270-attempt full matrix. Matrix
+verification fails closed for missing or duplicate artifacts, cases,
+conditions, models, trial indices, failed trials, fallback, or absent or
+mismatched actual model identity. Existing files are not a v1.3 model-quality
+claim until those live gates have completed.
+
 This directory contains versioned, model-visible behavior evidence rather than
 golden answers.
 

@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.architecture/schemas/benchmark-score.schema.json",
+  "title": "Architecture behavior benchmark score",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["cases", "trials"],
+  "properties": {
+    "cases": {"type": "integer", "minimum": 0},
+    "trials": {"type": "integer", "minimum": 0},
+    "attempted": {"type": "integer", "minimum": 0},
+    "completed": {"type": "integer", "minimum": 0},
+    "passed": {"type": "integer", "minimum": 0},
+    "solved_rate": {"type": "number", "minimum": 0, "maximum": 1},
+    "solved_rate_wilson_low": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+    "solved_rate_wilson_high": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+    "tokens_per_solved": {"type": ["number", "null"], "minimum": 0},
+    "failure_counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["timeout", "schema-invalid", "tool-error", "nonzero"],
+      "properties": {
+        "timeout": {"type": "integer", "minimum": 0},
+        "schema-invalid": {"type": "integer", "minimum": 0},
+        "tool-error": {"type": "integer", "minimum": 0},
+        "nonzero": {"type": "integer", "minimum": 0}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"required": ["attempted"]},
+      "then": {"required": ["completed", "passed", "solved_rate", "solved_rate_wilson_low", "solved_rate_wilson_high", "tokens_per_solved", "failure_counts"]}
+    }
+  ]
+}

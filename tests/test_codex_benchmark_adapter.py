@@ -1,11 +1,15 @@
 from __future__ import annotations
 
+import copy
 import importlib.util
+import io
 import json
 import sys
 import tempfile
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
+from unittest.mock import patch
 
 sys.dont_write_bytecode = True
 ROOT = Path(__file__).resolve().parent.parent
@@ -17,6 +21,85 @@ SPEC.loader.exec_module(codex_benchmark_adapter)
 
 
 class CodexBenchmarkAdapterTests(unittest.TestCase):
+    def test_cli_metadata_keeps_current_codex_model_identity_unavailable(
+        self,
+    ) -> None:
+        actual, source, usage = codex_benchmark_adapter.parse_cli_metadata(
+            "\n".join(
+                [
+                    json.dumps({"type": "thread.started", "model": "actual-model"}),
+                    json.dumps(
+                        {
+                            "type": "turn.completed",
+                            "usage": {"input_tokens": 11, "output_tokens": 7},
+                        }
+                    ),
+                ]
+            ),
+            "requested-model",
+        )
+        self.assertEqual((actual, source), (None, "unavailable"))
+        self.assertEqual(usage["input_tokens"], 11)
+        self.assertIsNone(usage["cost_usd"])
+
+    def test_cli_metadata_rejects_hostile_nested_models_and_banners(self) -> None:
+        stdout = "\n".join(
+            [
+                json.dumps(
+                    {
+                        "type": "item.completed",
+                        "item": {
+                            "type": "mcp_tool_call",
+                            "model": "hostile-nested-model",
+                            "result": {"actual_model": "hostile-tool-result"},
+                        },
+                    }
+                ),
+                json.dumps(
+                    {
+                        "type": "turn.completed",
+                        "usage": {"input_tokens": 3, "output_tokens": 2},
+                        "metadata": {"model_id": "hostile-metadata-model"},
+                    }
+                ),
+                "model: hostile-banner-model",
+            ]
+        )
+        actual, source, usage = codex_benchmark_adapter.parse_cli_metadata(
+            stdout,
+            "actual model: hostile-stderr-banner",
+        )
+        self.assertEqual((actual, source), (None, "unavailable"))
+        self.assertEqual(usage["input_tokens"], 3)
+
+    def test_command_envelope_owns_metadata_and_exposes_no_raw_errors(self) -> None:
+        observation = {
+            "observed_findings": [],
+            "observed_recommendations": [],
+            "observed_decision": {
+                "selected_option": "not-applicable",
+                "compared_tradeoffs": [],
+                "knowledge_ids": [],
+                "rejected_options": [],
+                "migration_slices": [],
+            },
+        }
+        envelope = codex_benchmark_adapter.command_envelope(
+            requested_model="requested-model",
+            status="completed",
+            actual_model="actual-model",
+            actual_model_source="cli-json",
+            correction_count=0,
+            usage=None,
+            observation=observation,
+        )
+        self.assertEqual(
+            envelope["adapter"]["name"], codex_benchmark_adapter.ADAPTER_NAME
+        )
+        self.assertEqual(envelope["retries"]["generic"], 0)
+        self.assertFalse(envelope["model_fallback"])
+        self.assertNotIn("error", envelope)
+
     def test_allowed_rules_come_from_machine_rule_packs(self) -> None:
         rule_ids = codex_benchmark_adapter.allowed_rule_ids(ROOT)
         self.assertIn("PROJECT.IDEMPOTENCY.001", rule_ids)
@@ -129,6 +212,42 @@ class CodexBenchmarkAdapterTests(unittest.TestCase):
             prompt,
         )
 
+    def test_treatment_resolution_rejects_exact_and_default_ambiguity(self) -> None:
+        manifest = codex_benchmark_adapter.load_context_manifest(
+            ROOT,
+            ROOT / "benchmarks" / "ablation" / "context-manifest.yaml",
+        )
+        exact_ambiguous = copy.deepcopy(manifest)
+        duplicate_exact = copy.deepcopy(exact_ambiguous["treatments"][-1])
+        duplicate_exact["tool_descriptions"] = []
+        exact_ambiguous["treatments"].append(duplicate_exact)
+        with self.assertRaisesRegex(ValueError, "multiple exact"):
+            codex_benchmark_adapter.treatment_for(
+                exact_ambiguous,
+                condition="compressed",
+                skill="ai-agent-architecture-audit",
+                case_id="evaluation-report-pipeline",
+            )
+
+        default_ambiguous = copy.deepcopy(manifest)
+        default = next(
+            treatment
+            for treatment in default_ambiguous["treatments"]
+            if treatment["condition"] == "base"
+            and treatment["skill"] == "project-architecture-audit"
+            and "case_id" not in treatment
+        )
+        duplicate_default = copy.deepcopy(default)
+        duplicate_default["tool_descriptions"] = []
+        default_ambiguous["treatments"].append(duplicate_default)
+        with self.assertRaisesRegex(ValueError, "multiple default"):
+            codex_benchmark_adapter.treatment_for(
+                default_ambiguous,
+                condition="base",
+                skill="project-architecture-audit",
+                case_id="benign-large-sqlite",
+            )
+
     def test_full_treatment_uses_declared_references_and_shared_knowledge(self) -> None:
         manifest = codex_benchmark_adapter.load_context_manifest(
             ROOT,
@@ -167,6 +286,96 @@ class CodexBenchmarkAdapterTests(unittest.TestCase):
         self.assertIn(str(references[0]), prompt)
         self.assertIn(str(knowledge[0]), prompt)
         self.assertNotIn("The architecture knowledge catalog is read-only at", prompt)
+
+    def test_missing_codex_emits_structured_tool_failure(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            stream = io.StringIO()
+            argv = [
+                str(SCRIPT_PATH),
+                "--root",
+                str(ROOT),
+                "--model",
+                "requested-model",
+                "--skill",
+                "ai-agent-architecture-audit",
+                "--fixture",
+                str(ROOT / "benchmarks" / "fixtures" / "protocol-session-host"),
+                "--prompt",
+                "Audit the bounded fixture without inferring expected outcomes.",
+                "--case-id",
+                "protocol-session-host",
+                "--codex",
+                "definitely-not-codex",
+            ]
+            with patch.object(sys, "argv", argv), redirect_stdout(stream):
+                self.assertEqual(codex_benchmark_adapter.main(), 0)
+            payload = json.loads(stream.getvalue())
+            self.assertEqual(payload["status"], "failed")
+            self.assertEqual(payload["failure"]["class"], "tool-error")
+            self.assertIsNone(payload["actual_model"])
+            self.assertNotIn(str(temporary), stream.getvalue())
+
+    def test_evidence_correction_exhaustion_is_structured(self) -> None:
+        invalid = {
+            "observed_findings": [
+                {
+                    "rule_id": "AI.STATE.001",
+                    "severity": "high",
+                    "evidence": [
+                        {
+                            "path": "host.py",
+                            "line_start": 1,
+                            "line_end": 1,
+                            "excerpt": "not present",
+                        }
+                    ],
+                }
+            ],
+            "observed_recommendations": [],
+            "observed_decision": {
+                "selected_option": "not-applicable",
+                "compared_tradeoffs": [],
+                "knowledge_ids": [],
+                "rejected_options": [],
+                "migration_slices": [],
+            },
+        }
+        argv = [
+            str(SCRIPT_PATH),
+            "--root",
+            str(ROOT),
+            "--model",
+            "requested-model",
+            "--skill",
+            "ai-agent-architecture-audit",
+            "--fixture",
+            str(ROOT / "benchmarks" / "fixtures" / "protocol-session-host"),
+            "--prompt",
+            "Audit the bounded fixture without inferring expected outcomes.",
+            "--case-id",
+            "protocol-session-host",
+        ]
+        stream = io.StringIO()
+        with (
+            patch.object(sys, "argv", argv),
+            patch.object(
+                codex_benchmark_adapter.shutil, "which", return_value=sys.executable
+            ),
+            patch.object(
+                codex_benchmark_adapter,
+                "execute_codex",
+                side_effect=[
+                    (invalid, "requested-model", "cli-json", None),
+                    (invalid, "requested-model", "cli-json", None),
+                ],
+            ),
+            redirect_stdout(stream),
+        ):
+            self.assertEqual(codex_benchmark_adapter.main(), 0)
+        payload = json.loads(stream.getvalue())
+        self.assertEqual(payload["failure"]["class"], "schema-invalid")
+        self.assertEqual(payload["retries"]["evidence_correction_count"], 1)
+        self.assertNotIn("not present", stream.getvalue())
 
 
 if __name__ == "__main__":

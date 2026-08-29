@@ -25,6 +25,171 @@ architecture_tool = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(architecture_tool)
 
 
+def benchmark_v16_run(case_id: str, trials: list[dict]) -> dict:
+    truth = architecture_tool.load_yaml(ROOT / "benchmarks" / "ground-truth.yaml")
+    case = next(item for item in truth["cases"] if item["id"] == case_id)
+    zero = "0" * 64
+    return {
+        "schema_version": "1.6",
+        "benchmark": {
+            "id": truth["benchmark"]["id"],
+            "version": truth["benchmark"]["version"],
+            "kind": "run",
+            "model": "model-a",
+            "actual_model": "model-a",
+            "surface": "test-surface",
+            "skill_version": "1.3.0",
+            "condition": "full",
+            "profile": "default",
+            "context_budget": {
+                "condition": "full",
+                "metric_kind": "declared-context-proxy-v1",
+                "scope": "corpus",
+                "character_unit": "unicode_code_points",
+                "manifest_path": "benchmarks/ablation/context-manifest.yaml",
+                "manifest_sha256": zero,
+                "skill_metadata_chars": 0,
+                "skill_body_chars": 0,
+                "reference_chars": 0,
+                "knowledge_chars": 0,
+                "tool_description_chars": 0,
+                "artifact_input_bytes": 0,
+                "inputs": [
+                    {
+                        "role": "artifact-input",
+                        "path": case["fixture"],
+                        "sha256": zero,
+                        "bytes": 0,
+                        "file_count": 1,
+                    }
+                ],
+            },
+            "run_at": "2026-08-29T00:00:00+00:00",
+            "repetitions": len(trials),
+            "trial_timeout_seconds": 600,
+            "artifact_timeout_seconds": 36000,
+            "selected_case_ids": [case_id],
+            "harness": {
+                "name": "hengmu-behavior-benchmark",
+                "version": "1.3.0",
+                "implementation_sha256": zero,
+                "config_sha256": zero,
+            },
+            "provenance": {
+                "source": {"repository": ".", "commit": "0" * 40, "dirty": False},
+                "environment": {
+                    "os": "test",
+                    "os_release": "test",
+                    "architecture": "test",
+                    "python_implementation": "CPython",
+                    "python_version": "3.13",
+                },
+                "model_request": "model-a",
+                "command_template": [
+                    "adapter",
+                    "{condition}",
+                    "{context_manifest}",
+                    "{case_id}",
+                ],
+                "command_template_sha256": zero,
+                "inputs": [
+                    {"role": role, "path": f"{role}.json", "sha256": zero}
+                    for role in (
+                        "ground-truth",
+                        "benchmark-schema",
+                        "observation-schema",
+                        "command-result-schema",
+                        "dependency-lock",
+                        "knowledge-manifest",
+                        "plugin-manifest",
+                        "context-manifest",
+                        "benchmark-context-schema",
+                    )
+                ],
+                "fixtures": [
+                    {
+                        "case_id": case_id,
+                        "path": case["fixture"],
+                        "sha256": zero,
+                        "file_count": 1,
+                    }
+                ],
+                "tools": [
+                    {
+                        "id": "benchmark-runner",
+                        "path": "scripts/run_behavior_benchmark.py",
+                        "sha256": zero,
+                    }
+                ],
+                "execution_log": {
+                    "path": "run.log.jsonl",
+                    "format": "jsonl",
+                    "sha256": zero,
+                    "records": len(trials),
+                },
+            },
+        },
+        "cases": [
+            {
+                "id": case_id,
+                "fixture": case["fixture"],
+                "skill": case["skill"],
+                "expected_findings": [],
+                "forbidden_recommendations": [],
+                "trials": trials,
+            }
+        ],
+    }
+
+
+def benchmark_v16_trial(
+    index: int,
+    *,
+    status: str = "completed",
+    failure_class: str | None = None,
+    findings: list[dict] | None = None,
+    usage: dict | None = None,
+) -> dict:
+    zero = "0" * 64
+    trial = {
+        "index": index,
+        "status": status,
+        "duration_seconds": 0.1,
+        "actual_model": "model-a" if status == "completed" else None,
+        "actual_model_source": "provider" if status == "completed" else "unavailable",
+        "model_fallback": False,
+        "adapter": {"name": "hengmu-codex-benchmark-adapter", "version": "1.3.0"},
+        "retries": {
+            "generic": 0,
+            "evidence_correction_count": 0,
+            "evidence_correction_max": 1,
+        },
+        "usage": usage,
+        "observed_findings": findings or [],
+        "observed_recommendations": [],
+        "observed_decision": {
+            "selected_option": "not-applicable",
+            "compared_tradeoffs": [],
+            "knowledge_ids": [],
+            "rejected_options": [],
+            "migration_slices": [],
+        },
+        "execution": {
+            "exit_code": 0 if status == "completed" else None,
+            "command": ["adapter", "full", "manifest", "case"],
+            "command_sha256": zero,
+            "stdout_sha256": zero,
+            "stderr_sha256": zero,
+            "observation_sha256": zero if status == "completed" else None,
+            "command_result_sha256": zero,
+            "log_record_sha256": zero,
+        },
+    }
+    if failure_class is not None:
+        trial["failure_class"] = failure_class
+    return trial
+
+
 def as_legacy_remediation_decision(
     decision: dict,
     schema_version: str,
@@ -3216,7 +3381,9 @@ class ArchitectureToolTests(unittest.TestCase):
         )
 
     def test_empty_benchmark_run_scores_zero_positive_precision(self) -> None:
-        truth = architecture_tool.load_yaml(ROOT / "benchmarks" / "ground-truth.yaml")
+        truth = architecture_tool.load_yaml(
+            ROOT / "benchmarks" / "ground-truth-1.0.0.yaml"
+        )
         expected_positive = sum(
             finding["present"]
             for case in truth["cases"]
@@ -3240,8 +3407,6 @@ class ArchitectureToolTests(unittest.TestCase):
             ROOT / "benchmarks" / "ablation" / "context-manifest.yaml"
         )
         truth = architecture_tool.load_yaml(ROOT / "benchmarks" / "ground-truth.yaml")
-        skills = {case["skill"] for case in truth["cases"]}
-
         duplicate = copy.deepcopy(manifest)
         duplicate["treatments"].append(copy.deepcopy(duplicate["treatments"][0]))
         with self.assertRaisesRegex(
@@ -3250,7 +3415,7 @@ class ArchitectureToolTests(unittest.TestCase):
         ):
             architecture_tool.validate_benchmark_ablation_contract(
                 duplicate,
-                skills=skills,
+                cases=truth["cases"],
             )
 
         incomplete = copy.deepcopy(manifest)
@@ -3261,7 +3426,7 @@ class ArchitectureToolTests(unittest.TestCase):
         ):
             architecture_tool.validate_benchmark_ablation_contract(
                 incomplete,
-                skills=skills,
+                cases=truth["cases"],
             )
 
     def test_benchmark_scores_repeated_trial_stability(self) -> None:
@@ -3284,7 +3449,9 @@ class ArchitectureToolTests(unittest.TestCase):
             ROOT / "benchmarks" / "ground-truth.yaml",
             run_path,
         )
-        truth = architecture_tool.load_yaml(ROOT / "benchmarks" / "ground-truth.yaml")
+        truth = architecture_tool.load_yaml(
+            ROOT / "benchmarks" / "ground-truth-1.0.0.yaml"
+        )
         expected_positive = sum(
             finding["present"]
             for case in truth["cases"]
@@ -3349,6 +3516,530 @@ class ArchitectureToolTests(unittest.TestCase):
         self.assertEqual(result["rejection_explanation_coverage"], 1.0)
         self.assertEqual(result["migration_actionability"], 1.0)
 
+    def test_benchmark_v16_failed_negative_is_unsolved(self) -> None:
+        run = benchmark_v16_run(
+            "benign-large-sqlite",
+            [benchmark_v16_trial(1, status="failed", failure_class="timeout")],
+        )
+        run_path = self.root / "failed-negative.yaml"
+        self.write_yaml(run_path, run)
+        with patch.object(
+            architecture_tool,
+            "validate_benchmark_provenance",
+            return_value=None,
+        ):
+            result = architecture_tool.score_benchmark(
+                ROOT / "benchmarks" / "ground-truth.yaml",
+                run_path,
+            )
+        self.assertEqual(result["attempted"], 1)
+        self.assertEqual(result["completed"], 0)
+        self.assertEqual(result["passed"], 0)
+        self.assertEqual(result["failure_counts"]["timeout"], 1)
+        self.assertIsNone(result["tokens_per_solved"])
+
+    def test_benchmark_command_envelope_uses_source_contract(self) -> None:
+        schema = json.loads(
+            (
+                ROOT / "resources" / "schemas" / "benchmark-command-result.schema.json"
+            ).read_text(encoding="utf-8")
+        )
+        validator = architecture_tool.Draft202012Validator(schema)
+        envelope = {
+            "schema_version": "1.0",
+            "adapter": {
+                "name": "hengmu-codex-benchmark-adapter",
+                "version": "1.3.0",
+            },
+            "status": "failed",
+            "requested_model": "model-a",
+            "actual_model": None,
+            "actual_model_source": "unavailable",
+            "model_fallback": False,
+            "retries": {
+                "generic": 0,
+                "evidence_correction_count": 0,
+                "evidence_correction_max": 1,
+            },
+            "usage": None,
+            "observation": None,
+            "failure": {"class": "tool-error", "exit_code": None},
+        }
+        architecture_tool.validate_benchmark_command_envelope(
+            envelope,
+            validator=validator,
+            case_id="case-a",
+            trial_index=1,
+        )
+        forged = copy.deepcopy(envelope)
+        forged["adapter"]["version"] = "forged"
+        forged["retries"]["generic"] = 4
+        with self.assertRaisesRegex(
+            architecture_tool.ArchitectureError,
+            "source-bound schema",
+        ):
+            architecture_tool.validate_benchmark_command_envelope(
+                forged,
+                validator=validator,
+                case_id="case-a",
+                trial_index=1,
+            )
+
+    def test_benchmark_command_schema_role_rejects_relabeled_plugin_manifest(
+        self,
+    ) -> None:
+        plugin_path = ROOT / ".codex-plugin" / "plugin.json"
+        relabeled = {
+            "role": "command-result-schema",
+            "path": ".codex-plugin/plugin.json",
+            "sha256": architecture_tool.file_sha256(plugin_path),
+        }
+        with self.assertRaisesRegex(
+            architecture_tool.ArchitectureError,
+            "canonical path",
+        ):
+            architecture_tool.load_benchmark_command_result_validator(
+                root=ROOT,
+                commit="0" * 40,
+                input_record=relabeled,
+            )
+
+        canonical_but_wrong_identity = {
+            **relabeled,
+            "path": architecture_tool.BENCHMARK_COMMAND_RESULT_SCHEMA_PATH,
+        }
+        with (
+            patch.object(
+                architecture_tool,
+                "git_blob_bytes",
+                return_value=plugin_path.read_bytes(),
+            ),
+            self.assertRaisesRegex(
+                architecture_tool.ArchitectureError,
+                "wrong identity",
+            ),
+        ):
+            architecture_tool.load_benchmark_command_result_validator(
+                root=ROOT,
+                commit="0" * 40,
+                input_record=canonical_but_wrong_identity,
+            )
+
+    def test_benchmark_v16_schema_valid_wrong_truth_is_unsolved(self) -> None:
+        finding = {
+            "rule_id": "PROJECT.DATA.001",
+            "severity": "info",
+            "evidence": [
+                {
+                    "path": "catalog.py",
+                    "line_start": 1,
+                    "line_end": 1,
+                    "excerpt": "A deliberately simple, single-owner local catalog.",
+                }
+            ],
+            "evidence_valid": True,
+        }
+        run = benchmark_v16_run(
+            "benign-large-sqlite",
+            [
+                benchmark_v16_trial(
+                    1,
+                    findings=[finding],
+                    usage={
+                        "input_tokens": 10,
+                        "output_tokens": 20,
+                        "cost_usd": None,
+                        "tool_calls": 0,
+                    },
+                )
+            ],
+        )
+        run_path = self.root / "wrong-truth.yaml"
+        self.write_yaml(run_path, run)
+        with patch.object(
+            architecture_tool,
+            "validate_benchmark_provenance",
+            return_value=None,
+        ):
+            result = architecture_tool.score_benchmark(
+                ROOT / "benchmarks" / "ground-truth.yaml",
+                run_path,
+            )
+        self.assertEqual(result["completed"], 1)
+        self.assertEqual(result["passed"], 0)
+        self.assertIsNone(result["tokens_per_solved"])
+
+    def test_benchmark_rejected_option_ids_must_be_distinct_and_unselected(
+        self,
+    ) -> None:
+        trials = [benchmark_v16_trial(index) for index in (1, 2)]
+        common_decision = {
+            "selected_option": "web-queue-worker",
+            "compared_tradeoffs": [
+                "operational-complexity",
+                "recovery",
+                "delivery-semantics",
+            ],
+            "knowledge_ids": [
+                "style.web-queue-worker",
+                "case-study.queue-worker-before-workflow",
+            ],
+            "migration_slices": [
+                "Validate the queue worker through one reversible release slice."
+            ],
+        }
+        trials[0]["observed_decision"] = {
+            **common_decision,
+            "rejected_options": [
+                {
+                    "id": "microservices",
+                    "reason": (
+                        "The current workload does not require service separation."
+                    ),
+                },
+                {
+                    "id": "microservices",
+                    "reason": (
+                        "The operating cost is not justified by current evidence."
+                    ),
+                },
+            ],
+        }
+        trials[1]["observed_decision"] = {
+            **common_decision,
+            "rejected_options": [
+                {
+                    "id": "web-queue-worker",
+                    "reason": "This cannot reject the option selected by the decision.",
+                },
+                {
+                    "id": "microservices",
+                    "reason": (
+                        "The current workload does not require service separation."
+                    ),
+                },
+            ],
+        }
+        run = benchmark_v16_run("queue-worker-sufficient", trials)
+        run_path = self.root / "invalid-rejected-option-ids.yaml"
+        self.write_yaml(run_path, run)
+        with patch.object(
+            architecture_tool,
+            "validate_benchmark_provenance",
+            return_value=None,
+        ):
+            result = architecture_tool.score_benchmark(
+                ROOT / "benchmarks" / "ground-truth.yaml",
+                run_path,
+            )
+        self.assertEqual(result["completed"], 2)
+        self.assertEqual(result["passed"], 0)
+        self.assertEqual(result["rejection_explanation_coverage"], 1.0)
+
+    def test_benchmark_v16_solved_telemetry_and_wilson_bounds(self) -> None:
+        run = benchmark_v16_run(
+            "benign-large-sqlite",
+            [
+                benchmark_v16_trial(
+                    1,
+                    usage={
+                        "input_tokens": 10,
+                        "output_tokens": 20,
+                        "cost_usd": None,
+                        "tool_calls": 0,
+                    },
+                ),
+                benchmark_v16_trial(2, status="failed", failure_class="timeout"),
+                benchmark_v16_trial(3, status="failed", failure_class="tool-error"),
+            ],
+        )
+        run_path = self.root / "one-of-three.yaml"
+        self.write_yaml(run_path, run)
+        with patch.object(
+            architecture_tool,
+            "validate_benchmark_provenance",
+            return_value=None,
+        ):
+            result = architecture_tool.score_benchmark(
+                ROOT / "benchmarks" / "ground-truth.yaml",
+                run_path,
+            )
+        self.assertEqual(
+            (result["attempted"], result["completed"], result["passed"]), (3, 1, 1)
+        )
+        low, high = architecture_tool.wilson_interval(1, 3)
+        self.assertAlmostEqual(result["solved_rate_wilson_low"], low)
+        self.assertAlmostEqual(result["solved_rate_wilson_high"], high)
+        self.assertIsNone(result["tokens_per_solved"])
+        self.assertEqual(architecture_tool.wilson_interval(0, 0), (None, None))
+        self.assertEqual(architecture_tool.wilson_interval(0, 3)[0], 0.0)
+        self.assertEqual(architecture_tool.wilson_interval(3, 3)[1], 1.0)
+
+    def test_benchmark_matrix_shapes_are_exact(self) -> None:
+        canary_paths = []
+        for model in ("model-a", "model-b"):
+            cases = []
+            for case_id in ("benign-large-sqlite", "evaluation-report-pipeline"):
+                run = benchmark_v16_run(
+                    case_id,
+                    [benchmark_v16_trial(index) for index in (1, 2, 3)],
+                )
+                cases.extend(run["cases"])
+            run["cases"] = cases
+            run["benchmark"]["model"] = model
+            run["benchmark"]["actual_model"] = model
+            run["benchmark"]["selected_case_ids"] = [case["id"] for case in cases]
+            for case in cases:
+                for trial in case["trials"]:
+                    trial["actual_model"] = model
+            path = self.root / f"canary-{model}.yaml"
+            self.write_yaml(path, run)
+            canary_paths.append(path)
+        selector = json.loads(
+            (ROOT / "resources" / "selector-source.json").read_text(encoding="utf-8")
+        )
+        governed_source_commit = selector["commit"]
+        validated_score = {
+            "provenance": {
+                "valid": True,
+                "source_commit": governed_source_commit,
+            }
+        }
+        with patch.object(
+            architecture_tool,
+            "score_benchmark",
+            return_value=validated_score,
+        ) as scorer:
+            result = architecture_tool.verify_benchmark_matrix(
+                canary_paths,
+                models=["model-a", "model-b"],
+                shape="canary",
+            )
+        self.assertEqual(scorer.call_count, 2)
+        self.assertTrue(
+            all(
+                call.kwargs
+                == {"runtime_verification": "strict", "artifact_commit": None}
+                for call in scorer.call_args_list
+            )
+        )
+        self.assertEqual(result["trials"], 12)
+        mixed_scores = [
+            validated_score,
+            {"provenance": {"valid": True, "source_commit": "0" * 40}},
+        ]
+        with (
+            patch.object(
+                architecture_tool,
+                "score_benchmark",
+                side_effect=mixed_scores,
+            ),
+            self.assertRaisesRegex(
+                architecture_tool.ArchitectureError,
+                "mixes source commits",
+            ),
+        ):
+            architecture_tool.verify_benchmark_matrix(
+                canary_paths,
+                models=["model-a", "model-b"],
+                shape="canary",
+            )
+        obsolete_score = {"provenance": {"valid": True, "source_commit": "0" * 40}}
+        with (
+            patch.object(
+                architecture_tool,
+                "score_benchmark",
+                return_value=obsolete_score,
+            ),
+            self.assertRaisesRegex(
+                architecture_tool.ArchitectureError,
+                "obsolete or not governed",
+            ),
+        ):
+            architecture_tool.verify_benchmark_matrix(
+                canary_paths,
+                models=["model-a", "model-b"],
+                shape="canary",
+            )
+        with self.assertRaisesRegex(
+            architecture_tool.ArchitectureError,
+            "does not match governed selector",
+        ):
+            architecture_tool.resolve_benchmark_required_source_commit(
+                ROOT / "benchmarks" / "ground-truth.yaml",
+                "0" * 40,
+            )
+        wrong_skill = architecture_tool.load_yaml(canary_paths[0])
+        wrong_skill["cases"][0]["skill"] = "ai-agent-architecture-audit"
+        self.write_yaml(canary_paths[0], wrong_skill)
+        with (
+            patch.object(
+                architecture_tool,
+                "score_benchmark",
+                return_value=validated_score,
+            ),
+            self.assertRaisesRegex(
+                architecture_tool.ArchitectureError,
+                "case binding mismatch",
+            ),
+        ):
+            architecture_tool.verify_benchmark_matrix(
+                canary_paths,
+                models=["model-a", "model-b"],
+                shape="canary",
+            )
+        wrong_skill["cases"][0]["skill"] = "project-architecture-audit"
+        self.write_yaml(canary_paths[0], wrong_skill)
+        with (
+            patch.object(
+                architecture_tool,
+                "score_benchmark",
+                side_effect=architecture_tool.ArchitectureError(
+                    "forged harness configuration"
+                ),
+            ),
+            self.assertRaisesRegex(
+                architecture_tool.ArchitectureError,
+                "forged harness configuration",
+            ),
+        ):
+            architecture_tool.verify_benchmark_matrix(
+                canary_paths,
+                models=["model-a", "model-b"],
+                shape="canary",
+            )
+        missing_identity = architecture_tool.load_yaml(canary_paths[0])
+        missing_identity["benchmark"]["actual_model"] = None
+        self.write_yaml(canary_paths[0], missing_identity)
+        with (
+            patch.object(
+                architecture_tool,
+                "score_benchmark",
+                return_value=validated_score,
+            ),
+            self.assertRaisesRegex(architecture_tool.ArchitectureError, "unavailable"),
+        ):
+            architecture_tool.verify_benchmark_matrix(
+                canary_paths,
+                models=["model-a", "model-b"],
+                shape="canary",
+            )
+        missing_identity["benchmark"]["actual_model"] = "model-a"
+        self.write_yaml(canary_paths[0], missing_identity)
+        duplicate = [canary_paths[0], canary_paths[0]]
+        with (
+            patch.object(
+                architecture_tool,
+                "score_benchmark",
+                return_value=validated_score,
+            ),
+            self.assertRaisesRegex(architecture_tool.ArchitectureError, "duplicate"),
+        ):
+            architecture_tool.verify_benchmark_matrix(
+                duplicate,
+                models=["model-a", "model-b"],
+                shape="canary",
+            )
+        truth = architecture_tool.load_yaml(ROOT / "benchmarks" / "ground-truth.yaml")
+        full_paths = []
+        for model in ("model-a", "model-b"):
+            for condition in ("base", "full", "compressed"):
+                cases = []
+                for truth_case in truth["cases"]:
+                    part = benchmark_v16_run(
+                        truth_case["id"],
+                        [benchmark_v16_trial(index) for index in (1, 2, 3)],
+                    )
+                    cases.extend(part["cases"])
+                part["cases"] = cases
+                part["benchmark"]["model"] = model
+                part["benchmark"]["actual_model"] = model
+                part["benchmark"]["condition"] = condition
+                part["benchmark"]["context_budget"]["condition"] = condition
+                part["benchmark"]["selected_case_ids"] = [case["id"] for case in cases]
+                for case in cases:
+                    for trial in case["trials"]:
+                        trial["actual_model"] = model
+                path = self.root / f"full-{model}-{condition}.yaml"
+                self.write_yaml(path, part)
+                full_paths.append(path)
+        with patch.object(
+            architecture_tool,
+            "score_benchmark",
+            return_value=validated_score,
+        ) as scorer:
+            full_result = architecture_tool.verify_benchmark_matrix(
+                full_paths,
+                models=["model-a", "model-b"],
+                shape="full",
+                canary_paths=canary_paths,
+                runtime_verification="archived",
+                artifact_commit="a" * 40,
+            )
+        self.assertEqual(scorer.call_count, 8)
+        self.assertTrue(
+            all(
+                call.kwargs
+                == {
+                    "runtime_verification": "archived",
+                    "artifact_commit": "a" * 40,
+                }
+                for call in scorer.call_args_list
+            )
+        )
+        self.assertEqual(full_result["trials"], 270)
+
+    def test_benchmark_matrix_cli_propagates_archived_verification(self) -> None:
+        args = architecture_tool.build_parser().parse_args(
+            [
+                "benchmark-verify-matrix",
+                "--shape",
+                "canary",
+                "--model",
+                "model-a",
+                "--model",
+                "model-b",
+                "--run",
+                "model-a.yaml",
+                "--run",
+                "model-b.yaml",
+                "--ground-truth",
+                str(ROOT / "benchmarks" / "ground-truth.yaml"),
+                "--runtime-verification",
+                "archived",
+                "--artifact-commit",
+                "b" * 40,
+                "--required-source-commit",
+                json.loads(
+                    (ROOT / "resources" / "selector-source.json").read_text(
+                        encoding="utf-8"
+                    )
+                )["commit"],
+            ]
+        )
+        with (
+            patch.object(
+                architecture_tool,
+                "verify_benchmark_matrix",
+                return_value={"valid": True},
+            ) as verifier,
+            patch("builtins.print"),
+        ):
+            self.assertEqual(architecture_tool.run(args), 0)
+        self.assertEqual(
+            verifier.call_args.kwargs["runtime_verification"],
+            "archived",
+        )
+        self.assertEqual(verifier.call_args.kwargs["artifact_commit"], "b" * 40)
+        self.assertEqual(
+            verifier.call_args.kwargs["required_source_commit"],
+            json.loads(
+                (ROOT / "resources" / "selector-source.json").read_text(
+                    encoding="utf-8"
+                )
+            )["commit"],
+        )
+
     def test_cli_json_preserves_policy_exit_code(self) -> None:
         self.init_project()
         review_path = self.write_review()
@@ -3379,7 +4070,7 @@ class ArchitectureToolTests(unittest.TestCase):
             check=False,
         )
         self.assertEqual(process.returncode, 0, process.stderr)
-        self.assertEqual(process.stdout.strip(), "architecture_tool.py 1.2.0")
+        self.assertEqual(process.stdout.strip(), "architecture_tool.py 1.3.0")
 
     def test_benchmark_score_cli_can_preserve_json_output(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

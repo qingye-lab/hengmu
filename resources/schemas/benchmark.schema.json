@@ -6,7 +6,7 @@
   "additionalProperties": false,
   "required": ["schema_version", "benchmark", "cases"],
   "properties": {
-    "schema_version": {"enum": ["1.1", "1.2", "1.3", "1.4", "1.5"]},
+    "schema_version": {"enum": ["1.1", "1.2", "1.3", "1.4", "1.5", "1.6"]},
     "benchmark": {
       "type": "object",
       "additionalProperties": false,
@@ -16,12 +16,23 @@
         "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
         "kind": {"enum": ["ground-truth", "run"]},
         "model": {"type": "string"},
+        "actual_model": {"type": ["string", "null"], "minLength": 1},
         "surface": {"type": "string"},
         "skill_version": {"type": "string"},
         "condition": {"enum": ["base", "full", "compressed"]},
+        "profile": {"type": "string", "minLength": 1},
         "context_budget": {"$ref": "#/$defs/contextBudget"},
         "run_at": {"type": "string", "format": "date-time"},
         "repetitions": {"type": "integer", "minimum": 1, "maximum": 20},
+        "trial_timeout_seconds": {"type": "number", "exclusiveMinimum": 0},
+        "artifact_timeout_seconds": {"type": "number", "exclusiveMinimum": 0, "maximum": 36000},
+        "selected_case_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"}
+        },
+        "harness": {"$ref": "#/$defs/harness"},
         "provenance": {"$ref": "#/$defs/provenance"}
       }
     },
@@ -194,6 +205,7 @@
         },
         "rejected_options": {
           "type": "array",
+          "description": "Scoring requires unique option IDs that differ from the selected and accepted options; structural validation intentionally keeps violations as completed but unsolved trials.",
           "items": {
             "type": "object",
             "additionalProperties": false,
@@ -254,6 +266,30 @@
       ],
       "properties": {
         "index": {"type": "integer", "minimum": 1},
+        "status": {"enum": ["completed", "failed"]},
+        "failure_class": {"enum": ["timeout", "schema-invalid", "tool-error", "nonzero"]},
+        "actual_model": {"type": ["string", "null"], "minLength": 1},
+        "actual_model_source": {"enum": ["cli-json", "provider", "unavailable"]},
+        "model_fallback": {"type": "boolean"},
+        "adapter": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name", "version"],
+          "properties": {
+            "name": {"type": "string", "minLength": 1},
+            "version": {"type": "string", "minLength": 1}
+          }
+        },
+        "retries": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["generic", "evidence_correction_count", "evidence_correction_max"],
+          "properties": {
+            "generic": {"type": "integer", "minimum": 0},
+            "evidence_correction_count": {"type": "integer", "minimum": 0},
+            "evidence_correction_max": {"type": "integer", "minimum": 0}
+          }
+        },
         "duration_seconds": {"type": "number", "minimum": 0},
         "observed_findings": {
           "type": "array",
@@ -270,14 +306,19 @@
           "$ref": "#/$defs/trialExecution"
         },
         "usage": {
+          "oneOf": [
+            {"type": "null"},
+            {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "input_tokens": {"type": "integer", "minimum": 0},
-            "output_tokens": {"type": "integer", "minimum": 0},
-            "cost_usd": {"type": "number", "minimum": 0},
-            "tool_calls": {"type": "integer", "minimum": 0}
+            "input_tokens": {"type": ["integer", "null"], "minimum": 0},
+            "output_tokens": {"type": ["integer", "null"], "minimum": 0},
+            "cost_usd": {"type": ["number", "null"], "minimum": 0},
+            "tool_calls": {"type": ["integer", "null"], "minimum": 0}
           }
+            }
+          ]
         }
       }
     },
@@ -293,17 +334,29 @@
         "log_record_sha256"
       ],
       "properties": {
-        "exit_code": {"const": 0},
+        "exit_code": {"type": ["integer", "null"]},
         "command": {
           "type": "array",
           "minItems": 1,
           "items": {"type": "string"}
         },
         "command_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
-        "stdout_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
-        "stderr_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
-        "observation_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "stdout_sha256": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$"},
+        "stderr_sha256": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$"},
+        "observation_sha256": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$"},
+        "command_result_sha256": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$"},
         "log_record_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      }
+    },
+    "harness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version", "implementation_sha256", "config_sha256"],
+      "properties": {
+        "name": {"const": "hengmu-behavior-benchmark"},
+        "version": {"const": "1.3.0"},
+        "implementation_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "config_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
       }
     },
     "provenance": {
@@ -602,6 +655,53 @@
     ,
     {
       "if": {
+        "properties": {"schema_version": {"enum": ["1.1", "1.2", "1.3", "1.4", "1.5"]}},
+        "required": ["schema_version"]
+      },
+      "then": {
+        "properties": {
+          "benchmark": {
+            "not": {
+              "anyOf": [
+                {"required": ["actual_model"]},
+                {"required": ["profile"]},
+                {"required": ["trial_timeout_seconds"]},
+                {"required": ["artifact_timeout_seconds"]},
+                {"required": ["selected_case_ids"]},
+                {"required": ["harness"]}
+              ]
+            }
+          },
+          "cases": {
+            "items": {
+              "properties": {
+                "trials": {
+                  "items": {
+                    "not": {
+                      "anyOf": [
+                        {"required": ["status"]},
+                        {"required": ["failure_class"]},
+                        {"required": ["actual_model"]},
+                        {"required": ["actual_model_source"]},
+                        {"required": ["model_fallback"]},
+                        {"required": ["adapter"]},
+                        {"required": ["retries"]}
+                      ]
+                    },
+                    "properties": {
+                      "usage": {"type": "object"},
+                      "execution": {"not": {"required": ["command_result_sha256"]}}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
         "properties": {
           "schema_version": {"const": "1.5"},
           "benchmark": {
@@ -615,6 +715,86 @@
         "properties": {
           "benchmark": {"required": ["condition", "context_budget"]},
           "cases": {"items": {"required": ["skill"]}}
+        }
+      }
+    }
+    ,
+    {
+      "if": {
+        "properties": {
+          "schema_version": {"enum": ["1.3", "1.4", "1.5"]},
+          "benchmark": {"properties": {"kind": {"const": "run"}}, "required": ["kind"]}
+        },
+        "required": ["schema_version", "benchmark"]
+      },
+      "then": {
+        "properties": {
+          "cases": {
+            "items": {
+              "properties": {
+                "trials": {
+                  "items": {
+                    "properties": {
+                      "execution": {
+                        "properties": {
+                          "exit_code": {"const": 0},
+                          "stdout_sha256": {"type": "string"},
+                          "stderr_sha256": {"type": "string"},
+                          "observation_sha256": {"type": "string"}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "schema_version": {"const": "1.6"},
+          "benchmark": {"properties": {"kind": {"const": "run"}}, "required": ["kind"]}
+        },
+        "required": ["schema_version", "benchmark"]
+      },
+      "then": {
+        "properties": {
+          "benchmark": {
+            "required": [
+              "model", "actual_model", "surface", "skill_version", "condition", "profile",
+              "context_budget", "run_at", "repetitions", "trial_timeout_seconds",
+              "artifact_timeout_seconds", "selected_case_ids", "harness", "provenance"
+            ]
+          },
+          "cases": {
+            "items": {
+              "required": ["skill", "trials"],
+              "properties": {
+                "trials": {
+                  "items": {
+                    "required": [
+                      "status", "actual_model", "actual_model_source", "model_fallback",
+                      "adapter", "retries", "execution", "usage"
+                    ],
+                    "allOf": [
+                      {
+                        "if": {"properties": {"status": {"const": "failed"}}, "required": ["status"]},
+                        "then": {"required": ["failure_class"]},
+                        "else": {"not": {"required": ["failure_class"]}}
+                      }
+                    ],
+                    "properties": {
+                      "execution": {"required": ["command", "command_result_sha256"]},
+                      "model_fallback": {"const": false}
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }

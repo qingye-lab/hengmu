@@ -17,7 +17,10 @@ from typing import Any
 import yaml
 from jsonschema import Draft202012Validator, FormatChecker
 
-DEFAULT_SKILL_VERSION = "1.2.0"
+DEFAULT_SKILL_VERSION = "1.3.0"
+HARNESS_NAME = "hengmu-behavior-benchmark"
+HARNESS_VERSION = "1.3.0"
+MAX_ARTIFACT_TIMEOUT_SECONDS = 10 * 60 * 60
 TREATMENT_CONDITIONS = ("base", "full", "compressed")
 
 
@@ -111,12 +114,21 @@ def load_context_manifest(root: Path, path: Path) -> tuple[Path, dict[str, Any]]
     return resolved, payload
 
 
-def treatment_map(manifest: dict[str, Any]) -> dict[tuple[str, str], dict[str, Any]]:
-    treatments: dict[tuple[str, str], dict[str, Any]] = {}
+def treatment_map(
+    manifest: dict[str, Any],
+) -> dict[tuple[str, str, str | None], dict[str, Any]]:
+    treatments: dict[tuple[str, str, str | None], dict[str, Any]] = {}
     for treatment in manifest["treatments"]:
-        key = (treatment["condition"], treatment["skill"])
+        key = (
+            treatment["condition"],
+            treatment["skill"],
+            treatment.get("case_id"),
+        )
         if key in treatments:
-            raise ValueError("Context manifest repeats treatment " + "/".join(key))
+            raise ValueError(
+                "Context manifest repeats treatment "
+                + "/".join(value or "default" for value in key)
+            )
         treatments[key] = treatment
     return treatments
 
@@ -126,9 +138,14 @@ def treatment_for(
     *,
     condition: str,
     skill: str,
+    case_id: str | None = None,
 ) -> dict[str, Any]:
+    treatments = treatment_map(manifest)
     try:
-        return treatment_map(manifest)[(condition, skill)]
+        return (
+            treatments.get((condition, skill, case_id))
+            or treatments[(condition, skill, None)]
+        )
     except KeyError as exc:
         raise ValueError(
             f"Context manifest has no {condition!r} treatment for skill {skill!r}"
@@ -138,20 +155,37 @@ def treatment_for(
 def validate_ablation_treatments(
     manifest: dict[str, Any],
     *,
-    skills: set[str],
+    cases: list[dict[str, Any]],
 ) -> None:
     """Require one comparable Base/Full/Compressed treatment per benchmark Skill."""
     treatments = treatment_map(manifest)
-    expected = {
-        (condition, skill) for condition in TREATMENT_CONDITIONS for skill in skills
+    skills = {str(case["skill"]) for case in cases}
+    defaults = {
+        (condition, skill, None)
+        for condition in TREATMENT_CONDITIONS
+        for skill in skills
     }
-    if set(treatments) != expected:
+    if not defaults.issubset(treatments):
         raise ValueError(
             "Context manifest must declare exactly one Base/Full/Compressed "
-            "treatment for every benchmark Skill"
+            "default treatment for every benchmark Skill"
         )
+    corpus_skills = {str(case["id"]): str(case["skill"]) for case in cases}
+    for _condition, skill, case_id in treatments:
+        if case_id is None:
+            if skill not in skills:
+                raise ValueError(
+                    f"Context manifest has unknown default Skill {skill!r}"
+                )
+            continue
+        if case_id not in corpus_skills:
+            raise ValueError(f"Context manifest override has unknown case {case_id!r}")
+        if corpus_skills[case_id] != skill:
+            raise ValueError(
+                f"Context manifest override {case_id!r} does not match Skill {skill!r}"
+            )
     for skill in sorted(skills):
-        base = treatments[("base", skill)]
+        base = treatments[("base", skill, None)]
         if base["knowledge_basis"] != "none" or any(
             base[field]
             for field in ("skill_metadata", "skill_body", "references", "knowledge")
@@ -160,8 +194,8 @@ def validate_ablation_treatments(
                 f"Context manifest Base treatment for {skill} must not load "
                 "Skill, reference, or Knowledge content"
             )
-        full = treatments[("full", skill)]
-        compressed = treatments[("compressed", skill)]
+        full = treatments[("full", skill, None)]
+        compressed = treatments[("compressed", skill, None)]
         if (
             full["knowledge_basis"] != "workflow-required"
             or compressed["knowledge_basis"] != "workflow-required"
@@ -174,6 +208,31 @@ def validate_ablation_treatments(
             raise ValueError(
                 f"Context manifest Full and Compressed treatments for {skill} "
                 "must use identical Knowledge inputs"
+            )
+    for case in cases:
+        case_id = str(case["id"])
+        skill = str(case["skill"])
+        resolved = {
+            condition: treatment_for(
+                manifest,
+                condition=condition,
+                skill=skill,
+                case_id=case_id,
+            )
+            for condition in TREATMENT_CONDITIONS
+        }
+        base = resolved["base"]
+        if base["knowledge_basis"] != "none" or any(
+            base[field]
+            for field in ("skill_metadata", "skill_body", "references", "knowledge")
+        ):
+            raise ValueError(
+                f"Context manifest resolved Base treatment for {case_id} must be empty"
+            )
+        if resolved["full"]["knowledge"] != resolved["compressed"]["knowledge"]:
+            raise ValueError(
+                f"Context manifest resolved Full and Compressed treatments for "
+                f"{case_id} must use identical Knowledge inputs"
             )
 
 
@@ -203,9 +262,15 @@ def collect_context_budget(
     }
     inputs: list[dict[str, Any]] = []
     seen_text: set[tuple[str, str]] = set()
-    skills = sorted({str(case["skill"]) for case in corpus["cases"]})
-    for skill in skills:
-        treatment = treatment_for(manifest, condition=condition, skill=skill)
+    for case in corpus["cases"]:
+        skill = str(case["skill"])
+        case_id = str(case["id"])
+        treatment = treatment_for(
+            manifest,
+            condition=condition,
+            skill=skill,
+            case_id=case_id,
+        )
         for category, total_key in category_totals.items():
             for relative in treatment[category]:
                 key = (category, relative)
@@ -239,6 +304,7 @@ def collect_context_budget(
                 manifest,
                 condition=condition,
                 skill=str(case["skill"]),
+                case_id=str(case["id"]),
             )["artifact_inputs"]
         }
     )
@@ -432,6 +498,7 @@ def collect_provenance(
         ("ground-truth", corpus_path),
         ("benchmark-schema", schema_root / "benchmark.schema.json"),
         ("observation-schema", schema_root / "benchmark-observation.schema.json"),
+        ("command-result-schema", schema_root / "benchmark-command-result.schema.json"),
         ("dependency-lock", root / "requirements-runtime.lock"),
         ("knowledge-manifest", root / "resources" / "knowledge" / "manifest.yaml"),
         ("plugin-manifest", manifest_path),
@@ -461,7 +528,11 @@ def collect_provenance(
         candidate = Path(token)
         if not candidate.is_absolute():
             candidate = root / candidate
-        if candidate.is_file():
+        try:
+            is_file = candidate.is_file()
+        except OSError:
+            is_file = False
+        if is_file:
             try:
                 relative_to_root(root, candidate, "command tool")
             except ValueError:
@@ -518,15 +589,13 @@ def collect_provenance(
             *tracked_paths,
         )
     )
-    runtime_executables = collect_runtime_provenance(command, declared_runtimes)
+    try:
+        runtime_executables = collect_runtime_provenance(command, declared_runtimes)
+    except ValueError:
+        runtime_executables = []
     model_runtimes = [item for item in runtime_executables if item["role"] == "model"]
-    if model_runtimes and not any(
-        item["version_output"] == surface for item in model_runtimes
-    ):
-        raise ValueError(
-            "Declared benchmark surface does not match a model runtime version"
-        )
-    return {
+    del model_runtimes
+    result = {
         "source": {
             "repository": ".",
             "commit": git_output(root, "rev-parse", "HEAD"),
@@ -542,11 +611,68 @@ def collect_provenance(
         "model_request": model,
         "command_template": command,
         "command_template_sha256": sha256_bytes(canonical_json(command).encode()),
-        "runtime_executables": runtime_executables,
         "inputs": inputs,
         "fixtures": fixtures,
         "tools": tools,
     }
+    if runtime_executables:
+        result["runtime_executables"] = runtime_executables
+    return result
+
+
+def harness_implementation_sha256(root: Path) -> str:
+    paths = (
+        root / "scripts" / "run_behavior_benchmark.py",
+        root / "scripts" / "codex_benchmark_adapter.py",
+        root / "resources" / "schemas" / "benchmark-observation.schema.json",
+        root / "resources" / "schemas" / "benchmark-command-result.schema.json",
+    )
+    records = sorted(
+        (
+            {
+                "path": relative_to_root(root, path, "harness input"),
+                "sha256": file_sha256(path),
+            }
+            for path in paths
+        ),
+        key=lambda item: item["path"],
+    )
+    return sha256_bytes(canonical_json(records).encode("utf-8"))
+
+
+def harness_config_sha256(
+    *,
+    requested_model: str,
+    actual_model: str | None,
+    surface: str,
+    condition: str,
+    profile: str,
+    case_ids: list[str],
+    repetitions: int,
+    trial_timeout: float,
+    artifact_timeout: float,
+    command: list[str],
+    context_manifest_sha256: str,
+) -> str:
+    payload = {
+        "requested_model": requested_model,
+        "actual_model": actual_model,
+        "surface": surface,
+        "condition": condition,
+        "profile": profile,
+        "selected_case_ids": case_ids,
+        "repetitions": repetitions,
+        "trial_timeout_seconds": trial_timeout,
+        "artifact_timeout_seconds": artifact_timeout,
+        "command_template": command,
+        "context_manifest_sha256": context_manifest_sha256,
+        "policies": {
+            "generic_retries": 0,
+            "evidence_correction_max": 1,
+            "model_fallback": False,
+        },
+    }
+    return sha256_bytes(canonical_json(payload).encode("utf-8"))
 
 
 def load_yaml(path: Path) -> dict[str, Any]:
@@ -577,6 +703,7 @@ def render_command(
     prompt: str,
     condition: str = "full",
     context_manifest: Path | None = None,
+    case_id: str = "",
 ) -> list[str]:
     values = {
         "skill": skill,
@@ -584,6 +711,7 @@ def render_command(
         "prompt": prompt,
         "condition": condition,
         "context_manifest": str(context_manifest) if context_manifest else "",
+        "case_id": case_id,
     }
     rendered: list[str] = []
     for part in template:
@@ -632,27 +760,49 @@ def evidence_is_valid(fixture: Path, evidence: object) -> bool:
 def run_benchmark(args: argparse.Namespace) -> dict[str, Any]:
     root = args.root.resolve()
     repetitions = getattr(args, "repetitions", 1)
+    condition = getattr(args, "condition", "full")
+    trial_timeout = float(getattr(args, "timeout", 600))
+    artifact_timeout = min(
+        float(getattr(args, "artifact_timeout", MAX_ARTIFACT_TIMEOUT_SECONDS)),
+        float(MAX_ARTIFACT_TIMEOUT_SECONDS),
+    )
+    if trial_timeout <= 0 or artifact_timeout <= 0:
+        raise ValueError("Benchmark timeouts must be positive")
+    profile = str(getattr(args, "profile", "default"))
     corpus_path = args.ground_truth.resolve()
     output_path = args.output.resolve()
     log_path = output_path.with_suffix(".log.jsonl")
     corpus = load_yaml(corpus_path)
-    schema_path = root / "resources" / "schemas" / "benchmark.schema.json"
+    schema_root = root / "resources" / "schemas"
+    schema_path = schema_root / "benchmark.schema.json"
+    observation_schema_path = schema_root / "benchmark-observation.schema.json"
+    command_result_schema_path = schema_root / "benchmark-command-result.schema.json"
     schema = json.loads(schema_path.read_text(encoding="utf-8"))
-    observation_schema_path = (
-        root / "resources" / "schemas" / "benchmark-observation.schema.json"
-    )
     observation_schema = json.loads(observation_schema_path.read_text(encoding="utf-8"))
-    # Keep the standalone observation schema usable by model surfaces while
-    # avoiding network or resolver behavior during local validation.
-    observation_schema["properties"]["usage"] = schema["$defs"]["trial"]["properties"][
-        "usage"
-    ]
+    command_result_schema = json.loads(
+        command_result_schema_path.read_text(encoding="utf-8")
+    )
     validate(corpus, schema, corpus_path)
     if corpus["benchmark"]["kind"] != "ground-truth":
         raise ValueError("Benchmark input must be ground truth")
-    condition = getattr(args, "condition", "full")
-    if condition not in {"base", "full", "compressed"}:
+    if condition not in TREATMENT_CONDITIONS:
         raise ValueError(f"Unsupported benchmark condition: {condition}")
+
+    requested_case_ids = list(getattr(args, "case_ids", []) or [])
+    corpus_by_id = {str(case["id"]): case for case in corpus["cases"]}
+    if len(corpus_by_id) != len(corpus["cases"]):
+        raise ValueError("Ground truth contains duplicate case IDs")
+    unknown = sorted(set(requested_case_ids) - set(corpus_by_id))
+    if unknown:
+        raise ValueError("Unknown benchmark case IDs: " + ", ".join(unknown))
+    selected_cases = (
+        [corpus_by_id[case_id] for case_id in requested_case_ids]
+        if requested_case_ids
+        else list(corpus["cases"])
+    )
+    selected_case_ids = [str(case["id"]) for case in selected_cases]
+    selected_corpus = {**corpus, "cases": selected_cases}
+
     context_manifest_value = getattr(
         args,
         "context_manifest",
@@ -662,29 +812,32 @@ def run_benchmark(args: argparse.Namespace) -> dict[str, Any]:
         root,
         Path(context_manifest_value),
     )
-    validate_ablation_treatments(
-        context_manifest,
-        skills={str(case["skill"]) for case in corpus["cases"]},
+    validate_ablation_treatments(context_manifest, cases=list(corpus["cases"]))
+    has_overrides = any(
+        treatment.get("case_id") is not None
+        for treatment in context_manifest["treatments"]
     )
+    required_placeholders = ("condition", "context_manifest")
+    for placeholder in required_placeholders:
+        if not any(f"{{{placeholder}}}" in argument for argument in args.command):
+            raise ValueError(
+                f"Benchmark treatments require a {{{placeholder}}} command placeholder"
+            )
+    if has_overrides and not any("{case_id}" in argument for argument in args.command):
+        raise ValueError(
+            "Benchmark case overrides require a {case_id} command placeholder"
+        )
     context_budget = collect_context_budget(
         root=root,
         manifest_path=context_manifest_path,
         manifest=context_manifest,
         condition=condition,
-        corpus=corpus,
+        corpus=selected_corpus,
     )
-    if not any("{condition}" in argument for argument in args.command):
-        raise ValueError(
-            "Benchmark treatments require a {condition} command placeholder"
-        )
-    if not any("{context_manifest}" in argument for argument in args.command):
-        raise ValueError(
-            "Benchmark treatments require a {context_manifest} command placeholder"
-        )
     provenance = collect_provenance(
         root=root,
         corpus_path=corpus_path,
-        corpus=corpus,
+        corpus=selected_corpus,
         command=args.command,
         skill_version=args.skill_version,
         model=args.model,
@@ -695,36 +848,15 @@ def run_benchmark(args: argparse.Namespace) -> dict[str, Any]:
     )
     log_path.parent.mkdir(parents=True, exist_ok=True)
     log_path.write_text("", encoding="utf-8")
-    log_records = 0
+    deadline = time.monotonic() + artifact_timeout
+    result_cases: list[dict[str, Any]] = []
+    observed_actual_models: set[str] = set()
 
-    result: dict[str, Any] = {
-        "schema_version": "1.5",
-        "benchmark": {
-            "id": corpus["benchmark"]["id"],
-            "version": corpus["benchmark"]["version"],
-            "kind": "run",
-            "model": args.model,
-            "surface": args.surface,
-            "skill_version": args.skill_version,
-            "condition": condition,
-            "context_budget": context_budget,
-            "run_at": datetime.now(UTC).isoformat(),
-            "repetitions": repetitions,
-            "provenance": provenance,
-        },
-        "cases": [],
-    }
-    for case in corpus["cases"]:
-        fixture = (root / case["fixture"]).resolve()
-        try:
-            fixture.relative_to(root)
-        except ValueError as exc:
-            raise ValueError(
-                f"Case {case['id']} fixture escapes benchmark root"
-            ) from exc
+    for case in selected_cases:
+        fixture = _within_root(root, root / case["fixture"], "benchmark fixture")
         if not fixture.is_dir():
             raise ValueError(f"Case {case['id']} fixture is missing: {fixture}")
-        trials = []
+        trials: list[dict[str, Any]] = []
         for trial_index in range(1, repetitions + 1):
             command = render_command(
                 args.command,
@@ -733,146 +865,241 @@ def run_benchmark(args: argparse.Namespace) -> dict[str, Any]:
                 prompt=case["prompt"],
                 condition=condition,
                 context_manifest=context_manifest_path,
+                case_id=str(case["id"]),
             )
-            started = time.monotonic()
-            process = subprocess.run(
-                command,
-                cwd=root,
-                text=True,
-                capture_output=True,
-                check=False,
-                timeout=args.timeout,
-            )
-            duration_seconds = time.monotonic() - started
             command_sha256 = sha256_bytes(canonical_json(command).encode("utf-8"))
-            stdout_sha256 = sha256_bytes(process.stdout.encode("utf-8"))
-            stderr_sha256 = sha256_bytes(process.stderr.encode("utf-8"))
-            if process.returncode != 0:
-                failed_record = {
-                    "schema_version": "1.1",
-                    "case_id": case["id"],
-                    "trial_index": trial_index,
-                    "duration_seconds": duration_seconds,
-                    "exit_code": process.returncode,
-                    "command": command,
-                    "command_sha256": command_sha256,
-                    "stdout_sha256": stdout_sha256,
-                    "stderr_sha256": stderr_sha256,
-                    "observation": None,
+            started = time.monotonic()
+            remaining = max(0.0, deadline - started)
+            exit_code: int | None = None
+            stdout: str | None = None
+            stderr: str | None = None
+            envelope: dict[str, Any] | None = None
+            observed: dict[str, Any] | None = None
+            status = "failed"
+            failure_class: str | None = "timeout"
+
+            if remaining > 0:
+                try:
+                    process = subprocess.run(
+                        command,
+                        cwd=root,
+                        text=True,
+                        capture_output=True,
+                        check=False,
+                        timeout=max(0.001, min(trial_timeout, remaining)),
+                    )
+                    exit_code = process.returncode
+                    stdout = process.stdout
+                    stderr = process.stderr
+                    if exit_code != 0:
+                        failure_class = "nonzero"
+                    else:
+                        try:
+                            candidate = json.loads(stdout)
+                            if not isinstance(candidate, dict):
+                                raise ValueError("command result must be an object")
+                            validate(
+                                candidate,
+                                command_result_schema,
+                                command_result_schema_path,
+                            )
+                            if candidate["requested_model"] != args.model:
+                                raise ValueError(
+                                    "command result requested model mismatch"
+                                )
+                            envelope = candidate
+                            if envelope["status"] == "failed":
+                                failure_class = envelope["failure"]["class"]
+                            else:
+                                observed_candidate = envelope["observation"]
+                                validate(
+                                    observed_candidate,
+                                    observation_schema,
+                                    observation_schema_path,
+                                )
+                                observed = observed_candidate
+                                status = "completed"
+                                failure_class = None
+                        except (json.JSONDecodeError, ValueError):
+                            failure_class = "schema-invalid"
+                except subprocess.TimeoutExpired as exc:
+                    stdout = (
+                        exc.stdout.decode("utf-8", errors="replace")
+                        if isinstance(exc.stdout, bytes)
+                        else exc.stdout or ""
+                    )
+                    stderr = (
+                        exc.stderr.decode("utf-8", errors="replace")
+                        if isinstance(exc.stderr, bytes)
+                        else exc.stderr or ""
+                    )
+                    failure_class = "timeout"
+                except OSError:
+                    failure_class = "tool-error"
+
+            duration_seconds = time.monotonic() - started
+            adapter = (
+                envelope["adapter"]
+                if envelope is not None
+                else {"name": "unavailable", "version": "unavailable"}
+            )
+            actual_model = (
+                envelope.get("actual_model") if envelope is not None else None
+            )
+            actual_model_source = (
+                envelope["actual_model_source"]
+                if envelope is not None
+                else "unavailable"
+            )
+            retries = (
+                envelope["retries"]
+                if envelope is not None
+                else {
+                    "generic": 0,
+                    "evidence_correction_count": 0,
+                    "evidence_correction_max": 1,
                 }
-                with log_path.open("a", encoding="utf-8", newline="\n") as stream:
-                    stream.write(canonical_json(failed_record) + "\n")
-                raise RuntimeError(
-                    f"Case {case['id']} trial {trial_index} failed "
-                    f"({process.returncode}): {process.stderr.strip()}"
-                )
-            try:
-                observed = json.loads(process.stdout)
-            except json.JSONDecodeError as exc:
-                raise ValueError(
-                    f"Case {case['id']} trial {trial_index} did not return JSON: {exc}"
-                ) from exc
-            if not isinstance(observed, dict):
-                raise ValueError(
-                    f"Case {case['id']} trial {trial_index} output must be "
-                    "a JSON object"
-                )
-            validate(observed, observation_schema, observation_schema_path)
+            )
+            usage = envelope.get("usage") if envelope is not None else None
+            if isinstance(actual_model, str):
+                observed_actual_models.add(actual_model)
+
+            normalized_findings: list[dict[str, Any]] = []
+            recommendations: list[str] = []
+            if observed is not None:
+                recommendations = list(observed["observed_recommendations"])
+                for finding in observed["observed_findings"]:
+                    evidence = finding["evidence"]
+                    normalized_findings.append(
+                        {
+                            "rule_id": finding["rule_id"],
+                            "severity": finding["severity"],
+                            "evidence": evidence,
+                            "evidence_valid": evidence_is_valid(fixture, evidence),
+                        }
+                    )
+
+            stdout_sha256 = (
+                sha256_bytes(stdout.encode("utf-8")) if stdout is not None else None
+            )
+            stderr_sha256 = (
+                sha256_bytes(stderr.encode("utf-8")) if stderr is not None else None
+            )
+            observation_sha256 = (
+                sha256_bytes(canonical_json(observed).encode("utf-8"))
+                if observed is not None
+                else None
+            )
+            command_result_sha256 = (
+                sha256_bytes(canonical_json(envelope).encode("utf-8"))
+                if envelope is not None
+                else None
+            )
             log_record = {
-                "schema_version": "1.1",
+                "schema_version": "1.2",
                 "case_id": case["id"],
                 "trial_index": trial_index,
+                "status": status,
+                "failure_class": failure_class,
                 "duration_seconds": duration_seconds,
-                "exit_code": process.returncode,
+                "exit_code": exit_code,
                 "command": command,
                 "command_sha256": command_sha256,
                 "stdout_sha256": stdout_sha256,
                 "stderr_sha256": stderr_sha256,
+                "command_result": envelope,
                 "observation": observed,
             }
             log_record_text = canonical_json(log_record)
             with log_path.open("a", encoding="utf-8", newline="\n") as stream:
                 stream.write(log_record_text + "\n")
-            log_records += 1
-            observed_findings = observed.get("observed_findings", [])
-            observed_recommendations = observed.get(
-                "observed_recommendations",
-                [],
-            )
-            if not isinstance(observed_findings, list):
-                raise ValueError(
-                    f"Case {case['id']} observed_findings must be an array"
-                )
-            if not isinstance(observed_recommendations, list):
-                raise ValueError(
-                    f"Case {case['id']} observed_recommendations must be an array"
-                )
-            normalized_findings = []
-            for index, finding in enumerate(observed_findings):
-                if not isinstance(finding, dict):
-                    raise ValueError(
-                        f"Case {case['id']} finding {index} must be an object"
-                    )
-                evidence = finding.get("evidence", [])
-                normalized_findings.append(
-                    {
-                        "rule_id": finding.get("rule_id"),
-                        "severity": finding.get("severity"),
-                        "evidence": evidence,
-                        "evidence_valid": evidence_is_valid(fixture, evidence),
-                    }
-                )
-            trial = {
+            trial: dict[str, Any] = {
                 "index": trial_index,
+                "status": status,
                 "duration_seconds": duration_seconds,
+                "actual_model": actual_model,
+                "actual_model_source": actual_model_source,
+                "model_fallback": False,
+                "adapter": adapter,
+                "retries": retries,
+                "usage": usage,
                 "observed_findings": normalized_findings,
-                "observed_recommendations": observed_recommendations,
+                "observed_recommendations": recommendations,
                 "execution": {
-                    "exit_code": process.returncode,
+                    "exit_code": exit_code,
                     "command": command,
                     "command_sha256": command_sha256,
                     "stdout_sha256": stdout_sha256,
                     "stderr_sha256": stderr_sha256,
-                    "observation_sha256": sha256_bytes(
-                        canonical_json(observed).encode("utf-8")
-                    ),
+                    "observation_sha256": observation_sha256,
+                    "command_result_sha256": command_result_sha256,
                     "log_record_sha256": sha256_bytes(log_record_text.encode("utf-8")),
                 },
             }
-            observed_decision = observed.get("observed_decision")
-            if case.get("expected_decision") is not None:
-                if observed_decision is None:
-                    raise ValueError(
-                        f"Case {case['id']} requires observed_decision output"
-                    )
-                trial["observed_decision"] = observed_decision
-            elif observed_decision is not None:
-                trial["observed_decision"] = observed_decision
-            usage = observed.get("usage")
-            if usage is not None:
-                if not isinstance(usage, dict):
-                    raise ValueError(f"Case {case['id']} usage must be an object")
-                trial["usage"] = usage
+            if failure_class is not None:
+                trial["failure_class"] = failure_class
+            if observed is not None and "observed_decision" in observed:
+                trial["observed_decision"] = observed["observed_decision"]
             trials.append(trial)
-        first_trial = trials[0]
-        result_case = {
-            "id": case["id"],
-            "fixture": case["fixture"],
-            "skill": case["skill"],
-            "expected_findings": [],
-            "forbidden_recommendations": [],
-            "observed_findings": first_trial["observed_findings"],
-            "observed_recommendations": first_trial["observed_recommendations"],
-            "trials": trials,
-        }
-        if "observed_decision" in first_trial:
-            result_case["observed_decision"] = first_trial["observed_decision"]
-        result["cases"].append(result_case)
+        result_cases.append(
+            {
+                "id": case["id"],
+                "fixture": case["fixture"],
+                "skill": case["skill"],
+                "expected_findings": [],
+                "forbidden_recommendations": [],
+                "trials": trials,
+            }
+        )
+
+    actual_model = (
+        next(iter(observed_actual_models)) if len(observed_actual_models) == 1 else None
+    )
     provenance["execution_log"] = {
         "path": log_path.name,
         "format": "jsonl",
         "sha256": file_sha256(log_path),
-        "records": log_records,
+        "records": len(selected_cases) * repetitions,
+    }
+    result: dict[str, Any] = {
+        "schema_version": "1.6",
+        "benchmark": {
+            "id": corpus["benchmark"]["id"],
+            "version": corpus["benchmark"]["version"],
+            "kind": "run",
+            "model": args.model,
+            "actual_model": actual_model,
+            "surface": args.surface,
+            "skill_version": args.skill_version,
+            "condition": condition,
+            "profile": profile,
+            "context_budget": context_budget,
+            "run_at": datetime.now(UTC).isoformat(),
+            "repetitions": repetitions,
+            "trial_timeout_seconds": trial_timeout,
+            "artifact_timeout_seconds": artifact_timeout,
+            "selected_case_ids": selected_case_ids,
+            "harness": {
+                "name": HARNESS_NAME,
+                "version": HARNESS_VERSION,
+                "implementation_sha256": harness_implementation_sha256(root),
+                "config_sha256": harness_config_sha256(
+                    requested_model=args.model,
+                    actual_model=actual_model,
+                    surface=args.surface,
+                    condition=condition,
+                    profile=profile,
+                    case_ids=selected_case_ids,
+                    repetitions=repetitions,
+                    trial_timeout=trial_timeout,
+                    artifact_timeout=artifact_timeout,
+                    command=args.command,
+                    context_manifest_sha256=file_sha256(context_manifest_path),
+                ),
+            },
+            "provenance": provenance,
+        },
+        "cases": result_cases,
     }
     validate(result, schema, args.output)
     return result
@@ -918,13 +1145,27 @@ def parse_args() -> argparse.Namespace:
         ),
     )
     parser.add_argument("--timeout", type=int, default=600)
+    parser.add_argument(
+        "--artifact-timeout",
+        type=int,
+        default=MAX_ARTIFACT_TIMEOUT_SECONDS,
+        help="Per-artifact wall-clock cap; values above ten hours are clamped.",
+    )
+    parser.add_argument("--profile", default="default")
+    parser.add_argument(
+        "--case-id",
+        action="append",
+        default=[],
+        dest="case_ids",
+        help="Run only this Ground Truth case. Repeat to select multiple cases.",
+    )
     parser.add_argument("--repetitions", type=int, default=1, choices=range(1, 21))
     parser.add_argument(
         "command",
         nargs=argparse.REMAINDER,
         help=(
             "Command arguments after --. Use {skill}, {fixture}, {prompt}, "
-            "{condition}, and {context_manifest} placeholders."
+            "{condition}, {context_manifest}, and {case_id} placeholders."
         ),
     )
     args = parser.parse_args()

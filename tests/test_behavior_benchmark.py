@@ -24,6 +24,23 @@ SPEC.loader.exec_module(run_behavior_benchmark)
 
 
 class BehaviorBenchmarkTests(unittest.TestCase):
+    def test_legacy_ground_truth_snapshot_is_byte_exact(self) -> None:
+        process = subprocess.run(
+            [
+                "git",
+                "-C",
+                str(ROOT),
+                "show",
+                "d6aadcb916de55a14c9735d610ceee0127233cd0:benchmarks/ground-truth.yaml",
+            ],
+            check=True,
+            capture_output=True,
+        )
+        self.assertEqual(
+            process.stdout,
+            (ROOT / "benchmarks" / "ground-truth-1.0.0.yaml").read_bytes(),
+        )
+
     def test_parse_args_uses_default_skill_version(self) -> None:
         with patch.object(
             sys,
@@ -84,6 +101,28 @@ class BehaviorBenchmarkTests(unittest.TestCase):
                 (expected, 2),
             )
 
+    def test_harness_hashes_bind_implementation_and_configuration(self) -> None:
+        implementation = run_behavior_benchmark.harness_implementation_sha256(ROOT)
+        self.assertRegex(implementation, r"^[a-f0-9]{64}$")
+        arguments = {
+            "requested_model": "model-a",
+            "actual_model": "model-a",
+            "surface": "codex-cli",
+            "condition": "full",
+            "profile": "default",
+            "case_ids": ["benign-large-sqlite"],
+            "repetitions": 3,
+            "trial_timeout": 600.0,
+            "artifact_timeout": 36000.0,
+            "command": ["adapter", "{case_id}"],
+            "context_manifest_sha256": "0" * 64,
+        }
+        baseline = run_behavior_benchmark.harness_config_sha256(**arguments)
+        tampered = run_behavior_benchmark.harness_config_sha256(
+            **{**arguments, "trial_timeout": 601.0}
+        )
+        self.assertNotEqual(baseline, tampered)
+
     def test_context_manifest_schema_keeps_base_without_skill_content(self) -> None:
         manifest_path = ROOT / "benchmarks" / "ablation" / "context-manifest.yaml"
         schema_path = (
@@ -107,14 +146,12 @@ class BehaviorBenchmarkTests(unittest.TestCase):
         corpus = yaml.safe_load(
             (ROOT / "benchmarks" / "ground-truth.yaml").read_text(encoding="utf-8")
         )
-        skills = {case["skill"] for case in corpus["cases"]}
-
         duplicate = copy.deepcopy(manifest)
         duplicate["treatments"].append(copy.deepcopy(duplicate["treatments"][0]))
         with self.assertRaisesRegex(ValueError, "repeats treatment"):
             run_behavior_benchmark.validate_ablation_treatments(
                 duplicate,
-                skills=skills,
+                cases=corpus["cases"],
             )
 
         incomplete = copy.deepcopy(manifest)
@@ -122,7 +159,59 @@ class BehaviorBenchmarkTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "exactly one Base/Full/Compressed"):
             run_behavior_benchmark.validate_ablation_treatments(
                 incomplete,
-                skills=skills,
+                cases=corpus["cases"],
+            )
+
+    def test_case_treatment_resolution_is_exact_then_default(self) -> None:
+        _, manifest = run_behavior_benchmark.load_context_manifest(
+            ROOT,
+            ROOT / "benchmarks" / "ablation" / "context-manifest.yaml",
+        )
+        exact = run_behavior_benchmark.treatment_for(
+            manifest,
+            condition="full",
+            skill="ai-agent-architecture-audit",
+            case_id="evaluation-report-pipeline",
+        )
+        default = run_behavior_benchmark.treatment_for(
+            manifest,
+            condition="full",
+            skill="ai-agent-architecture-audit",
+            case_id="trace-export-pipeline",
+        )
+        self.assertEqual(exact["case_id"], "evaluation-report-pipeline")
+        self.assertNotIn("case_id", default)
+        self.assertEqual(
+            exact["knowledge"],
+            run_behavior_benchmark.treatment_for(
+                manifest,
+                condition="compressed",
+                skill="ai-agent-architecture-audit",
+                case_id="evaluation-report-pipeline",
+            )["knowledge"],
+        )
+
+    def test_context_override_rejects_unknown_or_mismatched_case(self) -> None:
+        _, manifest = run_behavior_benchmark.load_context_manifest(
+            ROOT,
+            ROOT / "benchmarks" / "ablation" / "context-manifest.yaml",
+        )
+        corpus = run_behavior_benchmark.load_yaml(
+            ROOT / "benchmarks" / "ground-truth.yaml"
+        )
+        unknown = copy.deepcopy(manifest)
+        unknown["treatments"][-1]["case_id"] = "unknown-case"
+        with self.assertRaisesRegex(ValueError, "unknown case"):
+            run_behavior_benchmark.validate_ablation_treatments(
+                unknown,
+                cases=corpus["cases"],
+            )
+        mismatch = copy.deepcopy(manifest)
+        mismatch["treatments"][-1]["skill"] = "project-architecture-audit"
+        with self.assertRaisesRegex(ValueError, "does not match Skill"):
+            run_behavior_benchmark.validate_ablation_treatments(
+                mismatch,
+                cases=corpus["cases"],
             )
 
     def test_provenance_marks_declared_context_assets_as_relevant_inputs(self) -> None:
@@ -202,18 +291,22 @@ class BehaviorBenchmarkTests(unittest.TestCase):
                     "-c",
                     (
                         "import json; "
-                        "print(json.dumps({'observed_findings': [], "
-                        "'observed_recommendations': [], "
-                        "'observed_decision': {"
-                        "'selected_option': 'test-option', "
-                        "'compared_tradeoffs': [], "
-                        "'knowledge_ids': [], "
-                        "'rejected_options': [], "
-                        "'migration_slices': []}}))"
+                        "o={'observed_findings': [], 'observed_recommendations': [], "
+                        "'observed_decision': {'selected_option': 'test-option', "
+                        "'compared_tradeoffs': [], 'knowledge_ids': [], "
+                        "'rejected_options': [], 'migration_slices': []}}; "
+                        "print(json.dumps({'schema_version':'1.0','adapter':"
+                        "{'name':'hengmu-codex-benchmark-adapter','version':'1.3.0'},"
+                        "'status':'completed','requested_model':'test-model',"
+                        "'actual_model':'test-model','actual_model_source':'provider',"
+                        "'model_fallback':False,'retries':{'generic':0,"
+                        "'evidence_correction_count':0,'evidence_correction_max':1},"
+                        "'usage':None,'observation':o}))"
                     ),
                     str(ROOT / "scripts" / "codex_benchmark_adapter.py"),
                     "--condition={condition}",
                     "--context-manifest={context_manifest}",
+                    "--case-id={case_id}",
                     "{skill}",
                     "{fixture}",
                     "{prompt}",
@@ -221,8 +314,8 @@ class BehaviorBenchmarkTests(unittest.TestCase):
             )
             result = run_behavior_benchmark.run_benchmark(args)
             log_path = output.with_suffix(".log.jsonl")
-            self.assertEqual(len(result["cases"]), 10)
-            self.assertEqual(result["schema_version"], "1.5")
+            self.assertEqual(len(result["cases"]), 15)
+            self.assertEqual(result["schema_version"], "1.6")
             self.assertEqual(result["benchmark"]["model"], "test-model")
             self.assertEqual(result["benchmark"]["condition"], "full")
             context_budget = result["benchmark"]["context_budget"]
@@ -247,7 +340,7 @@ class BehaviorBenchmarkTests(unittest.TestCase):
                 "context-manifest",
                 {item["role"] for item in provenance["inputs"]},
             )
-            self.assertEqual(provenance["execution_log"]["records"], 10)
+            self.assertEqual(provenance["execution_log"]["records"], 15)
             self.assertEqual(
                 provenance["execution_log"]["sha256"],
                 hashlib.sha256(log_path.read_bytes()).hexdigest(),
@@ -256,7 +349,7 @@ class BehaviorBenchmarkTests(unittest.TestCase):
                 json.loads(line)
                 for line in log_path.read_text(encoding="utf-8").splitlines()
             ]
-            self.assertEqual(len(log_records), 10)
+            self.assertEqual(len(log_records), 15)
             self.assertTrue(
                 all(
                     "execution" in trial and trial["execution"]["command"]
@@ -265,7 +358,7 @@ class BehaviorBenchmarkTests(unittest.TestCase):
                 )
             )
             self.assertTrue(
-                all(case["observed_findings"] == [] for case in result["cases"])
+                all("observed_findings" not in case for case in result["cases"])
             )
             output.write_text(
                 yaml.safe_dump(result, sort_keys=False, allow_unicode=True),
@@ -298,6 +391,35 @@ class BehaviorBenchmarkTests(unittest.TestCase):
                     "current_host_match"
                 ]
             )
+
+            harness = result["benchmark"]["harness"]
+            for field, message in (
+                ("implementation_sha256", "implementation hash mismatch"),
+                ("config_sha256", "configuration hash mismatch"),
+            ):
+                original_hash = harness[field]
+                harness[field] = "0" * 64
+                output.write_text(
+                    yaml.safe_dump(result, sort_keys=False, allow_unicode=True),
+                    encoding="utf-8",
+                )
+                harness_tampered = subprocess.run(
+                    [
+                        sys.executable,
+                        str(ROOT / "resources" / "scripts" / "architecture_tool.py"),
+                        "benchmark-score",
+                        "--ground-truth",
+                        str(ROOT / "benchmarks" / "ground-truth.yaml"),
+                        "--run",
+                        str(output),
+                    ],
+                    text=True,
+                    capture_output=True,
+                    check=False,
+                )
+                self.assertEqual(harness_tampered.returncode, 2)
+                self.assertIn(message, harness_tampered.stderr)
+                harness[field] = original_hash
 
             original_version = provenance["runtime_executables"][0]["version_output"]
             provenance["runtime_executables"][0]["version_output"] = "tampered"
@@ -438,36 +560,155 @@ class BehaviorBenchmarkTests(unittest.TestCase):
                 runtime_executables=[sys.executable],
                 timeout=10,
                 repetitions=1,
+                case_ids=["benign-large-sqlite"],
                 command=[
                     sys.executable,
                     "-c",
                     "raise SystemExit(7)",
                     "{condition}",
                     "{context_manifest}",
+                    "{case_id}",
                 ],
             )
-            with self.assertRaisesRegex(RuntimeError, "trial 1 failed"):
-                run_behavior_benchmark.run_benchmark(args)
+            result = run_behavior_benchmark.run_benchmark(args)
             record = json.loads(
                 output.with_suffix(".log.jsonl").read_text(encoding="utf-8")
             )
+            trial = result["cases"][0]["trials"][0]
+            self.assertEqual(trial["status"], "failed")
+            self.assertEqual(trial["failure_class"], "nonzero")
             self.assertEqual(record["exit_code"], 7)
             self.assertIsNone(record["observation"])
-            self.assertEqual(
-                set(record),
-                {
-                    "schema_version",
-                    "case_id",
-                    "trial_index",
-                    "duration_seconds",
-                    "exit_code",
-                    "command",
-                    "command_sha256",
-                    "stdout_sha256",
-                    "stderr_sha256",
-                    "observation",
-                },
+            self.assertEqual(record["failure_class"], "nonzero")
+            self.assertIsNone(trial["execution"]["observation_sha256"])
+
+    def test_runner_continues_across_mixed_attempt_failures(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            temporary_root = Path(temporary)
+            script = temporary_root / "attempt.py"
+            counter = temporary_root / "counter.txt"
+            output = temporary_root / "mixed.yaml"
+            script.write_text(
+                """import json, pathlib, sys, time
+p = pathlib.Path(sys.argv[1])
+n = int(p.read_text()) + 1 if p.exists() else 1
+p.write_text(str(n))
+base = {
+    'schema_version': '1.0',
+    'adapter': {
+        'name': 'hengmu-codex-benchmark-adapter',
+        'version': '1.3.0',
+    },
+    'requested_model': 'test-model',
+    'actual_model': 'test-model',
+    'actual_model_source': 'provider',
+    'model_fallback': False,
+    'retries': {
+        'generic': 0,
+        'evidence_correction_count': 0,
+        'evidence_correction_max': 1,
+    },
+    'usage': None,
+}
+if n == 1:
+    observation = {
+        'observed_findings': [],
+        'observed_recommendations': [],
+        'observed_decision': {
+            'selected_option': 'not-applicable',
+            'compared_tradeoffs': [],
+            'knowledge_ids': [],
+            'rejected_options': [],
+            'migration_slices': [],
+        },
+    }
+    base.update(status='completed', observation=observation)
+    print(json.dumps(base))
+elif n == 2:
+    time.sleep(1)
+elif n == 3:
+    print('not-json')
+elif n in (4, 5):
+    kind = 'schema-invalid' if n == 4 else 'tool-error'
+    failure = {'class': kind, 'exit_code': None}
+    base.update(status='failed', observation=None, failure=failure)
+    print(json.dumps(base))
+else:
+    raise SystemExit(7)
+""",
+                encoding="utf-8",
             )
+            result = run_behavior_benchmark.run_benchmark(
+                Namespace(
+                    root=ROOT,
+                    ground_truth=ROOT / "benchmarks" / "ground-truth.yaml",
+                    output=output,
+                    model="test-model",
+                    surface="test-surface",
+                    skill_version=run_behavior_benchmark.DEFAULT_SKILL_VERSION,
+                    runtime_executables=[sys.executable],
+                    timeout=0.05,
+                    artifact_timeout=10,
+                    repetitions=6,
+                    case_ids=["benign-large-sqlite"],
+                    command=[
+                        sys.executable,
+                        str(script),
+                        str(counter),
+                        "{condition}",
+                        "{context_manifest}",
+                        "{case_id}",
+                    ],
+                )
+            )
+            trials = result["cases"][0]["trials"]
+            self.assertEqual(
+                [(trial["status"], trial.get("failure_class")) for trial in trials],
+                [
+                    ("completed", None),
+                    ("failed", "timeout"),
+                    ("failed", "schema-invalid"),
+                    ("failed", "schema-invalid"),
+                    ("failed", "tool-error"),
+                    ("failed", "nonzero"),
+                ],
+            )
+            records = output.with_suffix(".log.jsonl").read_text().splitlines()
+            self.assertEqual(len(records), 6)
+            self.assertEqual(
+                result["benchmark"]["provenance"]["execution_log"]["records"], 6
+            )
+            self.assertIsNone(trials[1]["execution"]["exit_code"])
+            self.assertIsNotNone(trials[1]["execution"]["stdout_sha256"])
+            self.assertIsNone(trials[1]["execution"]["observation_sha256"])
+
+    def test_nonexistent_command_is_a_sealed_tool_error(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary) / "missing.yaml"
+            result = run_behavior_benchmark.run_benchmark(
+                Namespace(
+                    root=ROOT,
+                    ground_truth=ROOT / "benchmarks" / "ground-truth.yaml",
+                    output=output,
+                    model="test-model",
+                    surface="test-surface",
+                    skill_version=run_behavior_benchmark.DEFAULT_SKILL_VERSION,
+                    runtime_executables=[],
+                    timeout=1,
+                    repetitions=1,
+                    case_ids=["benign-large-sqlite"],
+                    command=[
+                        "definitely-not-a-benchmark-executable",
+                        "{condition}",
+                        "{context_manifest}",
+                        "{case_id}",
+                    ],
+                )
+            )
+            trial = result["cases"][0]["trials"][0]
+            self.assertEqual(trial["failure_class"], "tool-error")
+            self.assertIsNone(trial["execution"]["exit_code"])
+            self.assertIsNone(trial["execution"]["stdout_sha256"])
 
     def test_command_placeholders_are_argument_safe(self) -> None:
         fixture = Path("/tmp/fixture with spaces")
