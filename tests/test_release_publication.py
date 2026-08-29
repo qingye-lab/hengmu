@@ -102,6 +102,80 @@ def remote(local):
     )
 
 
+def release_payload(
+    *,
+    tag: str = "v1.1.0",
+    release_id: int = 101,
+    draft: bool = True,
+    immutable: bool = False,
+    assets=(),
+):
+    return {
+        "id": release_id,
+        "tag_name": tag,
+        "draft": draft,
+        "immutable": immutable,
+        "assets": [
+            {"name": asset.name, "size": asset.size, "digest": asset.digest}
+            for asset in assets
+        ],
+    }
+
+
+class DraftAwareGhClient(publish_release.GhReleaseClient):
+    def __init__(self, assets, *, initially_present: bool) -> None:
+        self.expected_assets = assets
+        self.present = initially_present
+        self.published = False
+        self.uploaded: dict[str, publish_release.RemoteAsset] = (
+            {asset.name: remote(asset) for asset in assets} if initially_present else {}
+        )
+        self.calls: list[tuple[str, ...]] = []
+
+    def _run(self, arguments, *, allow_failure=False):
+        arguments = tuple(arguments)
+        self.calls.append(arguments)
+        endpoint = arguments[-1]
+        if endpoint.endswith("/immutable-releases"):
+            return CompletedProcess([], 0, '{"enabled": true}', "")
+        if "/releases/tags/" in endpoint:
+            if self.published:
+                payload = release_payload(
+                    draft=False,
+                    immutable=True,
+                    assets=self.uploaded.values(),
+                )
+                return CompletedProcess([], 0, json.dumps(payload), "")
+            return CompletedProcess([], 1, "", "gh: Not Found (HTTP 404)\n")
+        if endpoint.endswith("/releases?per_page=100"):
+            page = [{"id": 101, "tag_name": "v1.1.0"}] if self.present else []
+            return CompletedProcess([], 0, json.dumps([page]), "")
+        if endpoint.endswith("/releases/101"):
+            payload = release_payload(
+                draft=not self.published,
+                immutable=self.published,
+                assets=self.uploaded.values(),
+            )
+            return CompletedProcess([], 0, json.dumps(payload), "")
+        if arguments[:2] == ("release", "create"):
+            self.present = True
+            return CompletedProcess([], 0, "", "")
+        if arguments[:2] == ("release", "upload"):
+            path = Path(arguments[3])
+            local = next(asset for asset in self.expected_assets if asset.path == path)
+            self.uploaded[local.name] = remote(local)
+            return CompletedProcess([], 0, "", "")
+        if arguments[:2] == ("release", "edit"):
+            self.published = True
+            return CompletedProcess([], 0, "", "")
+        if arguments[:2] in {
+            ("release", "verify"),
+            ("release", "verify-asset"),
+        }:
+            return CompletedProcess([], 0, "", "")
+        raise AssertionError(f"unexpected command: {arguments!r}")
+
+
 class ReleasePublicationTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
@@ -504,11 +578,25 @@ class ReleasePublicationTests(unittest.TestCase):
             allow_failure=True,
         )
 
-    def test_gh_release_lookup_treats_only_http_404_as_absent(self) -> None:
+    def test_gh_release_lookup_uses_published_fast_path_without_fallback(self) -> None:
         client = publish_release.GhReleaseClient()
-        not_found = CompletedProcess([], 1, "", "gh: Not Found (HTTP 404)\n")
-        with patch.object(client, "_run", return_value=not_found) as run:
-            self.assertIsNone(client.get_release("owner/repo", "v1.1.0"))
+        published = CompletedProcess(
+            [],
+            0,
+            json.dumps(
+                release_payload(
+                    draft=False,
+                    immutable=True,
+                    assets=(remote(self.assets[0]),),
+                )
+            ),
+            "",
+        )
+        with patch.object(client, "_run", return_value=published) as run:
+            state = client.get_release("owner/repo", "v1.1.0")
+        self.assertIsNotNone(state)
+        assert state is not None
+        self.assertFalse(state.draft)
         run.assert_called_once_with(
             [
                 "api",
@@ -519,16 +607,235 @@ class ReleasePublicationTests(unittest.TestCase):
             allow_failure=True,
         )
 
+        mismatched = CompletedProcess(
+            [],
+            0,
+            json.dumps(release_payload(tag="v1.1.0-other", draft=False)),
+            "",
+        )
+        with (
+            patch.object(client, "_run", return_value=mismatched) as run,
+            self.assertRaisesRegex(publish_release.ReleaseError, "tag identity"),
+        ):
+            client.get_release("owner/repo", "v1.1.0")
+        self.assertEqual(run.call_count, 1)
+
+    def test_gh_release_lookup_finds_exact_draft_on_later_page(self) -> None:
+        client = publish_release.GhReleaseClient()
+        not_found = CompletedProcess([], 1, "", "gh: Not Found (HTTP 404)\n")
+        pages = CompletedProcess(
+            [],
+            0,
+            json.dumps(
+                [
+                    [
+                        {"id": 1, "tag_name": "v1.1.0-rc1"},
+                        {"id": 2, "tag_name": "prefix-v1.1.0"},
+                    ],
+                    [{"id": 101, "tag_name": "v1.1.0"}],
+                ]
+            ),
+            "",
+        )
+        authoritative = CompletedProcess(
+            [],
+            0,
+            json.dumps(release_payload(assets=(remote(self.assets[0]),))),
+            "",
+        )
+        with patch.object(
+            client,
+            "_run",
+            side_effect=(not_found, pages, authoritative),
+        ) as run:
+            state = client.get_release("owner/repo", "v1.1.0")
+        self.assertIsNotNone(state)
+        assert state is not None
+        self.assertTrue(state.draft)
+        self.assertEqual(run.call_count, 3)
+        run.assert_any_call(
+            [
+                "api",
+                "--paginate",
+                "--slurp",
+                "-H",
+                "X-GitHub-Api-Version: 2026-03-10",
+                "repos/owner/repo/releases?per_page=100",
+            ]
+        )
+        run.assert_called_with(
+            [
+                "api",
+                "-H",
+                "X-GitHub-Api-Version: 2026-03-10",
+                "repos/owner/repo/releases/101",
+            ]
+        )
+
+    def test_gh_release_lookup_returns_none_for_zero_exact_matches(self) -> None:
+        client = publish_release.GhReleaseClient()
+        not_found = CompletedProcess([], 1, "", "gh: Not Found (HTTP 404)\n")
+        pages = CompletedProcess(
+            [],
+            0,
+            json.dumps(
+                [
+                    [{"id": 1, "tag_name": "v1.1.0-rc1"}],
+                    [{"id": 2, "tag_name": "prefix-v1.1.0"}],
+                ]
+            ),
+            "",
+        )
+        with patch.object(client, "_run", side_effect=(not_found, pages)) as run:
+            self.assertIsNone(client.get_release("owner/repo", "v1.1.0"))
+        self.assertEqual(run.call_count, 2)
+
+    def test_gh_release_lookup_rejects_duplicate_exact_matches(self) -> None:
+        client = publish_release.GhReleaseClient()
+        not_found = CompletedProcess([], 1, "", "gh: Not Found (HTTP 404)\n")
+        pages = CompletedProcess(
+            [],
+            0,
+            json.dumps(
+                [
+                    [{"id": 101, "tag_name": "v1.1.0"}],
+                    [{"id": 102, "tag_name": "v1.1.0"}],
+                ]
+            ),
+            "",
+        )
+        with (
+            patch.object(client, "_run", side_effect=(not_found, pages)) as run,
+            self.assertRaisesRegex(publish_release.ReleaseError, "duplicate exact"),
+        ):
+            client.get_release("owner/repo", "v1.1.0")
+        self.assertEqual(run.call_count, 2)
+
+    def test_gh_release_lookup_failures_are_closed(self) -> None:
+        client = publish_release.GhReleaseClient()
+        not_found = CompletedProcess([], 1, "", "gh: Not Found (HTTP 404)\n")
+        malformed_lists = (
+            "not-json",
+            json.dumps({"id": 1}),
+            json.dumps([{"id": 1}]),
+            json.dumps([["not-an-object"]]),
+            json.dumps([[{"id": True, "tag_name": "v1.1.0"}]]),
+            json.dumps([[{"id": 1, "tag_name": 123}]]),
+        )
+        for payload in malformed_lists:
+            with (
+                self.subTest(payload=payload),
+                patch.object(
+                    client,
+                    "_run",
+                    side_effect=(
+                        not_found,
+                        CompletedProcess([], 0, payload, ""),
+                    ),
+                ),
+                self.assertRaisesRegex(publish_release.ReleaseError, "malformed"),
+            ):
+                client.get_release("owner/repo", "v1.1.0")
+
+        for failure in ("authentication failed", "GitHub API failed"):
+            with (
+                self.subTest(failure=failure),
+                patch.object(
+                    client,
+                    "_run",
+                    side_effect=(not_found, publish_release.ReleaseError(failure)),
+                ),
+                self.assertRaisesRegex(publish_release.ReleaseError, failure),
+            ):
+                client.get_release("owner/repo", "v1.1.0")
+
+        summary = CompletedProcess(
+            [],
+            0,
+            json.dumps([[{"id": 101, "tag_name": "v1.1.0"}]]),
+            "",
+        )
+        malformed_authoritative = (
+            release_payload(tag="v1.1.1"),
+            release_payload(release_id=102),
+            release_payload(release_id=True),
+            {"id": 101, "tag_name": "v1.1.0", "draft": True},
+        )
+        for payload in malformed_authoritative:
+            with (
+                self.subTest(payload=payload),
+                patch.object(
+                    client,
+                    "_run",
+                    side_effect=(
+                        not_found,
+                        summary,
+                        CompletedProcess([], 0, json.dumps(payload), ""),
+                    ),
+                ),
+                self.assertRaisesRegex(
+                    publish_release.ReleaseError,
+                    "malformed",
+                ),
+            ):
+                client.get_release("owner/repo", "v1.1.0")
+
+        with (
+            patch.object(
+                client,
+                "_run",
+                side_effect=(
+                    not_found,
+                    summary,
+                    publish_release.ReleaseError("numeric lookup failed"),
+                ),
+            ),
+            self.assertRaisesRegex(publish_release.ReleaseError, "numeric lookup"),
+        ):
+            client.get_release("owner/repo", "v1.1.0")
+
+    def test_gh_release_lookup_treats_only_http_404_as_fallback(self) -> None:
+        client = publish_release.GhReleaseClient()
         unauthorized = CompletedProcess([], 1, "", "authentication failed\n")
         with (
-            patch.object(client, "_run", return_value=unauthorized),
+            patch.object(client, "_run", return_value=unauthorized) as run,
             self.assertRaisesRegex(publish_release.ReleaseError, "authentication"),
         ):
             client.get_release("owner/repo", "v1.1.0")
+        self.assertEqual(run.call_count, 1)
+
+    def test_prepare_recovers_list_visible_draft_after_create_and_upload(self) -> None:
+        client = DraftAwareGhClient(self.assets, initially_present=False)
+        outcome = publish_release.prepare_release(
+            "owner/repo",
+            "v1.1.0",
+            self.dist,
+            client=client,
+        )
+        self.assertEqual(outcome, "draft-prepared")
+        self.assertTrue(client.present)
+        self.assertEqual(set(client.uploaded), {asset.name for asset in self.assets})
+
+    def test_publish_recovers_list_visible_draft_then_publishes_once(self) -> None:
+        client = DraftAwareGhClient(self.assets, initially_present=True)
+        outcome = publish_release.publish_release(
+            "owner/repo",
+            "v1.1.0",
+            self.dist,
+            client=client,
+            sleep=lambda _: None,
+        )
+        self.assertEqual(outcome, "published")
+        self.assertTrue(client.published)
+        self.assertEqual(
+            sum(call[:2] == ("release", "edit") for call in client.calls),
+            1,
+        )
 
     def test_gh_client_parses_inventory_and_issues_mutation_commands(self) -> None:
         client = publish_release.GhReleaseClient()
         payload = {
+            "tag_name": "v1.1.0",
             "draft": True,
             "immutable": False,
             "assets": [

@@ -15,10 +15,13 @@ GitHub Issues may track execution only when they link back to this file.
   only and does not independently justify a release.
 - v1.1.0 was tagged on 2026-08-27 but remained unpublished because GitHub
   skipped the reusable release job after the successful summary gate.
+- v1.1.1 was tagged on 2026-08-28 but remained unpublished. Its tag workflow
+  retained an exact six-asset draft, then failed because the post-upload lookup
+  used GitHub's published-only tag endpoint, which does not return drafts.
 
 ## v1.1 engineering trust
 
-Status: v1.1.1 release recovery.
+Status: v1.1.2 draft-lookup recovery.
 
 Required outcomes:
 
@@ -38,16 +41,20 @@ Required outcomes:
 - verify published immutable assets and attestations without modifying a
   published Release.
 
-The v1.1.1 patch repairs only tag-job orchestration: it explicitly evaluates the
-release job when the workflow is not cancelled, the stable `Quality gate`
-succeeds, and the ref is a `v*` tag. Done when all local gates pass, the hosted
-eight-lane matrix and summary gate pass, release-stage evidence reaches V4, the
-v1.1.1 tag prepares the exact six-asset draft, and a separate local
-administrator publication verifies the immutable Release. Repository rulesets
-and immutable-release settings are enabled only as a separately observed remote
-administration step. Before the v1.1.1 tag, an administrator must enable
-immutable releases and the maintainer must retain an authenticated GET
-readback; the tag workflow neither enables the setting nor publishes.
+The v1.1.1 patch repaired tag-job orchestration and successfully retained its
+exact six-asset draft, but the publisher then treated GitHub's documented 404
+for an authenticated draft on `/releases/tags/{tag}` as absence. v1.1.2 keeps
+that endpoint as the published fast path and, only after a 404, completely
+paginates authenticated Releases, requires one exact tag match, and reads the
+numeric Release ID as the authoritative draft, immutable, and asset state.
+The retained v1.1.1 tag and draft are not moved, published, or mutated.
+
+Done when all local gates pass, the hosted eight-lane matrix and summary gate
+pass, release-stage evidence reaches V4, the v1.1.2 tag prepares its exact
+six-asset draft, and a separate local administrator publication verifies the
+immutable Release. Repository rulesets and immutable-release settings remain a
+separately observed remote administration step; the tag workflow neither
+enables the setting nor publishes.
 
 ## v1.2 AI Knowledge 2026
 

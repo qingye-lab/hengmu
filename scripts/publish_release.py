@@ -310,28 +310,34 @@ class GhReleaseClient:
                 "GitHub immutable releases are not enabled for the repository"
             )
 
-    def get_release(self, repository: str, tag: str) -> ReleaseState | None:
-        process = self._run(
-            [
-                "api",
-                "-H",
-                "X-GitHub-Api-Version: 2026-03-10",
-                f"repos/{repository}/releases/tags/{tag}",
-            ],
-            allow_failure=True,
-        )
-        if process.returncode != 0:
-            if "(HTTP 404)" in process.stderr:
-                return None
-            raise ReleaseError(process.stderr.strip() or "GitHub Release lookup failed")
+    @staticmethod
+    def _load_json(process: subprocess.CompletedProcess[str], message: str) -> Any:
         try:
-            payload: Any = json.loads(process.stdout)
+            return json.loads(process.stdout)
         except json.JSONDecodeError as exc:
-            raise ReleaseError("GitHub Release response is malformed") from exc
-        if (
-            not isinstance(payload, dict)
-            or not isinstance(payload.get("draft"), bool)
-            or not isinstance(payload.get("immutable"), bool)
+            raise ReleaseError(message) from exc
+
+    @staticmethod
+    def _parse_release_state(
+        payload: Any,
+        *,
+        expected_tag: str | None = None,
+        expected_id: int | None = None,
+    ) -> ReleaseState:
+        if not isinstance(payload, dict):
+            raise ReleaseError("GitHub Release response is malformed")
+        if expected_tag is not None and payload.get("tag_name") != expected_tag:
+            raise ReleaseError("GitHub Release tag identity is malformed")
+        if expected_id is not None:
+            actual_id = payload.get("id")
+            if (
+                not isinstance(actual_id, int)
+                or isinstance(actual_id, bool)
+                or actual_id != expected_id
+            ):
+                raise ReleaseError("GitHub Release numeric identity is malformed")
+        if not isinstance(payload.get("draft"), bool) or not isinstance(
+            payload.get("immutable"), bool
         ):
             raise ReleaseError("GitHub Release response is malformed")
         raw_assets = payload.get("assets")
@@ -344,7 +350,11 @@ class GhReleaseClient:
             name = record.get("name")
             size = record.get("size")
             digest = record.get("digest")
-            if not isinstance(name, str) or not isinstance(size, int):
+            if (
+                not isinstance(name, str)
+                or not isinstance(size, int)
+                or isinstance(size, bool)
+            ):
                 raise ReleaseError("GitHub Release asset identity is malformed")
             if digest is not None and not isinstance(digest, str):
                 raise ReleaseError("GitHub Release asset digest is malformed")
@@ -354,6 +364,82 @@ class GhReleaseClient:
             immutable=payload["immutable"],
             assets=tuple(assets),
         )
+
+    def _find_release_id(self, repository: str, tag: str) -> int | None:
+        process = self._run(
+            [
+                "api",
+                "--paginate",
+                "--slurp",
+                "-H",
+                "X-GitHub-Api-Version: 2026-03-10",
+                f"repos/{repository}/releases?per_page=100",
+            ]
+        )
+        pages = self._load_json(process, "GitHub Release list response is malformed")
+        if not isinstance(pages, list):
+            raise ReleaseError("GitHub Release list response is malformed")
+        matches: list[int] = []
+        for page in pages:
+            if not isinstance(page, list):
+                raise ReleaseError("GitHub Release list response is malformed")
+            for record in page:
+                if not isinstance(record, dict):
+                    raise ReleaseError("GitHub Release list entry is malformed")
+                release_id = record.get("id")
+                tag_name = record.get("tag_name")
+                if (
+                    not isinstance(release_id, int)
+                    or isinstance(release_id, bool)
+                    or release_id <= 0
+                    or not isinstance(tag_name, str)
+                ):
+                    raise ReleaseError("GitHub Release list identity is malformed")
+                if tag_name == tag:
+                    matches.append(release_id)
+        if not matches:
+            return None
+        if len(matches) != 1:
+            raise ReleaseError("GitHub Release list contains duplicate exact tags")
+        return matches[0]
+
+    def get_release(self, repository: str, tag: str) -> ReleaseState | None:
+        process = self._run(
+            [
+                "api",
+                "-H",
+                "X-GitHub-Api-Version: 2026-03-10",
+                f"repos/{repository}/releases/tags/{tag}",
+            ],
+            allow_failure=True,
+        )
+        if process.returncode != 0:
+            if "(HTTP 404)" not in process.stderr:
+                raise ReleaseError(
+                    process.stderr.strip() or "GitHub Release lookup failed"
+                )
+            release_id = self._find_release_id(repository, tag)
+            if release_id is None:
+                return None
+            authoritative = self._run(
+                [
+                    "api",
+                    "-H",
+                    "X-GitHub-Api-Version: 2026-03-10",
+                    f"repos/{repository}/releases/{release_id}",
+                ]
+            )
+            payload = self._load_json(
+                authoritative,
+                "GitHub Release response is malformed",
+            )
+            return self._parse_release_state(
+                payload,
+                expected_tag=tag,
+                expected_id=release_id,
+            )
+        payload = self._load_json(process, "GitHub Release response is malformed")
+        return self._parse_release_state(payload, expected_tag=tag)
 
     def create_draft(self, repository: str, tag: str, title: str) -> None:
         self._run(
