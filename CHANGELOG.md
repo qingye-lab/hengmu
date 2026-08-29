@@ -7,7 +7,26 @@ and this project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.1.2] - 2026-08-29
+
+Release status: unreleased. v1.1.1 remains tagged but unpublished, and its
+exact six-asset draft is retained without mutation.
+
+### Fixed
+
+- Authenticated Release lookup now keeps the published-by-tag fast path and,
+  only after its documented 404 response for drafts, completely paginates the
+  repository Release list, requires one exact tag match, and reads the matched
+  numeric Release ID before accepting draft, immutable, or asset state.
+- Malformed pagination, duplicate exact tags, identity mismatches, and GitHub
+  authentication or API failures now fail closed instead of treating the
+  existing draft as absent.
+
 ## [1.1.1] - 2026-08-28
+
+Release status: tagged but unpublished. The tag workflow prepared and retained
+the exact six-asset draft, but its post-upload lookup used the published-only
+`/releases/tags/{tag}` endpoint, which returns 404 for authenticated drafts.
 
 ### Fixed
 
