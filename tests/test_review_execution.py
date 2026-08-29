@@ -60,20 +60,20 @@ class ReviewExecutionRuntimeTests(unittest.TestCase):
                 knowledge_model.validate_knowledge_tree(
                     knowledge_root,
                     schema_root=schema_root,
-                    today=dt.date(2026, 8, 6),
+                    today=dt.date(2026, 8, 29),
                 )
                 first_count = mocked.call_count
                 knowledge_model.validate_knowledge_tree(
                     knowledge_root,
                     schema_root=schema_root,
-                    today=dt.date(2026, 8, 6),
+                    today=dt.date(2026, 8, 29),
                 )
                 self.assertEqual(mocked.call_count, first_count)
                 target.write_bytes(target.read_bytes() + b"\n")
                 knowledge_model.validate_knowledge_tree(
                     knowledge_root,
                     schema_root=schema_root,
-                    today=dt.date(2026, 8, 6),
+                    today=dt.date(2026, 8, 29),
                 )
                 self.assertGreater(mocked.call_count, first_count)
 
@@ -287,7 +287,7 @@ class ReviewExecutionRuntimeTests(unittest.TestCase):
         manifest, entries = knowledge_model.validate_knowledge_tree(
             ROOT / "resources" / "knowledge",
             schema_root=ROOT / "resources" / "schemas",
-            today=dt.date(2026, 8, 6),
+            today=dt.date(2026, 8, 29),
         )
         manifest["packs"].clear()
         first_entry = next(iter(entries.values()))
@@ -296,7 +296,7 @@ class ReviewExecutionRuntimeTests(unittest.TestCase):
         fresh_manifest, fresh_entries = knowledge_model.validate_knowledge_tree(
             ROOT / "resources" / "knowledge",
             schema_root=ROOT / "resources" / "schemas",
-            today=dt.date(2026, 8, 6),
+            today=dt.date(2026, 8, 29),
         )
         self.assertTrue(fresh_manifest["packs"])
         self.assertTrue(fresh_entries[first_entry.id].metadata["domains"])

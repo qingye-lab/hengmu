@@ -7,10 +7,31 @@ and this project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-08-29
+
+Release status: implementation pending hosted and release verification. v1.1.3
+remains the published immutable Release.
+
+### Added
+
+- Versioned, freshness-bound Knowledge for MCP, A2A, Agent Skills,
+  OpenTelemetry GenAI semantic conventions, agent evaluation design, and a
+  secure agent-tool runtime reference architecture.
+- Deterministic positive, negative, cross-protocol, advisor-policy, context
+  budget, and freshness-boundary selection coverage for the six entries.
+
+### Changed
+
+- The ten-pack Markdown Knowledge tree contains 211 validated entries at
+  content version 2.1.0. This release claims Knowledge and deterministic
+  selection coverage improvements only; it does not claim improved model
+  behavior.
+
 ## [1.1.3] - 2026-08-29
 
-Release status: implementation pending release verification. v1.1.2 remains
-the published immutable Release.
+Release status: published immutable at 2026-08-29T06:19:03Z. The exact six
+assets, provenance and SPDX attestations, hosted gates, and current-host smoke
+were verified.
 
 ### Fixed
 

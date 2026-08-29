@@ -122,3 +122,56 @@ cases:
       - prohibited options are hard-eliminated
       - a technology-evolution entry is not selected merely because the task says constrained
       - no version pin is inferred from memory
+  - id: mcp-protocol-boundary
+    skill: project-architecture-audit
+    facts: []
+    task: Review the mcp protocol boundary, authorization, and untrusted annotations.
+    must_include:
+      - technology.model-context-protocol
+    must_exclude:
+      - technology.a2a-protocol
+    requirements:
+      - selection binds the 2026-07-28 revision without treating MCP as authorization authority
+  - id: a2a-task-handoff
+    skill: project-architecture-audit
+    facts: []
+    task: Review the a2a task handoff, cancellation, retries, and ownership.
+    must_include:
+      - technology.a2a-protocol
+    must_exclude:
+      - technology.model-context-protocol
+    requirements:
+      - selection does not infer production fitness from announcement wording
+  - id: agent-skills-package-contract
+    skill: project-architecture-audit
+    facts: []
+    task: Review skill.md, progressive-disclosure, and allowed-tools boundaries.
+    must_include:
+      - technology.agent-skills
+    requirements:
+      - experimental allowed-tools metadata is not treated as sandbox or authorization enforcement
+  - id: opentelemetry-genai-sensitive-content
+    skill: project-architecture-audit
+    facts: []
+    task: Review genai semantic-convention fields and sensitive content collection.
+    must_include:
+      - technology.opentelemetry-genai
+    requirements:
+      - selection retains development maturity and explicit sensitive-content opt-in
+  - id: agent-evaluation-identity
+    skill: project-architecture-audit
+    facts: []
+    task: Review agent-evaluation design and bind repeated outcomes to the complete harness identity.
+    must_include:
+      - decision.agent-evaluation-design
+    requirements:
+      - no model-quality claim transfers beyond the evaluated model surface harness prompt fixture policy scorer runtime and hashes
+  - id: secure-agent-tool-runtime
+    skill: project-architecture-audit
+    facts: []
+    task: Review tool-sandbox and complete-mediation for model-proposed side effects.
+    must_include:
+      - reference.secure-agent-tool-runtime
+    requirements:
+      - the model never becomes authorization authority
+      - the reference makes no completeness certification or compliance claim

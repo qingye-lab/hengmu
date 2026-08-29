@@ -731,7 +731,7 @@ class ArchitectureToolTests(unittest.TestCase):
         _, knowledge = architecture_tool.validate_knowledge_tree(
             ROOT / "resources" / "knowledge",
             schema_root=ROOT / "resources" / "schemas",
-            today=date(2026, 8, 6),
+            today=date(2026, 8, 29),
         )
         decision = architecture_tool.load_yaml(
             ROOT / "resources" / "templates" / "architecture-decision.yaml"
@@ -3379,7 +3379,7 @@ class ArchitectureToolTests(unittest.TestCase):
             check=False,
         )
         self.assertEqual(process.returncode, 0, process.stderr)
-        self.assertEqual(process.stdout.strip(), "architecture_tool.py 1.1.3")
+        self.assertEqual(process.stdout.strip(), "architecture_tool.py 1.2.0")
 
     def test_benchmark_score_cli_can_preserve_json_output(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

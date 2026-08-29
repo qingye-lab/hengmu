@@ -35,6 +35,38 @@ class TargetArchitectureTests(unittest.TestCase):
     def tearDown(self) -> None:
         self.temporary.cleanup()
 
+    def write_empty_facts(self) -> Path:
+        facts_path = self.root / "empty-repository-facts.yaml"
+        facts_path.write_text(
+            yaml.safe_dump(
+                {
+                    "schema_version": "1.1",
+                    "repository": {
+                        "root": ".",
+                        "commit": "unknown",
+                        "dirty": False,
+                        "scanned_at": "2026-08-29T00:00:00+00:00",
+                        "scope": ["."],
+                    },
+                    "languages": [],
+                    "frameworks": [],
+                    "storage": [],
+                    "interfaces": [],
+                    "infrastructure": [],
+                    "artifacts": {
+                        "manifests": [],
+                        "migrations": [],
+                        "api_definitions": [],
+                        "ci": [],
+                        "deployments": [],
+                    },
+                },
+                sort_keys=False,
+            ),
+            encoding="utf-8",
+        )
+        return facts_path
+
     def test_inspector_collects_only_bounded_observations(self) -> None:
         (self.root / "app.py").write_text(
             "from fastapi import FastAPI\napp = FastAPI()\n",
@@ -501,7 +533,7 @@ setup(name="example", install_requires=RUNTIME_REQUIREMENTS)
         )
         self.assertEqual(
             len(selection["selection"]) + len(selection["excluded"]),
-            205,
+            211,
         )
         priorities = {item["id"]: item["priority"] for item in selection["selection"]}
         self.assertEqual(
@@ -630,6 +662,212 @@ setup(name="example", install_requires=RUNTIME_REQUIREMENTS)
             maintainer_entries["style.modular-monolith"]["reasons"],
         )
         self.assertTrue(maintainer["inputs"]["maintainer_mode"])
+
+    def test_ai_knowledge_2026_positive_selection_is_exact_and_explainable(
+        self,
+    ) -> None:
+        facts_path = self.write_empty_facts()
+        cases = (
+            (
+                "Review the mcp boundary.",
+                "unregistered-test-skill",
+                "technology.model-context-protocol",
+                "technology-profile",
+                "Task matches trigger(s): mcp",
+            ),
+            (
+                "Review the a2a handoff.",
+                "unregistered-test-skill",
+                "technology.a2a-protocol",
+                "technology-profile",
+                "Task matches trigger(s): a2a",
+            ),
+            (
+                "Review progressive-disclosure and skill.md boundaries.",
+                "unregistered-test-skill",
+                "technology.agent-skills",
+                "technology-profile",
+                "Task matches trigger(s): progressive-disclosure, skill.md",
+            ),
+            (
+                "Review genai trace fields.",
+                "unregistered-test-skill",
+                "technology.opentelemetry-genai",
+                "technology-profile",
+                "Task matches trigger(s): genai",
+            ),
+            (
+                "Design an agent-evaluation corpus.",
+                "unregistered-test-skill",
+                "decision.agent-evaluation-design",
+                "decision-guide",
+                "Task matches trigger(s): agent-evaluation",
+            ),
+            (
+                "Review tool-sandbox complete-mediation controls.",
+                "unregistered-test-skill",
+                "reference.secure-agent-tool-runtime",
+                "reference-architecture",
+                "Task matches trigger(s): complete-mediation, tool-sandbox",
+            ),
+        )
+
+        for task, skill, expected_id, expected_kind, reason in cases:
+            with self.subTest(expected_id=expected_id):
+                selection = select_knowledge(
+                    facts_path,
+                    profile_path=None,
+                    task=task,
+                    skill=skill,
+                    maximum_entries=12,
+                )
+                selected = {item["id"]: item for item in selection["selection"]}
+                self.assertIn(expected_id, selected)
+                self.assertEqual(selected[expected_id]["kind"], expected_kind)
+                self.assertEqual(selected[expected_id]["maturity"], "standard")
+                self.assertEqual(selected[expected_id]["priority"], "recommended")
+                self.assertIn(reason, selected[expected_id]["reasons"])
+
+    def test_ai_knowledge_2026_avoids_generic_and_negated_requests(self) -> None:
+        facts_path = self.write_empty_facts()
+        cases = (
+            (
+                "Review human and team skills development.",
+                {"technology.agent-skills"},
+            ),
+            (
+                "Review ordinary OpenTelemetry service tracing.",
+                {"technology.opentelemetry-genai"},
+            ),
+            (
+                "Review a generic agent runtime.",
+                {"reference.secure-agent-tool-runtime"},
+            ),
+            (
+                "Review generic software tests.",
+                {"decision.agent-evaluation-design"},
+            ),
+            (
+                "Review the system without MCP, A2A, Agent Skills, or GenAI telemetry.",
+                {
+                    "technology.model-context-protocol",
+                    "technology.a2a-protocol",
+                    "technology.agent-skills",
+                    "technology.opentelemetry-genai",
+                },
+            ),
+        )
+
+        for task, forbidden_ids in cases:
+            with self.subTest(task=task):
+                selection = select_knowledge(
+                    facts_path,
+                    profile_path=None,
+                    task=task,
+                    skill="unregistered-test-skill",
+                    maximum_entries=12,
+                )
+                selected = {item["id"] for item in selection["selection"]}
+                self.assertTrue(forbidden_ids.isdisjoint(selected))
+
+        mcp = select_knowledge(
+            facts_path,
+            profile_path=None,
+            task="Review the mcp boundary.",
+            skill="unregistered-test-skill",
+            maximum_entries=12,
+        )
+        a2a = select_knowledge(
+            facts_path,
+            profile_path=None,
+            task="Review the a2a handoff.",
+            skill="unregistered-test-skill",
+            maximum_entries=12,
+        )
+        self.assertNotIn(
+            "technology.a2a-protocol",
+            {item["id"] for item in mcp["selection"]},
+        )
+        self.assertNotIn(
+            "technology.model-context-protocol",
+            {item["id"] for item in a2a["selection"]},
+        )
+
+    def test_ai_knowledge_2026_budget_is_deterministic_and_accounted(self) -> None:
+        facts_path = self.write_empty_facts()
+        selection = select_knowledge(
+            facts_path,
+            profile_path=None,
+            task="Review mcp, a2a, skill.md, and genai boundaries.",
+            skill="unregistered-test-skill",
+            maximum_entries=12,
+            kind_budgets={"technology-profile": 3},
+        )
+        selected = {item["id"] for item in selection["selection"]}
+        self.assertEqual(
+            selected
+            & {
+                "technology.model-context-protocol",
+                "technology.a2a-protocol",
+                "technology.agent-skills",
+                "technology.opentelemetry-genai",
+            },
+            {
+                "technology.a2a-protocol",
+                "technology.agent-skills",
+                "technology.model-context-protocol",
+            },
+        )
+        excluded = {item["id"]: item["reason"] for item in selection["excluded"]}
+        self.assertEqual(
+            excluded["technology.opentelemetry-genai"],
+            "Relevant but outside the configured technology-profile context budget.",
+        )
+        self.assertEqual(selection["budget"]["selected_entries"], len(selected))
+        self.assertEqual(
+            selection["budget"]["per_kind"]["technology-profile"],
+            {"maximum_entries": 3, "selected_entries": 3},
+        )
+
+    def test_ai_knowledge_2026_advisor_requires_an_exact_standard_exception(
+        self,
+    ) -> None:
+        facts_path = self.write_empty_facts()
+        discretionary = select_knowledge(
+            facts_path,
+            profile_path=None,
+            task="Compare mcp architecture options.",
+            skill="architecture-solution-advisor",
+            maximum_entries=16,
+        )
+        self.assertNotIn(
+            "technology.model-context-protocol",
+            {item["id"] for item in discretionary["selection"]},
+        )
+        excluded = {item["id"]: item["reason"] for item in discretionary["excluded"]}
+        self.assertEqual(
+            excluded["technology.model-context-protocol"],
+            "Architecture solution advisor defaults to Golden discretionary "
+            "knowledge; this standard entry has no explicit exception.",
+        )
+
+        explicit = select_knowledge(
+            facts_path,
+            profile_path=None,
+            task="Compare mcp architecture options.",
+            skill="architecture-solution-advisor",
+            maximum_entries=16,
+            includes=["technology.model-context-protocol"],
+        )
+        selected = {item["id"]: item for item in explicit["selection"]}
+        self.assertEqual(
+            selected["technology.model-context-protocol"]["priority"],
+            "required",
+        )
+        self.assertIn(
+            "Non-Golden exception: explicit caller include.",
+            selected["technology.model-context-protocol"]["reasons"],
+        )
 
     def test_selector_uses_decision_intent_to_disambiguate_local_runtime(
         self,
@@ -810,12 +1048,116 @@ setup(name="example", install_requires=RUNTIME_REQUIREMENTS)
         manifest, entries = validate_knowledge_tree(
             ROOT / "resources" / "knowledge",
             schema_root=ROOT / "resources" / "schemas",
-            today=date(2026, 8, 6),
+            today=date(2026, 8, 29),
         )
 
         self.assertEqual(len(manifest["packs"]), 10)
-        self.assertEqual(len(entries), 205)
+        self.assertEqual(len(entries), 211)
+        self.assertEqual(
+            manifest["_validated_counts"],
+            {
+                "foundations": 22,
+                "domains": 17,
+                "decision-guides": 24,
+                "architecture-styles": 17,
+                "patterns": 30,
+                "technology-profiles": 51,
+                "reference-architectures": 16,
+                "migration-guides": 18,
+                "anti-patterns": 10,
+                "case-studies": 6,
+            },
+        )
         self.assertTrue(all(manifest["_validated_counts"].values()))
+
+    def test_ai_knowledge_2026_freshness_boundaries_are_exact(self) -> None:
+        cases = (
+            (
+                "technology-profiles",
+                "model-context-protocol.md",
+                "technology-profile",
+                date(2026, 10, 13),
+                date(2026, 10, 14),
+            ),
+            (
+                "technology-profiles",
+                "opentelemetry-genai.md",
+                "technology-profile",
+                date(2026, 10, 13),
+                date(2026, 10, 14),
+            ),
+            (
+                "technology-profiles",
+                "a2a-protocol.md",
+                "technology-profile",
+                date(2026, 11, 27),
+                date(2026, 11, 28),
+            ),
+            (
+                "technology-profiles",
+                "agent-skills.md",
+                "technology-profile",
+                date(2026, 11, 27),
+                date(2026, 11, 28),
+            ),
+            (
+                "decision-guides",
+                "agent-evaluation-design.md",
+                "decision-guide",
+                date(2026, 11, 27),
+                date(2026, 11, 28),
+            ),
+            (
+                "reference-architectures",
+                "secure-agent-tool-runtime.md",
+                "reference-architecture",
+                date(2026, 11, 27),
+                date(2026, 11, 28),
+            ),
+        )
+        for directory, filename, expected_kind, last_current, first_stale in cases:
+            path = ROOT / "resources" / "knowledge" / directory / filename
+            with self.subTest(path=path.name):
+                validate_markdown_entry(
+                    path,
+                    schema_root=ROOT / "resources" / "schemas",
+                    expected_kind=expected_kind,
+                    today=last_current,
+                )
+                with self.assertRaisesRegex(KnowledgeError, "is stale by 1 day"):
+                    validate_markdown_entry(
+                        path,
+                        schema_root=ROOT / "resources" / "schemas",
+                        expected_kind=expected_kind,
+                        today=first_stale,
+                    )
+
+    def test_knowledge_validator_rejects_future_review_date(self) -> None:
+        source = (
+            ROOT
+            / "resources"
+            / "knowledge"
+            / "decision-guides"
+            / "agent-evaluation-design.md"
+        )
+        future = self.root / "future.md"
+        future.write_text(
+            source.read_text(encoding="utf-8").replace(
+                "last_reviewed: '2026-08-29'",
+                "last_reviewed: '2026-08-30'",
+            ),
+            encoding="utf-8",
+        )
+        with self.assertRaisesRegex(
+            KnowledgeError,
+            "last_reviewed 2026-08-30 is in the future",
+        ):
+            validate_markdown_entry(
+                future,
+                schema_root=ROOT / "resources" / "schemas",
+                expected_kind="decision-guide",
+                today=date(2026, 8, 29),
+            )
 
     def test_knowledge_validator_rejects_shallow_and_stale_entries(self) -> None:
         source = (
@@ -893,7 +1235,7 @@ setup(name="example", install_requires=RUNTIME_REQUIREMENTS)
         _, entries = validate_knowledge_tree(
             ROOT / "resources" / "knowledge",
             schema_root=ROOT / "resources" / "schemas",
-            today=date(2026, 8, 6),
+            today=date(2026, 8, 29),
         )
         decision = architecture_tool.load_yaml(
             ROOT / "resources" / "templates" / "architecture-decision.yaml"
