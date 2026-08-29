@@ -1,0 +1,210 @@
+schema_version: '1.2'
+decision:
+  id: ADR-HENGMU-V1.1.3-GH-PUBLICATION-VERIFICATION-001
+  source_review: hengmu-20260829-v1-1-3-gh-publication-verification-project-verified
+  source_review_sha256: 231ea1abc4618bf765ab456191105db38216810f89ae78ba51e5705b0b233dcb
+  decided_at: '2026-08-29T05:15:00Z'
+  decision_makers: [architecture-owner]
+  status: accepted
+  supersedes: ADR-HENGMU-V1.1.2-DRAFT-LOOKUP-001
+  knowledge_selection_path: .architecture/reviews/inputs/2026-08-29-v1-1-3-gh-publication-verification-decision-knowledge-selection.yaml
+  knowledge_selection_sha256: 9471f39a64f77bb85faf72a2c296e12d5f9ff7234721cb4d5c11423151ce21e2
+problem:
+  quality_attributes:
+    - compatibility
+    - deterministic-enforcement
+    - safety
+    - traceability
+  constraints:
+    - Retain the independently verified v1.1.3 GitHub CLI publication preflight and source ancestry without changing the exact-six asset, permission, attestation, or public runtime contracts.
+    - Enumerate local expected assets before checking the CLI, then require a stable first-line GitHub CLI version at or above the supported floor before every remote publication call.
+    - Keep prepare draft-only and preserve the separately authorized immutable administrator publication boundary, published read-only behavior, and bounded verification.
+    - Require hosted matrix, Quality gate, v1.1.3 tag, draft, attestations, immutable publication, and current-host smoke before release completion.
+    - Do not add privileged workflow credentials, expand permissions, move immutable tags, replace published assets, or weaken failure behavior.
+    - Keep public Skills, Rule Packs, Knowledge entries, schemas, release assets, package boundaries, and historical artifact readability unchanged.
+  finding_ids: []
+  assumptions:
+    - The verified source and selector-anchor commits remain the intended v1.1.3 patch while external release gates are pending.
+    - GitHub remains the authorized hosted CI, draft, attestation, and immutable Release environment.
+  known_facts:
+    - The independent remote-normalized V2 Verified Review reports zero Findings across 31 Rule rows, six assessed critical flows, seven audit Knowledge entries, 21 changed files, 26 unique source bindings, and 23 bound paths.
+    - Connector normalization changed commit metadata and identities while preserving the reviewed source tree; trusted bindings use only source 6c4e983e5df769634fa60effebe12e7557e9b1ac and selector anchor 6193ea0c5cb8e0f0c145c65f514522b1074372ec.
+    - The clean test-results Evidence Provider at commit 6193ea0c5cb8e0f0c145c65f514522b1074372ec records 216 passing tests and 89 passing subtests in JUnit 305 with dirty_tree and dirty_tree_after both false.
+    - Publication enumerates the six local assets, then parses only the first `gh version` line using the anchored stable X.Y.Z contract before immutable GET, Release lookup, publish, or verification.
+    - Missing executable, nonzero, empty, malformed, prerelease, and versions below 2.93.0 fail with an actionable upgrade message and zero publication remote calls.
+    - GitHub CLI 2.93.0 and current-style 2.98.0 outputs are accepted by deterministic tests; 2.75.0 is rejected, while real 2.93.0 was not exercised on the verifier host.
+    - Prepare remains limited to the exact six assets and cannot publish; immutable administration, exact inventory, published read-only behavior, and five-attempt verification remain unchanged.
+    - Native and portable manifests, tool, benchmark default, template, documentation, and selector metadata identify v1.1.3 while selector source remains bound to implementation commit 6c4e983e5df769634fa60effebe12e7557e9b1ac.
+    - Repository evidence records v1.1.2 as immutable published with dated Codex host evidence; the V2 verifier did not independently query or mutate that remote or host state.
+  unknowns:
+    - The hosted eight-lane matrix, stable Quality gate, and real v1.1.3 tag workflow have not been observed for the reviewed commit.
+    - Remote repository rulesets, Actions policy, v* tag protection, immutable-release enablement, and immutable readback remain unverified for v1.1.3.
+    - A real v1.1.3 exact six-asset draft, provenance and SPDX attestations, immutable publication, and post-publication verification have not been observed.
+    - Installation, routing, CLI, and Knowledge Selection smoke on the current Codex host have not been observed for v1.1.3 packages.
+knowledge_snapshot:
+  - {id: domain.plugin-platform, version: 1.0.0, sha256: b72a0e3b6959464b32c9a4d44b50baa40b4baf13b5b14f65f99d094f301bf58c}
+  - {id: foundation.evolutionary-architecture, version: 1.0.0, sha256: b9b125fa34bdeb346145f926210f7052d60d8f3b5f4e225cf1aa0fdb6a7888e5}
+  - {id: foundation.proportional-design, version: 1.0.0, sha256: ccfa63d523fab3503c47dbf73fc7a9ae85c7fc516856bcf422322c0d92a409df}
+  - {id: foundation.quality-attributes, version: 1.0.0, sha256: 50d92ab7563d70605408ba4592d9445f79f6eb0cecb50195471b56e42418b680}
+  - {id: foundation.technology-selection, version: 1.0.0, sha256: ce43c17d29cc79ad65c0f1a551a938f3fec642d1e75070b98d4aa3336ddf882d}
+  - {id: foundation.tradeoff-analysis, version: 1.0.0, sha256: 058c9756ba4d9306f42e0fb49365aff3564f3545e103c05812040ce2c9f8b9d5}
+  - {id: domain.test-automation-platform, version: 1.0.0, sha256: 7ce2621239bad831f4a6689a1718b5dd1cdbbf1d6d2e3bb9a6d043457a70e016}
+  - {id: style.plugin-architecture, version: 1.0.0, sha256: 9d72e896b0154e8ee979474c6d47579889705c751a32a172f4b1b72bdef13a8a}
+options:
+  - id: keep-current
+    title: Keep the verified v1.1.3 stable gh 2.93.0 publication preflight
+    complexity_tier: keep-current
+    architecture_styles: [style.plugin-architecture]
+    patterns: []
+    technologies: []
+    benefits:
+      - Preserves the smallest verified correction and all public, packaging, exact-asset, attestation, credential, and immutable publication boundaries.
+      - Rejects every unclassified or unsupported local GitHub CLI state before any publication remote call while retaining local-asset precedence.
+      - Accepts GitHub's patched 2.93.0 minimum without forcing maintainers to install a newer version than the verified contract requires.
+      - Leaves hosted v1.1.3, real publication, and current-host compatibility as blocking external evidence gates.
+    liabilities:
+      - Publication remains blocked on hosts whose GitHub CLI is older, missing, prerelease, or does not emit the stable first-line format.
+      - Real 2.93.0 execution remains unobserved until a release operator exercises that exact boundary or a newer supported stable CLI.
+    assumptions:
+      - External release gates can validate the reviewed commit without another source or contract change.
+    quality_attribute_effects:
+      - {attribute: compatibility, effect: improves, rationale: 'The published minimum supports the patched GitHub CLI boundary without needlessly requiring 2.98.0.'}
+      - {attribute: deterministic-enforcement, effect: improves, rationale: 'One anchored parser and tuple comparison classify the supported stable CLI before all remote publication calls.'}
+      - {attribute: safety, effect: improves, rationale: 'Missing and unclassified CLI states fail before immutable administration, Release reads, publication, or verification.'}
+      - {attribute: traceability, effect: improves, rationale: 'Source, selector, tests, Provider, Candidate, V2 verification, Decision, and later release outcomes remain separately bound.'}
+    business_fit: Completes the authorized patch using the lowest supported stable GitHub CLI boundary while keeping external proof mandatory.
+    team_fit: Uses the existing single-maintainer local administrator flow without adding credentials, permissions, or a second publication client.
+    evolution_fit: Keeps the version floor explicit and independently changeable through a later tested patch if GitHub changes its CLI contract.
+    implementation_complexity: low
+    operational_complexity: low
+    migration_risk: low
+    reversibility: easy
+    cost: low
+    technical_maturity: mature
+    lock_in: low
+    tradeoff_scores: {business_fit: 2, quality_fit: 2, team_fit: 2, implementation: 2, operations: 2, migration: 2, reversibility: 2, cost: 2, maturity: 2, lock_in: 1, evolution: 2}
+    rejected_reasons: []
+  - id: raise-floor-to-2-98
+    title: Require GitHub CLI 2.98.0 for publication
+    complexity_tier: low
+    architecture_styles: [style.plugin-architecture]
+    patterns: []
+    technologies: []
+    benefits:
+      - Matches the newer stable GitHub CLI output exercised on the local release host.
+      - Avoids relying on an unexercised exact 2.93.0 binary during the first v1.1.3 publication.
+    liabilities:
+      - Rejects stable GitHub CLI versions from 2.93.0 through 2.97.x despite the declared patched minimum and identical required command surface.
+      - Creates avoidable operator upgrade work without evidence that the higher floor protects another invariant.
+    assumptions:
+      - Local observation of 2.98.0 is more important than compatibility with the supported patched range.
+    quality_attribute_effects:
+      - {attribute: compatibility, effect: degrades, rationale: 'It narrows the supported administrator environment beyond the evidenced minimum.'}
+      - {attribute: deterministic-enforcement, effect: neutral, rationale: 'The same parser and ordering remain; only the comparison tuple increases.'}
+      - {attribute: safety, effect: neutral, rationale: 'No additional unsafe version class is proven between 2.93.0 and 2.98.0.'}
+      - {attribute: traceability, effect: neutral, rationale: 'The higher number adds no new provenance or evidence binding.'}
+    business_fit: Adds operator friction without a demonstrated release-safety gain.
+    team_fit: Requires unnecessary host upgrades for the single maintainer and recovery environments.
+    evolution_fit: Couples the patch to one locally observed current version instead of the supported capability boundary.
+    implementation_complexity: low
+    operational_complexity: medium
+    migration_risk: medium
+    reversibility: easy
+    cost: medium
+    technical_maturity: mature
+    lock_in: medium
+    tradeoff_scores: {business_fit: -1, quality_fit: 0, team_fit: -1, implementation: 2, operations: 0, migration: 0, reversibility: 2, cost: 0, maturity: 2, lock_in: 0, evolution: -1}
+    rejected_reasons:
+      - No verified invariant requires excluding stable GitHub CLI versions that meet the 2.93.0 patched minimum.
+  - id: direct-attestation-api
+    title: Replace GitHub CLI verification with custom direct Release and attestation API calls
+    complexity_tier: high
+    architecture_styles: [style.plugin-architecture]
+    patterns: []
+    technologies: []
+    benefits:
+      - Could remove the local GitHub CLI version dependency.
+      - Could expose every HTTP request and response under a project-owned client.
+    liabilities:
+      - Requires new authentication, pagination, attestation, signature, retry, error-classification, and API-version ownership inside Hengmu.
+      - Duplicates the existing GitHub CLI release and attestation surface and broadens credential-handling and long-term compatibility obligations.
+      - Would require new security, provider, integration, and real-host evidence rather than addressing the bounded local version defect.
+    assumptions:
+      - Owning a custom GitHub API and attestation client is safer and cheaper than validating the supported GitHub CLI.
+    quality_attribute_effects:
+      - {attribute: compatibility, effect: degrades, rationale: 'A new private API client adds GitHub REST and attestation compatibility duties beyond the existing CLI contract.'}
+      - {attribute: deterministic-enforcement, effect: degrades, rationale: 'More response, pagination, authentication, and retry states would require classification and tests.'}
+      - {attribute: safety, effect: degrades, rationale: 'Credential and publication logic would expand into new project-owned code without a demonstrated need.'}
+      - {attribute: traceability, effect: neutral, rationale: 'Direct calls could be logged, but no new provenance property is established over the current verified CLI path.'}
+    business_fit: Solves a bounded CLI compatibility check by creating a larger release subsystem.
+    team_fit: Adds substantial security and maintenance ownership to a single-maintainer project.
+    evolution_fit: Increases lock-in to unstable API and attestation details that the GitHub CLI currently owns.
+    implementation_complexity: high
+    operational_complexity: high
+    migration_risk: high
+    reversibility: difficult
+    cost: high
+    technical_maturity: unknown
+    lock_in: high
+    tradeoff_scores: {business_fit: -2, quality_fit: -2, team_fit: -2, implementation: -2, operations: -2, migration: -2, reversibility: -2, cost: -2, maturity: -2, lock_in: -2, evolution: -2}
+    rejected_reasons:
+      - It replaces a verified bounded preflight with an unevidenced credentialed subsystem and materially expands scope.
+selected_option: keep-current
+rationale: >-
+  The independently verified connector-normalized v1.1.3 patch has zero Findings and is the smallest
+  compatible correction to the local publication-client uncertainty. Keeping
+  the 2.93.0 floor preserves the declared patched minimum, accepts the exercised
+  current-style 2.98.0 output, and fails every unsupported state before remote
+  publication access. Raising the floor excludes supported stable clients
+  without another protected invariant; a custom direct API and attestation
+  client creates new credential, compatibility, and operational ownership far
+  beyond the observed defect. All hosted, remote, publication, and host-smoke
+  results remain blocking external gates.
+revisit_triggers:
+  - GitHub changes the stable first-line `gh version` format or documents a newer minimum for required immutable Release or attestation commands.
+  - A stable GitHub CLI at or above 2.93.0 fails the preflight or required publication command on a supported administrator host.
+  - Any hosted v1.1.3 matrix lane, Quality gate, tag workflow, exact draft, attestation, immutable publication, or bounded verification fails.
+  - Remote immutable-release readback is disabled, missing, malformed, or cannot satisfy the administrator publication preflight.
+  - Current Codex host installation, routing, CLI, or Knowledge Selection smoke exposes a public compatibility defect.
+acceptance_evidence:
+  - The architecture-owner accepts the connector-normalized source and selector identities as the authoritative tree-equivalent v1.1.3 chain; the independent-agent V2 result is not represented as independent GitHub approval identity separation.
+  - The architecture-owner explicitly authorized the v1.1.3 governed verification and accepted the three-option comparison without expanding credentials, permissions, remote mutation, public contracts, or implementation scope.
+  - The architecture-owner selects keep-current and requires hosted, draft, attestation, immutable-publication, post-verification, and current-host gates before release completion.
+  - The Decision binds the independent V2 Verified Review with zero Findings and the clean test-results Provider recording 216 passing tests and 89 passing subtests in JUnit 305 at commit 6193ea0c5cb8e0f0c145c65f514522b1074372ec.
+migration:
+  affected_paths:
+    - .codex-plugin/plugin.json
+    - CHANGELOG.md
+    - README.md
+    - README.zh-CN.md
+    - docs/compatibility-evidence/2026-08-29-hengmu-1.1.2.md
+    - docs/compatibility.md
+    - docs/host-compatibility.md
+    - docs/releasing.md
+    - docs/roadmap.md
+    - plugin.json
+    - resources/scripts/architecture_tool.py
+    - resources/selector-source.json
+    - resources/templates/knowledge-selection.yaml
+    - scripts/publish_release.py
+    - scripts/run_behavior_benchmark.py
+    - tests/test_architecture_tool.py
+    - tests/test_constrained_target_architecture.py
+    - tests/test_package_plugin.py
+    - tests/test_release_publication.py
+    - tests/test_repository_contract.py
+    - tests/test_supply_chain.py
+  slices:
+    - Preserve source commit 6c4e983e5df769634fa60effebe12e7557e9b1ac and selector-anchor commit 6193ea0c5cb8e0f0c145c65f514522b1074372ec as distinct ancestry, open a pull request, and merge with a Merge Commit only after required review and checks pass.
+    - Create an annotated v1.1.3 tag on the merged source and require the real hosted eight-lane matrix, stable Quality gate, and tag-triggered reusable workflow to complete successfully.
+    - Verify the reusable workflow prepares the exact six-asset v1.1.3 draft and produces valid archive provenance plus both SPDX SBOM attestations without publishing.
+    - From a separately authorized administrator environment, confirm a supported stable GitHub CLI, immutable-release enablement, exact draft inventory, one-time publication, immutable readback, and bounded Release and asset verification.
+    - Install both v1.1.3 package forms on the current Codex host and record dated discovery, routing, CLI, and Knowledge Selection smoke evidence.
+  rollback: Before immutable v1.1.3 publication, revert the recovery Merge Commit or issue a later corrective patch without moving or deleting the immutable v1.1.2 tag or replacing its assets. Retain every failed workflow, draft, and attestation artifact for diagnosis. After publication, never move the v1.1.3 tag or replace or delete immutable assets; publish any correction as a new patch release.
+  validation:
+    - Validate the exact Candidate and Verified Reviews, accepted Decision, both Knowledge selections and contexts, clean Evidence Provider run, source bindings, repository, project, history anchors, and Knowledge catalogs.
+    - Require focused and full tests, strict mypy, branch and changed-line coverage, Ruff check and format, license and dependency audit, deterministic double build, extracted package smoke, checksum, SPDX SBOM, and archive-boundary verification.
+    - Require the hosted eight-lane v1.1.3 matrix and stable Quality gate, including the Python 3.14 dependency-audit lane, to pass without failure, cancellation, or unexpected skip.
+    - Verify authorized repository rulesets, Actions policy, v* tag protection, immutable-release enablement, and successful immutable GET readback without adding privileged hosted credentials.
+    - Verify the real v1.1.3 tag run, exact six-asset draft, provenance and SBOM attestations, administrator publication, post-publish immutable state, checksums, and bounded remote verification.
+    - Install both v1.1.3 package forms on the current Codex host and record dated installation, routing, CLI, and Knowledge Selection smoke evidence.
