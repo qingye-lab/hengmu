@@ -1,0 +1,637 @@
+schema_version: '1.4'
+selection:
+- id: technology.agent-skills
+  version: 1.0.0
+  path: technology-profiles/agent-skills.md
+  sha256: 571c9390240cb651beeb118191a1e619b80bb50cea0fc9dc3a70011f748392ac
+  kind: technology-profile
+  maturity: standard
+  priority: required
+  reasons:
+  - 'Entry domain matches project: plugin-platform'
+  - Explicit caller include.
+  - 'Non-Golden exception: explicit caller include.'
+- id: decision.agent-evaluation-design
+  version: 1.0.0
+  path: decision-guides/agent-evaluation-design.md
+  sha256: 7f8d12324c1eafc7c9493f823d7b502eb587c55e4bf66a502deac75fcd36e1e7
+  kind: decision-guide
+  maturity: standard
+  priority: required
+  reasons:
+  - Explicit caller include.
+  - 'Non-Golden exception: explicit caller include.'
+- id: reference.secure-agent-tool-runtime
+  version: 1.0.0
+  path: reference-architectures/secure-agent-tool-runtime.md
+  sha256: 07963d327ca3dc7abb85d7fa4da41931ad376d7fd283ca259658105a205c101b
+  kind: reference-architecture
+  maturity: standard
+  priority: required
+  reasons:
+  - Explicit caller include.
+  - 'Non-Golden exception: explicit caller include.'
+- id: technology.a2a-protocol
+  version: 1.0.0
+  path: technology-profiles/a2a-protocol.md
+  sha256: 6957f28a0878b9bdc0a6ad0f2a88d3cbb09ee4605fe26da1eedcd3ff0ee40978
+  kind: technology-profile
+  maturity: standard
+  priority: required
+  reasons:
+  - Explicit caller include.
+  - 'Non-Golden exception: explicit caller include.'
+- id: technology.model-context-protocol
+  version: 1.0.0
+  path: technology-profiles/model-context-protocol.md
+  sha256: 48dec38289808c27a66f50489d796097870420b842d811048901f27cabde2f83
+  kind: technology-profile
+  maturity: standard
+  priority: required
+  reasons:
+  - Explicit caller include.
+  - 'Non-Golden exception: explicit caller include.'
+- id: technology.opentelemetry-genai
+  version: 1.0.0
+  path: technology-profiles/opentelemetry-genai.md
+  sha256: ee20bb9280198bd2219eb074480c6d1ee903e40fb59393b5b854d399a83b4d14
+  kind: technology-profile
+  maturity: standard
+  priority: required
+  reasons:
+  - Explicit caller include.
+  - 'Non-Golden exception: explicit caller include.'
+- id: domain.plugin-platform
+  version: 1.0.0
+  path: domains/plugin-platform/overview.md
+  sha256: b72a0e3b6959464b32c9a4d44b50baa40b4baf13b5b14f65f99d094f301bf58c
+  kind: domain
+  maturity: standard
+  priority: required
+  reasons:
+  - 'Decision intent matches: plugin-runtime-topology.'
+  - 'Non-Golden exception: exact decision-intent match.'
+  - Project profile or detected facts require plugin-platform.
+- id: foundation.evolutionary-architecture
+  version: 1.0.0
+  path: foundations/evolutionary-architecture.md
+  sha256: b9b125fa34bdeb346145f926210f7052d60d8f3b5f4e225cf1aa0fdb6a7888e5
+  kind: foundation
+  maturity: standard
+  priority: required
+  reasons:
+  - 'Non-Golden exception: skill-required contract dependency.'
+  - Required foundation or lens for architecture-solution-advisor.
+- id: foundation.proportional-design
+  version: 1.0.0
+  path: foundations/proportional-design.md
+  sha256: ccfa63d523fab3503c47dbf73fc7a9ae85c7fc516856bcf422322c0d92a409df
+  kind: foundation
+  maturity: standard
+  priority: required
+  reasons:
+  - 'Non-Golden exception: skill-required contract dependency.'
+  - Required foundation or lens for architecture-solution-advisor.
+- id: foundation.quality-attributes
+  version: 1.0.0
+  path: foundations/quality-attributes.md
+  sha256: 50d92ab7563d70605408ba4592d9445f79f6eb0cecb50195471b56e42418b680
+  kind: foundation
+  maturity: standard
+  priority: required
+  reasons:
+  - 'Non-Golden exception: skill-required contract dependency.'
+  - Required foundation or lens for architecture-solution-advisor.
+- id: foundation.technology-selection
+  version: 1.0.0
+  path: foundations/technology-selection.md
+  sha256: ce43c17d29cc79ad65c0f1a551a938f3fec642d1e75070b98d4aa3336ddf882d
+  kind: foundation
+  maturity: standard
+  priority: required
+  reasons:
+  - 'Non-Golden exception: skill-required contract dependency.'
+  - Required foundation or lens for architecture-solution-advisor.
+- id: foundation.tradeoff-analysis
+  version: 1.0.0
+  path: foundations/tradeoff-analysis.md
+  sha256: 058c9756ba4d9306f42e0fb49365aff3564f3545e103c05812040ce2c9f8b9d5
+  kind: foundation
+  maturity: standard
+  priority: required
+  reasons:
+  - 'Non-Golden exception: skill-required contract dependency.'
+  - Required foundation or lens for architecture-solution-advisor.
+- id: domain.test-automation-platform
+  version: 1.0.0
+  path: domains/test-automation-platform/overview.md
+  sha256: 7ce2621239bad831f4a6689a1718b5dd1cdbbf1d6d2e3bb9a6d043457a70e016
+  kind: domain
+  maturity: standard
+  priority: required
+  reasons:
+  - 'Non-Golden exception: profile-required domain has no declared Golden replacement.'
+  - Project profile or detected facts require test-automation-platform.
+- id: style.plugin-architecture
+  version: 1.0.0
+  path: architecture-styles/plugin-architecture.md
+  sha256: 9d72e896b0154e8ee979474c6d47579889705c751a32a172f4b1b72bdef13a8a
+  kind: architecture-style
+  maturity: standard
+  priority: required
+  reasons:
+  - 'Decision intent matches: plugin-runtime-topology.'
+  - 'Non-Golden exception: exact decision-intent match.'
+excluded:
+- id: anti-pattern.cache-without-invalidation
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: anti-pattern.distributed-monolith
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: anti-pattern.event-sourcing-for-crud
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: anti-pattern.multi-agent-for-workflow
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: anti-pattern.premature-generic-platform
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: anti-pattern.queue-as-default
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: anti-pattern.redis-everywhere
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: anti-pattern.repository-layer-everywhere
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: anti-pattern.shared-database-microservices
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: anti-pattern.websocket-for-rare-updates
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: case-study.queue-worker-before-workflow
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: case-study.server-cache-not-local-first
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: case-study.single-agent-is-sufficient
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: case-study.small-team-modular-saas
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: case-study.sqlite-is-appropriate
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: case-study.sse-task-progress
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: decision.agent-orchestration-selection
+  reason: Architecture solution advisor defaults to Golden discretionary knowledge;
+    this standard entry has no explicit exception.
+- id: decision.build-vs-adopt
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: decision.cache-strategy
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: decision.client-data-model-selection
+  reason: Architecture solution advisor defaults to Golden discretionary knowledge;
+    this standard entry has no explicit exception.
+- id: decision.data-loading-and-refresh
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: decision.data-store-selection
+  reason: Architecture solution advisor defaults to Golden discretionary knowledge;
+    this standard entry has no explicit exception.
+- id: decision.database-selection
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: decision.integration-style-selection
+  reason: Architecture solution advisor defaults to Golden discretionary knowledge;
+    this standard entry has no explicit exception.
+- id: decision.layered-vs-modular-monolith
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: decision.local-first-vs-server-first
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: decision.message-system-selection
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: decision.monolith-vs-microservices
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: decision.optimistic-vs-pessimistic-update
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: decision.polling-vs-sse-vs-websocket
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: decision.relational-vs-document-vs-graph
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: decision.request-vs-background-job
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: decision.rest-vs-graphql-vs-grpc
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: decision.single-agent-vs-multi-agent
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: decision.ssr-vs-csr-vs-ssg
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: decision.state-management
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: decision.sync-vs-async
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: decision.system-style-selection
+  reason: Architecture solution advisor defaults to Golden discretionary knowledge;
+    this standard entry has no explicit exception.
+- id: decision.workflow-vs-agent
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: domain.ai-agent
+  reason: Architecture solution advisor defaults to Golden discretionary knowledge;
+    this standard related entry has no explicit exception.
+- id: domain.backend-api
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: domain.cloud-native-platform
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: domain.data-platform
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: domain.desktop-application
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: domain.financial-trading
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: domain.identity
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: domain.iot-edge
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: domain.local-first-application
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: domain.mobile
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: domain.multi-tenant-saas
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: domain.real-time-system
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: domain.search-recommendation
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: domain.streaming-media
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: domain.web-frontend
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: foundation.architecture-principles
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: foundation.aws-well-architected
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: foundation.azure-well-architected
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: foundation.compatibility
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: foundation.data-ownership
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: foundation.evidence-reasoning
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: foundation.flexibility
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: foundation.functional-suitability
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: foundation.google-cloud-well-architected
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: foundation.interaction-capability
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: foundation.maintainability
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: foundation.performance-efficiency
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: foundation.quality-attribute-scenario
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: foundation.reliability
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: foundation.safety
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: foundation.security
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: foundation.system-boundaries
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: migration.batch-to-incremental-stream
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: migration.cache-introduction
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: migration.client-only-to-hybrid-rendering
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: migration.direct-write-to-outbox
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: migration.expand-contract-migration
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: migration.internal-extension-to-plugin
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: migration.layered-monolith-to-modular
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: migration.offset-to-cursor-pagination
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: migration.polling-to-sse
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: migration.queue-to-durable-workflow
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: migration.server-first-to-offline-capable
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: migration.server-first-to-offline-first
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: migration.shared-database-to-owned-data
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: migration.shared-saas-to-cells
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: migration.single-region-to-multi-region
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: migration.strangler-migration
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: migration.sync-to-event-integration
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: migration.synchronous-to-background-job
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: pattern.anti-corruption-layer
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: pattern.api-aggregation
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: pattern.api-gateway
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: pattern.backend-for-frontend
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: pattern.branch-by-abstraction
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: pattern.bulkhead
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: pattern.cache-aside
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: pattern.change-data-capture
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: pattern.circuit-breaker
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: pattern.compensating-transaction
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: pattern.cqrs-event-sourcing
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: pattern.cursor-pagination
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: pattern.dead-letter-replay
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: pattern.expand-contract
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: pattern.feature-flag
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: pattern.idempotency-key
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: pattern.inbox
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: pattern.leader-election
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: pattern.lease
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: pattern.load-shedding
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: pattern.materialized-view
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: pattern.outbox
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: pattern.read-replica
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: pattern.retry-timeout
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: pattern.retry-with-backoff
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: pattern.saga
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: pattern.schema-registry
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: pattern.sharding
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: pattern.stale-while-revalidate
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: pattern.strangler
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: reference.cell-based-saas
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: reference.cloud-native-service-platform
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: reference.durable-agent-workflow
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: reference.event-driven-integration
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: reference.modular-monolith-service
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: reference.multi-tenant-knowledge-base
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: reference.multi-tenant-saas
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: reference.offline-first-mobile
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: reference.react-fastapi-postgresql
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: reference.real-time-stream-processing
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: reference.real-time-task-status
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: reference.retrieval-augmented-agent
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: reference.secure-plugin-host
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: reference.server-first-mobile-client
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: reference.web-queue-worker-ai
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: style.actor-model
+  reason: Architecture solution advisor defaults to Golden discretionary knowledge;
+    this standard entry has no explicit exception.
+- id: style.cell-based
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: style.clean-architecture
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: style.data-mesh
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: style.durable-workflow
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: style.event-driven
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: style.hexagonal
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: style.layered-monolith
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: style.microservices
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: style.modular-monolith
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: style.multi-tenant-saas
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: style.offline-first
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: style.pipe-and-filter
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: style.serverless
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: style.space-based
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: style.web-queue-worker
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.apache-kafka
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.apache-pulsar
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.archunit
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.aspnet-core
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.astro
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.aws-sqs
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.aws-step-functions
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.azure-durable-functions
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.caddy
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.dapr
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.dapr-workflow
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.dependency-cruiser
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.django
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.docker
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.elasticsearch-opensearch
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.fastapi
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.google-workflows
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.import-linter
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.kubernetes
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.langgraph
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.microsoft-agent-framework
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.milvus
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.mongodb
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.mysql
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.nats
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.neo4j
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.nestjs
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.nextjs
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.nginx
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.openai-agents-sdk
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.opentelemetry
+  reason: Architecture solution advisor defaults to Golden discretionary knowledge;
+    this standard related entry has no explicit exception.
+- id: technology.pgvector
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.postgresql
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.prometheus
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.rabbitmq
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.react
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.redis
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.redis-streams
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.redis-valkey
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.service-mesh
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.spring-boot
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.spring-modulith
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.sqlite
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.temporal
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.timescaledb
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.vite
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+- id: technology.vue
+  reason: No project fact, profile domain, task trigger, or skill rule selected it.
+inputs:
+  skill: architecture-solution-advisor
+  task: Decide whether to retain the verified Hengmu v1.2 AI Knowledge 2026 six-entry
+    upgrade and deterministic selection boundaries without changing public Skills,
+    schemas, Rule Packs, Evidence Providers, selector behavior, or benchmark behavior,
+    and without claiming model behavior improvement.
+  facts_sha256: f5e15ff2a292ddadf54d923bf682936779fa5922b10a64155a7ca7ecd1eaed64
+  maintainer_mode: false
+  includes:
+  - decision.agent-evaluation-design
+  - reference.secure-agent-tool-runtime
+  - technology.a2a-protocol
+  - technology.agent-skills
+  - technology.model-context-protocol
+  - technology.opentelemetry-genai
+  excludes: []
+  decision_intents:
+  - plugin-runtime-topology
+  project_commit: a64b1c389ffdd83b03f059037b58aa72de6bec7a
+  profile_sha256: 987d5205272918d4d17ac77f5d5908063d8715fca6dd8526c45b91f242a11f52
+budget:
+  maximum_entries: 24
+  selected_entries: 14
+  per_kind:
+    foundation:
+      maximum_entries: 6
+      selected_entries: 5
+    domain:
+      maximum_entries: 10
+      selected_entries: 2
+    decision-guide:
+      maximum_entries: 3
+      selected_entries: 1
+    architecture-style:
+      maximum_entries: 2
+      selected_entries: 1
+    pattern:
+      maximum_entries: 2
+      selected_entries: 0
+    technology-profile:
+      maximum_entries: 4
+      selected_entries: 4
+    reference-architecture:
+      maximum_entries: 1
+      selected_entries: 1
+    migration-guide:
+      maximum_entries: 1
+      selected_entries: 0
+    anti-pattern:
+      maximum_entries: 1
+      selected_entries: 0
+    case-study:
+      maximum_entries: 1
+      selected_entries: 0
+selector:
+  contract_version: '1.1'
+  source:
+    repository: https://github.com/qingye-lab/hengmu
+    commit: 417f3c9586c7a0b35f1e7838ae6ae646c4702e0b
+    plugin_version: 1.2.0
+    plugin_manifest_sha256: fdb52e0b5f9fc64e5928e865e266ac6a635b1e6a67d6952f8ff1d69bf2e33c0d
+  implementation_inputs:
+  - path: requirements-runtime.lock
+    sha256: 864b51ef5337742809db5eb96f2edd602799d364d4e076072d4b28f6f562cecb
+  - path: resources/scripts/select_knowledge.py
+    sha256: 5c01431bbffd79d79bb5d15eb21f39fb8c8ecb9e81063896750bada3b3f74778
+  - path: resources/scripts/build_project_profile.py
+    sha256: 08722272bcc5be14c13881752e5354fdac92dde825571667bab6f09c73027aa1
+  - path: resources/scripts/knowledge_model.py
+    sha256: 72d63011a69b3a0519c403dfd7f8ac5c065f46e501909b62c4669a2976a2bd5f
+  - path: resources/schemas/repository-facts.schema.json
+    sha256: d4e95057ac7c0497f1f19d47bffe8d3c68dc165c38b2dee7f56e71b4c4eebd8d
+  - path: resources/schemas/project-profile.schema.json
+    sha256: 5108edc799679eb04e5a1fccf41324d9de295e4fdf78f2b8d0f8cddd72de96a4
+  - path: resources/schemas/knowledge-entry.schema.json
+    sha256: 3d803431f729c580e860f0bfb0fed1d59e9eb37678fd6ec45f6dbb3b86f2f69a
+  - path: resources/schemas/knowledge-manifest.schema.json
+    sha256: 397c1d77934bfb12176bedb35ecc16d1a927a2ad23163e9cea19cd2251db223d
+  - path: resources/schemas/knowledge-context.schema.json
+    sha256: 01b8faec0add535eaeb099c8153804c21ffc39146397d3c04ce98cc4320425b9
+  - path: resources/schemas/knowledge-selection.schema.json
+    sha256: 600347c4ad9c0958f1cacdaa8550bc9e90fe706d6df7fab2938f1287b8c10331
+  - path: resources/schemas/selector-source.schema.json
+    sha256: 465a0f92b2644895b3ab272b5b640c21e29bb9dd311d6253af3e57b6ac13c0a7
+  implementation_bundle_sha256: a44548d9ed4b7bc338a5afec4edbaa26572acbbd13ef37fd09919d0bba3411fd
+  knowledge_manifest_sha256: 18e1937c39046e15aabd67af33af5536664de571a38137497e723022559973af
+  knowledge_tree_sha256: d7594f7bf5de58634e36aee06cacdc4f34f8b763a46a11c70ff1a7b8c8195596
+  selection_policy_version: '1.0'
+  replay_mode: creation-time-lock
+result_sha256: 4b0ed23c1b669d28174718eb2b2269d03ea76d04ef52e40f0a60ae609632099f

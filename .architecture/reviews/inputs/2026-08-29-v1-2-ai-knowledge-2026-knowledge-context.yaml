@@ -1,0 +1,102 @@
+schema_version: '1.1'
+selection_lock_sha256: e388de9a996c7e3dfd4f5d7b8cfaf3d5c33c8816a341c9577594b0e5b44aff89
+selection_result_sha256: c087ac64c589e05f76c65145cda62bcb9f1830d31e65474cbecb2be84ac6ab03
+disclosure:
+  order:
+  - operational-kernel
+  - project-context
+  - run-context
+  - source-evidence
+  knowledge_mode: validated-compact-projection
+  source_binding: selection-entry-sha256
+  full_source_required_for:
+  - candidate-driving-claim
+  - ambiguity
+  - volatile-fact
+  - explicit-source-review
+selected:
+- id: foundation.data-ownership
+  path: foundations/data-ownership.md
+  sha256: 260f240ec9782f5a42a68481652912532cfcd6a0b07fdc5366d44388cc3d0204
+  priority: required
+  reasons:
+  - Required foundation or lens for project-architecture-audit.
+- id: foundation.evidence-reasoning
+  path: foundations/evidence-reasoning.md
+  sha256: e3c370e04b8a9be5e64ea0d107281043652b1cdba3393fb61b57efd77262650f
+  priority: required
+  reasons:
+  - Required foundation or lens for project-architecture-audit.
+- id: foundation.proportional-design
+  path: foundations/proportional-design.md
+  sha256: ccfa63d523fab3503c47dbf73fc7a9ae85c7fc516856bcf422322c0d92a409df
+  priority: required
+  reasons:
+  - Required foundation or lens for project-architecture-audit.
+- id: foundation.quality-attributes
+  path: foundations/quality-attributes.md
+  sha256: 50d92ab7563d70605408ba4592d9445f79f6eb0cecb50195471b56e42418b680
+  priority: required
+  reasons:
+  - Required foundation or lens for project-architecture-audit.
+- id: foundation.system-boundaries
+  path: foundations/system-boundaries.md
+  sha256: a326964ec74303e0f08f3e7207e4836a0ff04c93c7f8516e6190b47925ec06db
+  priority: required
+  reasons:
+  - Required foundation or lens for project-architecture-audit.
+- id: domain.plugin-platform
+  path: domains/plugin-platform/overview.md
+  sha256: b72a0e3b6959464b32c9a4d44b50baa40b4baf13b5b14f65f99d094f301bf58c
+  priority: required
+  reasons:
+  - Project profile or detected facts require plugin-platform.
+- id: domain.test-automation-platform
+  path: domains/test-automation-platform/overview.md
+  sha256: 7ce2621239bad831f4a6689a1718b5dd1cdbbf1d6d2e3bb9a6d043457a70e016
+  priority: required
+  reasons:
+  - Project profile or detected facts require test-automation-platform.
+- id: technology.agent-skills
+  path: technology-profiles/agent-skills.md
+  sha256: 571c9390240cb651beeb118191a1e619b80bb50cea0fc9dc3a70011f748392ac
+  priority: recommended
+  reasons:
+  - 'Entry domain matches project: plugin-platform'
+  - 'Task matches trigger(s): allowed-tools, progressive-disclosure, skill.md'
+- id: reference.secure-agent-tool-runtime
+  path: reference-architectures/secure-agent-tool-runtime.md
+  sha256: 07963d327ca3dc7abb85d7fa4da41931ad376d7fd283ca259658105a205c101b
+  priority: recommended
+  reasons:
+  - 'Task matches trigger(s): complete-mediation, tool-sandbox'
+- id: decision.agent-evaluation-design
+  path: decision-guides/agent-evaluation-design.md
+  sha256: 7f8d12324c1eafc7c9493f823d7b502eb587c55e4bf66a502deac75fcd36e1e7
+  priority: recommended
+  reasons:
+  - 'Task matches trigger(s): agent-evaluation'
+- id: technology.a2a-protocol
+  path: technology-profiles/a2a-protocol.md
+  sha256: 6957f28a0878b9bdc0a6ad0f2a88d3cbb09ee4605fe26da1eedcd3ff0ee40978
+  priority: recommended
+  reasons:
+  - 'Task matches trigger(s): a2a'
+- id: technology.model-context-protocol
+  path: technology-profiles/model-context-protocol.md
+  sha256: 48dec38289808c27a66f50489d796097870420b842d811048901f27cabde2f83
+  priority: recommended
+  reasons:
+  - 'Task matches trigger(s): mcp'
+- id: technology.opentelemetry-genai
+  path: technology-profiles/opentelemetry-genai.md
+  sha256: ee20bb9280198bd2219eb074480c6d1ee903e40fb59393b5b854d399a83b4d14
+  priority: recommended
+  reasons:
+  - 'Task matches trigger(s): genai'
+- id: domain.ai-agent
+  path: domains/ai-agent/overview.md
+  sha256: c9d283d3d804f06b66eb80520a6f09c5e0ddf95900958625b2e4101f975ad4dd
+  priority: optional
+  reasons:
+  - One-hop relation from reference.secure-agent-tool-runtime.

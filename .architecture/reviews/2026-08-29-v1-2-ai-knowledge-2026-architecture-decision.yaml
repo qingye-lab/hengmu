@@ -1,0 +1,296 @@
+schema_version: '1.2'
+decision:
+  id: ADR-HENGMU-V1.2-AI-KNOWLEDGE-2026-001
+  source_review: hengmu-20260829-v1-2-ai-knowledge-2026-project-verified
+  source_review_sha256: d52f67e4107dd658b8ed9fbb1c7cc83c34d41b1d056ffe6d47cdf5215835692b
+  decided_at: '2026-08-29T09:03:36Z'
+  decision_makers: [architecture-owner]
+  status: accepted
+  supersedes: ADR-HENGMU-V1.1.3-GH-PUBLICATION-VERIFICATION-001
+  knowledge_selection_path: .architecture/reviews/inputs/2026-08-29-v1-2-ai-knowledge-2026-decision-knowledge-selection.yaml
+  knowledge_selection_sha256: e0944c546765886914c62bd347bd0a5c493dfed9c2edc601ad3828587bc6fd57
+problem:
+  quality_attributes:
+    - compatibility
+    - deterministic-enforcement
+    - maintainability
+    - reproducibility
+    - safety
+    - traceability
+  constraints:
+    - Accept only the independently verified six-entry Knowledge and deterministic selection coverage expansion at reviewed commit 5c4723385b1dd651f45b1d5268da1843e75f6dea.
+    - Limit v1.2 claims to Knowledge content and deterministic selection coverage; do not claim improved model behavior, benchmark quality, production fitness, security certification, or protocol conformance.
+    - Keep MCP and OpenTelemetry GenAI on 45-day review windows and A2A, Agent Skills, agent evaluation design, and secure agent-tool runtime on 90-day review windows.
+    - Preserve official or maintainer-snapshot source bindings, primary-research support where declared, Standard curation maturity, and explicit non-applicability, authority, privacy, version, and freshness boundaries.
+    - Do not add SKILL_REQUIRED behavior or change the selector algorithm, public Skills/frontmatter, schemas, Rule Packs, Evidence Providers, release workflow, publication algorithm, benchmark schemas, cases, scoring, or runtime behavior.
+    - Preserve the source commit and selector-anchor ancestry and require hosted, packaging, immutable-release, attestation, and current-host gates before v1.2 release completion.
+    - Preserve the failed fixed-date Evidence Run as causal negative evidence only; never treat it as passed tool evidence or rewrite its status.
+  finding_ids: []
+  assumptions:
+    - The independently verified source commit and selector anchor remain the intended v1.2 implementation while external release gates are pending.
+    - GitHub remains the authorized hosted CI, draft, attestation, and immutable Release environment without adding privileged workflow credentials.
+  known_facts:
+    - The V2 Verified Review at raw SHA d52f67e4107dd658b8ed9fbb1c7cc83c34d41b1d056ffe6d47cdf5215835692b and canonical SHA 3011e97b73a27650ffe1789e24b10df6a78497030c72205e959690295d6ca4b0 reports zero Findings across 31 Rule rows, six critical flows, fourteen audit Knowledge entries, and all 29 changed paths at commit 5c4723385b1dd651f45b1d5268da1843e75f6dea.
+    - The clean passed test-results Evidence Provider at reviewed commit 5c4723385b1dd651f45b1d5268da1843e75f6dea records 222 passing tests and 106 passing subtests in JUnit 328 with dirty_tree and dirty_tree_after both false.
+    - Six schema-valid Standard Knowledge entries bind official standards or maintainer snapshots and, for evaluation and secure runtime guidance, declared primary research; MCP and OTel GenAI use 45-day review windows while the other four use 90 days.
+    - The ten-pack Markdown Knowledge tree contains 211 entries at content version 2.1.0, and deterministic tests cover exact positive triggers, generic and negated exclusions, cross-protocol isolation, kind-budget accounting, advisor policy, and first-stale-day boundaries.
+    - Native and portable manifests, CLI, benchmark default, Selection template, user documentation, and selector metadata align to public version 1.2.0 while selector source is anchored to implementation commit 417f3c9586c7a0b35f1e7838ae6ae646c4702e0b.
+    - The preserved failed run test-results-20260829t074706168606z-b36be491ff59 recorded four deterministic failures caused by obsolete explicit test dates; the current source corrects those fixtures and a distinct clean run passes the complete suite.
+    - The 29-path diff does not modify public Skills, schemas, Rule Packs, Evidence Provider definitions, GitHub workflows, release publication code, benchmark schemas, benchmark cases, or benchmark scoring.
+    - Decision Selection uses the project-stable control-plane facts/profile required by Decision schema 1.2 validation; the accepted implementation snapshot is separately and exactly bound by the Verified Review raw hash and reviewed commit.
+  unknowns:
+    - The hosted eight-lane v1.2.0 matrix, stable Quality gate, real tag workflow, exact-six draft, provenance and SPDX attestations, immutable publication, and post-publication verification have not been observed for the reviewed commit.
+    - Current-host installation, routing, CLI, and Knowledge Selection smoke have not been observed for built v1.2.0 packages.
+    - Remote repository rulesets, Actions policy, v* tag protection, immutable-release enablement, and administrator readback remain unverified for v1.2.
+    - No model-behavior evaluation was performed for v1.2, so model precision, recall, stability, decision accuracy, and production behavior remain unknown and outside this release claim.
+    - Upstream protocol, specification, semantic-convention, security-guidance, and research availability can change after the bound review dates and requires the declared freshness review.
+knowledge_snapshot:
+  - {id: technology.agent-skills, version: 1.0.0, sha256: 571c9390240cb651beeb118191a1e619b80bb50cea0fc9dc3a70011f748392ac}
+  - {id: decision.agent-evaluation-design, version: 1.0.0, sha256: 7f8d12324c1eafc7c9493f823d7b502eb587c55e4bf66a502deac75fcd36e1e7}
+  - {id: reference.secure-agent-tool-runtime, version: 1.0.0, sha256: 07963d327ca3dc7abb85d7fa4da41931ad376d7fd283ca259658105a205c101b}
+  - {id: technology.a2a-protocol, version: 1.0.0, sha256: 6957f28a0878b9bdc0a6ad0f2a88d3cbb09ee4605fe26da1eedcd3ff0ee40978}
+  - {id: technology.model-context-protocol, version: 1.0.0, sha256: 48dec38289808c27a66f50489d796097870420b842d811048901f27cabde2f83}
+  - {id: technology.opentelemetry-genai, version: 1.0.0, sha256: ee20bb9280198bd2219eb074480c6d1ee903e40fb59393b5b854d399a83b4d14}
+  - {id: domain.plugin-platform, version: 1.0.0, sha256: b72a0e3b6959464b32c9a4d44b50baa40b4baf13b5b14f65f99d094f301bf58c}
+  - {id: foundation.evolutionary-architecture, version: 1.0.0, sha256: b9b125fa34bdeb346145f926210f7052d60d8f3b5f4e225cf1aa0fdb6a7888e5}
+  - {id: foundation.proportional-design, version: 1.0.0, sha256: ccfa63d523fab3503c47dbf73fc7a9ae85c7fc516856bcf422322c0d92a409df}
+  - {id: foundation.quality-attributes, version: 1.0.0, sha256: 50d92ab7563d70605408ba4592d9445f79f6eb0cecb50195471b56e42418b680}
+  - {id: foundation.technology-selection, version: 1.0.0, sha256: ce43c17d29cc79ad65c0f1a551a938f3fec642d1e75070b98d4aa3336ddf882d}
+  - {id: foundation.tradeoff-analysis, version: 1.0.0, sha256: 058c9756ba4d9306f42e0fb49365aff3564f3545e103c05812040ce2c9f8b9d5}
+  - {id: domain.test-automation-platform, version: 1.0.0, sha256: 7ce2621239bad831f4a6689a1718b5dd1cdbbf1d6d2e3bb9a6d043457a70e016}
+  - {id: style.plugin-architecture, version: 1.0.0, sha256: 9d72e896b0154e8ee979474c6d47579889705c751a32a172f4b1b72bdef13a8a}
+options:
+  - id: keep-current
+    title: Retain the verified bounded v1.2 Knowledge and selection upgrade
+    complexity_tier: keep-current
+    architecture_styles: [style.plugin-architecture]
+    patterns: []
+    technologies:
+      - technology.agent-skills
+      - technology.a2a-protocol
+      - technology.model-context-protocol
+      - technology.opentelemetry-genai
+    benefits:
+      - 'Preserves the smallest verified release: six versioned entries, exact freshness windows, deterministic selection coverage, and aligned 1.2.0 package identity.'
+      - Keeps volatile protocol and semantic-convention facts explicitly versioned and reviewable without forcing them into every AI audit.
+      - Retains current public Skills, schemas, selector behavior, Rule Packs, Providers, benchmarks, release state machine, and runtime network boundary.
+      - Keeps all model-behavior and production-fitness claims outside v1.2 until separate repeated behavioral evaluation exists.
+    liabilities:
+      - The Knowledge entries require ongoing 45-day or 90-day source review and may become stale as upstream contracts evolve.
+      - Deterministic selection coverage proves routing and exclusion behavior, not whether a model will apply the selected guidance correctly.
+    assumptions:
+      - External hosted, package, publication, and host-smoke gates can validate the reviewed tree without another source change.
+    quality_attribute_effects:
+      - {attribute: compatibility, effect: improves, rationale: 'Version and package identities advance together while public Skills, schemas, and historical readability remain unchanged.'}
+      - {attribute: deterministic-enforcement, effect: improves, rationale: 'Exact triggers, exclusions, budgets, advisor policy, and freshness boundaries are executable and hash-bound.'}
+      - {attribute: maintainability, effect: improves, rationale: 'Each volatile topic has one bounded entry, source map, version range, review window, and non-applicability boundary.'}
+      - {attribute: reproducibility, effect: improves, rationale: 'Pinned entry bytes, Selector Runtime inputs, and deterministic positive and negative cases reproduce the same routing outcome.'}
+      - {attribute: safety, effect: improves, rationale: 'Authority, consent, sensitive telemetry, sandbox, and evaluation claims remain explicitly bounded rather than inferred from protocol names.'}
+      - {attribute: traceability, effect: improves, rationale: 'Source, selector, facts, selections, Provider, Candidate, V2 verification, Decision, and later release evidence remain separately bound.'}
+    business_fit: Adds the requested current AI architecture knowledge without expanding Hengmu into a hosted runtime, protocol implementation, or model-quality product claim.
+    team_fit: Uses the existing schema, selector, tests, and governance workflows without creating a new subsystem for a single maintainer.
+    evolution_fit: Freshness windows and pinned official snapshots allow later focused refreshes or superseding entries without changing public workflow authority.
+    implementation_complexity: low
+    operational_complexity: low
+    migration_risk: low
+    reversibility: easy
+    cost: low
+    technical_maturity: stable
+    lock_in: low
+    tradeoff_scores: {business_fit: 2, quality_fit: 2, team_fit: 2, implementation: 2, operations: 1, migration: 2, reversibility: 2, cost: 2, maturity: 1, lock_in: 1, evolution: 2}
+    rejected_reasons: []
+  - id: defer-release
+    title: Retain the implementation but defer v1.2 release
+    complexity_tier: low
+    architecture_styles: [style.plugin-architecture]
+    patterns: []
+    technologies:
+      - technology.agent-skills
+      - technology.a2a-protocol
+      - technology.model-context-protocol
+      - technology.opentelemetry-genai
+    benefits:
+      - Avoids publishing until more upstream source retrieval or behavioral evidence is available.
+      - Preserves the verified source for a later release without broadening current claims.
+    liabilities:
+      - Delays schema-valid and deterministically selected Knowledge whose bounded claims already have zero verified Findings.
+      - Additional waiting does not itself produce hosted, behavioral, source-freshness, or host compatibility evidence.
+    assumptions:
+      - Deferral will produce a concrete evidence gain rather than only calendar delay.
+    quality_attribute_effects:
+      - {attribute: compatibility, effect: neutral, rationale: 'No release means no consumer change, but also no delivery of the aligned 1.2 package.'}
+      - {attribute: deterministic-enforcement, effect: neutral, rationale: 'The verified selection tests remain unchanged whether release is deferred or not.'}
+      - {attribute: maintainability, effect: degrades, rationale: 'An indefinitely pending verified tree adds branch and freshness-management overhead without a defined new invariant.'}
+      - {attribute: reproducibility, effect: neutral, rationale: 'Deferral does not change the bound source, Selection Runtime, or deterministic test evidence.'}
+      - {attribute: safety, effect: neutral, rationale: 'The bounded entries and explicit non-authority limits remain unchanged while unpublished.'}
+      - {attribute: traceability, effect: neutral, rationale: 'The current governance chain remains available, but no additional evidence follows from deferral alone.'}
+    business_fit: Delays the requested upgrade despite a verified bounded implementation and no identified repair work.
+    team_fit: Adds coordination and freshness overhead to the single maintainer without defining a new acceptance threshold.
+    evolution_fit: Risks entry staleness before first publication unless deferral has an owned evidence target.
+    implementation_complexity: low
+    operational_complexity: medium
+    migration_risk: low
+    reversibility: easy
+    cost: medium
+    technical_maturity: stable
+    lock_in: low
+    tradeoff_scores: {business_fit: -1, quality_fit: 0, team_fit: -1, implementation: 2, operations: 0, migration: 2, reversibility: 2, cost: 0, maturity: 1, lock_in: 1, evolution: -1}
+    rejected_reasons:
+      - No verified defect or defined additional evidence target justifies indefinite deferral; external release gates already remain blocking.
+  - id: broaden-ai-runtime-contracts
+    title: Expand selector, public Skills, Rule Packs, Providers, and benchmark behavior in v1.2
+    complexity_tier: high
+    architecture_styles: [style.plugin-architecture]
+    patterns: []
+    technologies:
+      - technology.agent-skills
+      - technology.a2a-protocol
+      - technology.model-context-protocol
+      - technology.opentelemetry-genai
+    benefits:
+      - Could make more AI-specific guidance load automatically or add new enforcement and evaluation behavior in one release.
+      - Could couple the new entries to new runtime capabilities immediately.
+    liabilities:
+      - Violates the approved bounded scope and would mix Knowledge curation with public routing, policy, provider, schema, and benchmark changes.
+      - Requires new activation, compatibility, security, evaluation, packaging, and migration evidence not present in the Verified Review.
+      - Increases context, maintenance, and release risk without a confirmed Finding requiring the expansion.
+    assumptions:
+      - Broader automatic loading and runtime behavior are necessary despite no verified gap in the current contracts.
+    quality_attribute_effects:
+      - {attribute: compatibility, effect: degrades, rationale: 'Multiple public and persisted contracts would change without a separately reviewed migration.'}
+      - {attribute: deterministic-enforcement, effect: unknown, rationale: 'New selector and policy behavior has not been specified or tested.'}
+      - {attribute: maintainability, effect: degrades, rationale: 'One release would couple otherwise independent Knowledge, Skill, Rule, Provider, and benchmark responsibilities.'}
+      - {attribute: reproducibility, effect: unknown, rationale: 'No exact implementation, inputs, cases, or execution hashes exist for the proposed expanded behavior.'}
+      - {attribute: safety, effect: degrades, rationale: 'Automatic AI guidance or new execution surfaces would expand authority and context without matching evidence.'}
+      - {attribute: traceability, effect: degrades, rationale: 'The proposed broad changes have no Candidate, verified source bindings, or accepted migration evidence.'}
+    business_fit: Replaces a bounded Knowledge release with an unevidenced platform expansion.
+    team_fit: Adds multiple new ownership surfaces to a single maintainer.
+    evolution_fit: Couples fast-changing AI knowledge to public runtime behavior and makes focused refreshes harder.
+    implementation_complexity: high
+    operational_complexity: high
+    migration_risk: high
+    reversibility: difficult
+    cost: high
+    technical_maturity: unknown
+    lock_in: high
+    tradeoff_scores: {business_fit: -2, quality_fit: -2, team_fit: -2, implementation: -2, operations: -2, migration: -2, reversibility: -2, cost: -2, maturity: -2, lock_in: -2, evolution: -2}
+    rejected_reasons:
+      - The option violates the explicit forbidden scope and has no confirmed Finding, source contract, or independent verification supporting it.
+  - id: claim-model-behavior-improvement
+    title: Publish v1.2 as evidence of improved model behavior
+    complexity_tier: low
+    architecture_styles: [style.plugin-architecture]
+    patterns: []
+    technologies:
+      - technology.agent-skills
+      - technology.a2a-protocol
+      - technology.model-context-protocol
+      - technology.opentelemetry-genai
+    benefits:
+      - Would present a stronger user-facing release claim without running additional trials.
+    liabilities:
+      - Deterministic selection tests and a Python test suite do not measure model precision, recall, finding stability, decision accuracy, or production behavior.
+      - The claim would exceed the Verified Review, changelog, roadmap, and agent-evaluation Knowledge boundaries.
+    assumptions:
+      - Loading more relevant Knowledge necessarily improves model outcomes across models, surfaces, prompts, fixtures, and runtimes.
+    quality_attribute_effects:
+      - {attribute: compatibility, effect: neutral, rationale: 'The package bytes do not change, but the unsupported claim changes user expectations.'}
+      - {attribute: deterministic-enforcement, effect: degrades, rationale: 'A stochastic behavior conclusion would be inferred from deterministic routing tests.'}
+      - {attribute: maintainability, effect: degrades, rationale: 'An unsupported release claim creates later documentation and evidence reconciliation work.'}
+      - {attribute: reproducibility, effect: degrades, rationale: 'No repeated model run or complete evaluated-system identity can reproduce the claimed improvement.'}
+      - {attribute: safety, effect: degrades, rationale: 'Users could treat unmeasured guidance application as production or security evidence.'}
+      - {attribute: traceability, effect: degrades, rationale: 'No model, surface, harness, prompt, fixture, repetition, scorer, runtime, or execution hashes support the claim.'}
+    business_fit: Creates a stronger marketing statement at the cost of evidence integrity.
+    team_fit: Avoids evaluation work only by accepting an unsupported conclusion.
+    evolution_fit: Makes later measured regressions or mixed model results harder to reconcile with the release record.
+    implementation_complexity: low
+    operational_complexity: low
+    migration_risk: medium
+    reversibility: moderate
+    cost: low
+    technical_maturity: unknown
+    lock_in: medium
+    tradeoff_scores: {business_fit: -2, quality_fit: -2, team_fit: -1, implementation: 2, operations: 1, migration: -1, reversibility: 0, cost: 2, maturity: -2, lock_in: 0, evolution: -2}
+    rejected_reasons:
+      - No repeated model-behavior Evidence Run exists, so this option would convert deterministic routing coverage into an unsupported stochastic quality claim.
+selected_option: keep-current
+rationale: >-
+  The independently verified v1.2 implementation has zero Findings and is the
+  smallest compatible way to add the requested six current AI architecture
+  topics with explicit sources, versions, freshness, authority, privacy, and
+  non-applicability boundaries. Retaining it preserves the established plugin,
+  schema, selector, Rule, Provider, benchmark, packaging, and release contracts
+  while external gates remain blocking. Deferral has no defined evidence gain;
+  broad runtime expansion violates the approved scope; and a model-behavior
+  improvement claim has no repeated behavioral evidence. Because the source
+  Review has zero Findings and keep-current requires no remediation migration,
+  no remediation Plan is created. This Decision records retention and release
+  gates only; it does not authorize additional source implementation.
+revisit_triggers:
+  - Any selected entry reaches its 45-day or 90-day stale boundary without a source review, or an official protocol/specification snapshot changes materially.
+  - Deterministic positive, negative, budget, advisor-policy, context, repository, packaging, or compatibility validation fails for v1.2.
+  - A hosted matrix lane, stable Quality gate, tag workflow, exact-six draft, attestation, immutable publication, or current-host smoke gate fails.
+  - A future repeated behavioral evaluation shows the new Knowledge worsens precision, recall, stability, decision accuracy, forbidden recommendations, or over-design.
+  - A real consumer requires a public Skill, Rule Pack, Provider, selector, schema, or benchmark change not covered by this bounded Decision.
+acceptance_evidence:
+  - The architecture-owner explicitly authorizes this accepted keep-current Decision for the verified v1.2 Knowledge and deterministic selection coverage upgrade while forbidding model-behavior claims and scope expansion.
+  - The independent architecture-verifier V2 Review has raw SHA d52f67e4107dd658b8ed9fbb1c7cc83c34d41b1d056ffe6d47cdf5215835692b, canonical SHA 3011e97b73a27650ffe1789e24b10df6a78497030c72205e959690295d6ca4b0, zero Findings, and complete 31-rule, six-flow, fourteen-Knowledge coverage at commit 5c4723385b1dd651f45b1d5268da1843e75f6dea.
+  - The verifier is independent agent evidence at V2 and is not represented as human verification, V3 through V5, or independent GitHub approval identity separation.
+  - The clean passed Provider is separately hash-bound; the preserved b36be failed run remains causal negative evidence only and is never listed as passed tool evidence.
+  - Zero source Findings and the selected keep-current option require no remediation migration or Plan; hosted, package, publication, and host-smoke gates remain separate completion evidence.
+hard_eliminations:
+  - option_id: broaden-ai-runtime-contracts
+    rule: The approved v1.2 scope forbids selector, public Skill, schema, Rule Pack, Evidence Provider, benchmark behavior, release algorithm, and runtime authority expansion.
+    evidence:
+      - The Verified Review binds the actual 29-path diff and reports no changes to those public or runtime contracts.
+      - The architecture-owner acceptance explicitly retains the bounded Knowledge-only release scope.
+  - option_id: claim-model-behavior-improvement
+    rule: Deterministic selection and repository tests cannot establish stochastic model-behavior improvement.
+    evidence:
+      - The Verified Review and changelog limit v1.2 claims to Knowledge and deterministic selection coverage.
+      - No model, surface, harness, prompt, fixture, repeated-trial, scorer, or execution-log evidence is bound to this Decision.
+migration:
+  affected_paths:
+    - .codex-plugin/plugin.json
+    - CHANGELOG.md
+    - README.md
+    - README.zh-CN.md
+    - docs/compatibility-evidence/2026-08-29-hengmu-1.1.3.md
+    - docs/compatibility.md
+    - docs/comprehensive-review-implementation.md
+    - docs/host-compatibility.md
+    - docs/roadmap.md
+    - evals/knowledge-selection.yaml
+    - plugin.json
+    - resources/knowledge/decision-guides/agent-evaluation-design.md
+    - resources/knowledge/manifest.yaml
+    - resources/knowledge/reference-architectures/secure-agent-tool-runtime.md
+    - resources/knowledge/technology-profiles/a2a-protocol.md
+    - resources/knowledge/technology-profiles/agent-skills.md
+    - resources/knowledge/technology-profiles/model-context-protocol.md
+    - resources/knowledge/technology-profiles/opentelemetry-genai.md
+    - resources/scripts/architecture_tool.py
+    - resources/selector-source.json
+    - resources/templates/knowledge-selection.yaml
+    - scripts/run_behavior_benchmark.py
+    - tests/test_architecture_tool.py
+    - tests/test_cli_wrappers.py
+    - tests/test_constrained_target_architecture.py
+    - tests/test_package_plugin.py
+    - tests/test_repository_contract.py
+    - tests/test_review_execution.py
+    - tests/test_target_architecture.py
+  slices:
+    - No remediation source migration is authorized or required; preserve implementation commit 417f3c9586c7a0b35f1e7838ae6ae646c4702e0b, selector anchor 5c4723385b1dd651f45b1d5268da1843e75f6dea, and the Candidate, V2 Verified Review, Decision Selection/Context, accepted Decision, passed Provider, and causal failed Evidence as distinct bound ancestry.
+    - Commit the complete governance chain only after its hashes, current-runtime selections, contexts, source bindings, Decision, repository, project, history, change, and release gates validate; merge the governed branch with a Merge Commit rather than squash or rebase.
+    - Require the hosted eight-lane Python 3.11 through 3.14 matrix and stable Quality gate, then build both package formats twice, compare bytes, run extracted smoke, verify checksums, licenses, and SPDX SBOMs.
+    - Create an annotated v1.2.0 tag only after V4 release evidence is complete; require exact-six draft preparation, archive provenance and SBOM attestations, separately authorized immutable publication, readback, and bounded post-publication verification.
+    - Install both v1.2.0 package forms on the current Codex host and record dated discovery, routing, CLI, six-topic Knowledge Selection/Context, and negative-selection smoke evidence.
+  rollback: Before immutable v1.2.0 publication, revert the governed Merge Commit or issue a later corrective patch without rewriting history, moving the immutable v1.1.3 tag, or replacing its assets. Retain every failed workflow, Provider, draft, and attestation artifact for diagnosis. After publication, never move the v1.2.0 tag or replace or delete immutable assets; publish any correction as a new patch release.
+  validation:
+    - Validate the exact Candidate and Verified Reviews, accepted Decision, both audit and Decision Knowledge selections and contexts, passed Provider, causal failed Evidence identity, source bindings, repository, project, history anchors, and Knowledge catalogs.
+    - Require focused and full tests, strict mypy, runtime branch and changed-line coverage, Ruff check and format, dependency and license audit, deterministic double build, extracted package smoke, checksum, SPDX SBOM, and archive-boundary verification.
+    - Require the hosted eight-lane v1.2.0 matrix and stable Quality gate, including the Python 3.14 dependency-audit lane, to pass without failure, cancellation, or unexpected skip.
+    - Verify repository rulesets, Actions policy, v* tag protection, immutable-release enablement, exact draft inventory, and successful immutable GET readback without adding privileged hosted credentials.
+    - Verify the real v1.2.0 tag run, exact six-asset draft, provenance and SBOM attestations, administrator publication, immutable state, checksums, and bounded remote verification.
+    - Install both v1.2.0 package forms on the current Codex host and record dated installation, routing, CLI, and Knowledge Selection/Context smoke evidence.

@@ -1,0 +1,466 @@
+...................................F................................ [ 30%]
+............................F..................... [ 53%]
+..............................................................FF.......................................                                  [100%]
+=================================== FAILURES ===================================
+_ ArchitectureToolTests.test_legacy_review_migration_downgrades_trust_and_binds_inputs _
+
+self = <test_architecture_tool.ArchitectureToolTests testMethod=test_legacy_review_migration_downgrades_trust_and_binds_inputs>
+
+    def test_legacy_review_migration_downgrades_trust_and_binds_inputs(
+        self,
+    ) -> None:
+        config_root = self.init_project()
+        critical_flows = config_root / "critical-flows.md"
+        critical_flows.write_text(
+            "# Critical flows\n\n"
+            "## Durable save\n\n"
+            "A write must reach its authoritative owner exactly once.\n",
+            encoding="utf-8",
+        )
+        profile_path = config_root / "profile.yaml"
+        facts_path = config_root / "repository-facts.yaml"
+        selection = architecture_tool.select_knowledge(
+            facts_path,
+            profile_path=profile_path,
+            task="Migrate the project architecture review contract.",
+            skill="project-architecture-audit",
+            maximum_entries=16,
+        )
+        selection_path = config_root / "knowledge-selection.yaml"
+        self.write_yaml(selection_path, selection)
+        review_path = self.write_review()
+        migrated_path = config_root / "reviews" / "migrated-candidates.yaml"
+    
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "resources" / "scripts" / "migrate_artifacts.py"),
+                "--project",
+                str(self.root),
+                "--review",
+                str(review_path),
+                "--facts",
+                str(facts_path),
+                "--knowledge-selection",
+                str(selection_path),
+                "--output",
+                str(migrated_path),
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        migrated = architecture_tool.load_yaml(migrated_path)
+        self.assertEqual(migrated["schema_version"], "1.2")
+        self.assertEqual(migrated["review"]["verification_state"], "candidates")
+        self.assertTrue(
+            all(
+                finding["verification"]["status"] == "candidate"
+                for finding in migrated["findings"]
+            )
+        )
+        self.assertEqual(migrated["findings"][0]["status"], "open")
+        self.assertIn(
+            "Legacy conclusions were deliberately downgraded to candidates.",
+            migrated["limitations"],
+        )
+        architecture_tool.validate_review(
+            migrated_path,
+            rule_pack_ids=["project-core"],
+            strict_trust=True,
+            repository_root=self.root,
+        )
+    
+        resolved_source = architecture_tool.load_yaml(review_path)
+        resolved_source["review"]["id"] = "test-project-resolved-source"
+        resolved_source["findings"][0]["status"] = "resolved"
+        resolved_source_path = config_root / "reviews" / "resolved-source.yaml"
+        self.write_yaml(resolved_source_path, resolved_source)
+        resolved_migrated_path = config_root / "reviews" / "resolved-migrated.yaml"
+        resolved_result = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "resources" / "scripts" / "migrate_artifacts.py"),
+                "--project",
+                str(self.root),
+                "--review",
+                str(resolved_source_path),
+                "--facts",
+                str(facts_path),
+                "--knowledge-selection",
+                str(selection_path),
+                "--output",
+                str(resolved_migrated_path),
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(resolved_result.returncode, 0, resolved_result.stderr)
+        resolved_migrated = architecture_tool.load_yaml(resolved_migrated_path)
+        self.assertEqual(resolved_migrated["findings"][0]["status"], "resolved")
+    
+        overwrite_result = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "resources" / "scripts" / "migrate_artifacts.py"),
+                "--project",
+                str(self.root),
+                "--review",
+                str(review_path),
+                "--facts",
+                str(facts_path),
+                "--knowledge-selection",
+                str(selection_path),
+                "--output",
+                str(migrated_path),
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(overwrite_result.returncode, 2)
+        self.assertIn("Refusing to overwrite", overwrite_result.stderr)
+    
+        validation_sentinel = config_root / "reviews" / ".migration-validation.yaml"
+        validation_sentinel.write_text("preserve: user-owned\n", encoding="utf-8")
+        sentinel_output = config_root / "reviews" / "sentinel-migrated.yaml"
+        sentinel_result = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "resources" / "scripts" / "migrate_artifacts.py"),
+                "--project",
+                str(self.root),
+                "--review",
+                str(review_path),
+                "--facts",
+                str(facts_path),
+                "--knowledge-selection",
+                str(selection_path),
+                "--output",
+                str(sentinel_output),
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(sentinel_result.returncode, 2)
+        self.assertIn(
+            "Temporary validation path already exists", sentinel_result.stderr
+        )
+        self.assertEqual(
+            validation_sentinel.read_text(encoding="utf-8"),
+            "preserve: user-owned\n",
+        )
+        self.assertFalse(sentinel_output.exists())
+    
+        unsupported_assessment = copy.deepcopy(migrated)
+        unsupported_assessment["coverage"][0].update({"status": "assessed"})
+        unsupported_assessment["coverage"][0].pop("reason", None)
+        unsupported_path = config_root / "reviews" / "unsupported-coverage.yaml"
+        self.write_yaml(unsupported_path, unsupported_assessment)
+        with self.assertRaisesRegex(
+            architecture_tool.ArchitectureError,
+            "assessed coverage .* has no evidence",
+        ):
+            architecture_tool.validate_review(
+                unsupported_path,
+                rule_pack_ids=["project-core"],
+                strict_trust=True,
+                repository_root=self.root,
+            )
+    
+        stale_selection = copy.deepcopy(migrated)
+        stale_selection["selected_knowledge"][0]["sha256"] = "0" * 64
+        stale_path = config_root / "reviews" / "stale-selection.yaml"
+        self.write_yaml(stale_path, stale_selection)
+        with self.assertRaisesRegex(
+            architecture_tool.ArchitectureError,
+            "selected_knowledge does not match",
+        ):
+            architecture_tool.validate_review(
+                stale_path,
+                rule_pack_ids=["project-core"],
+                strict_trust=True,
+                repository_root=self.root,
+            )
+    
+        missing_flow = copy.deepcopy(migrated)
+        missing_flow["critical_flow_coverage"] = []
+        missing_flow_path = config_root / "reviews" / "missing-flow.yaml"
+        self.write_yaml(missing_flow_path, missing_flow)
+        with self.assertRaises(architecture_tool.ArchitectureError):
+            architecture_tool.validate_review(
+                missing_flow_path,
+                rule_pack_ids=["project-core"],
+                strict_trust=True,
+                repository_root=self.root,
+            )
+    
+        verified = copy.deepcopy(migrated)
+        verified["review"]["id"] = "test-project-12-verified"
+        verified["review"]["verification_state"] = "verified"
+        verified["review"]["reviewers"] = ["architecture-verifier"]
+        verified["review"]["verification_run"] = {
+            "id": "verification-12",
+            "surface": "pytest",
+            "started_at": "2026-07-28T09:59:00+00:00",
+            "completed_at": "2026-07-28T10:01:00+00:00",
+        }
+        verified["review"]["source_candidate"] = {
+            "path": migrated_path.relative_to(self.root).as_posix(),
+            "review_id": migrated["review"]["id"],
+            "sha256": architecture_tool.file_sha256(migrated_path),
+        }
+        verified["summary"]["confirmed"] = len(verified["findings"])
+        for finding in verified["findings"]:
+            finding["verification"] = {
+                "status": "confirmed",
+                "rationale": "Independent test verification confirmed the invariant.",
+            }
+        verified["critical_flow_coverage"] = [
+            {"id": "durable-save", "status": "assessed"}
+        ]
+        verified_path = config_root / "reviews" / "verified-12.yaml"
+        self.write_yaml(verified_path, verified)
+        architecture_tool.validate_review(verified_path)
+    
+>       _, knowledge = architecture_tool.validate_knowledge_tree(
+            ROOT / "resources" / "knowledge",
+            schema_root=ROOT / "resources" / "schemas",
+            today=date(2026, 8, 6),
+        )
+
+tests/test_architecture_tool.py:731: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+resources/scripts/knowledge_model.py:409: in validate_knowledge_tree
+    entry = validate_markdown_entry(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/Volumes/SUNSANG 1/Codex/hengmu/resources/knowledge/decision-guides/agent-evaluation-design.md')
+schema_root = PosixPath('/Volumes/SUNSANG 1/Codex/hengmu/resources/schemas')
+expected_kind = 'decision-guide', today = datetime.date(2026, 8, 6)
+
+    def validate_markdown_entry(
+        path: Path,
+        *,
+        schema_root: Path,
+        expected_kind: str,
+        today: date,
+    ) -> KnowledgeEntry:
+        metadata, body = parse_markdown_entry(path)
+        _validate_schema(
+            metadata,
+            schema_root / "knowledge-entry.schema.json",
+            path,
+        )
+        if metadata["kind"] != expected_kind:
+            raise KnowledgeError(
+                f"{path} declares kind {metadata['kind']!r}; expected {expected_kind!r}"
+            )
+        if not body.startswith("# "):
+            raise KnowledgeError(f"{path} body must start with one level-one title")
+        for section in REQUIRED_SECTIONS:
+            content = _section_content(body, section)
+            if content is None:
+                raise KnowledgeError(f"{path} is missing section '## {section}'")
+            if len(content) < 3:
+                raise KnowledgeError(f"{path} section '## {section}' is too shallow")
+        lowered = body.lower()
+        for marker in FORBIDDEN_MARKERS:
+            if marker.lower() in lowered:
+                raise KnowledgeError(f"{path} contains forbidden marker {marker!r}")
+        reviewed = metadata["last_reviewed"]
+        if isinstance(reviewed, str):
+            reviewed_on = date.fromisoformat(reviewed)
+        elif isinstance(reviewed, date):
+            reviewed_on = reviewed
+        else:
+            raise KnowledgeError(f"{path} last_reviewed must be a date")
+        if reviewed_on > today:
+>           raise KnowledgeError(
+                f"{path} last_reviewed {reviewed_on.isoformat()} is in the future"
+            )
+E           knowledge_model.KnowledgeError: /Volumes/SUNSANG 1/Codex/hengmu/resources/knowledge/decision-guides/agent-evaluation-design.md last_reviewed 2026-08-29 is in the future
+
+resources/scripts/knowledge_model.py:281: KnowledgeError
+______ CliWrapperTests.test_validate_knowledge_real_tree_and_invalid_root ______
+
+self = <test_cli_wrappers.CliWrapperTests testMethod=test_validate_knowledge_real_tree_and_invalid_root>
+
+    def test_validate_knowledge_real_tree_and_invalid_root(self) -> None:
+        code, stdout, stderr = invoke_main(
+            validate_knowledge,
+            ["--today", "2026-08-27"],
+        )
+>       self.assertEqual((code, stderr), (0, ""))
+E       AssertionError: Tuples differ: (2, 'Knowledge validation failed: /Volumes[127 chars]e\n') != (0, '')
+E       
+E       First differing element 0:
+E       2
+E       0
+E       
+E       + (0, '')
+E       - (2,
+E       -  'Knowledge validation failed: /Volumes/SUNSANG '
+E       -  '1/Codex/hengmu/resources/knowledge/decision-guides/agent-evaluation-design.md '
+E       -  'last_reviewed 2026-08-29 is in the future\n')
+
+tests/test_cli_wrappers.py:192: AssertionError
+_ ReviewExecutionRuntimeTests.test_knowledge_cache_is_content_bound_and_revalidates_changes _
+
+self = <test_review_execution.ReviewExecutionRuntimeTests testMethod=test_knowledge_cache_is_content_bound_and_revalidates_changes>
+
+    def test_knowledge_cache_is_content_bound_and_revalidates_changes(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            knowledge_root = root / "knowledge"
+            schema_root = root / "schemas"
+            shutil.copytree(ROOT / "resources" / "knowledge", knowledge_root)
+            shutil.copytree(ROOT / "resources" / "schemas", schema_root)
+            target = next(knowledge_root.rglob("*.md"))
+            real_validator = knowledge_model.validate_markdown_entry
+            with patch.object(
+                knowledge_model,
+                "validate_markdown_entry",
+                wraps=real_validator,
+            ) as mocked:
+>               knowledge_model.validate_knowledge_tree(
+                    knowledge_root,
+                    schema_root=schema_root,
+                    today=dt.date(2026, 8, 6),
+                )
+
+tests/test_review_execution.py:60: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+resources/scripts/knowledge_model.py:409: in validate_knowledge_tree
+    entry = validate_markdown_entry(
+/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1167: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1171: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1244: in _execute_mock_call
+    return self._mock_wraps(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/private/var/folders/jp/tkxkqws50fsdwv0bh7_9gg8w0000gn/T/tmp_syfhxn4/knowledge/decision-guides/agent-evaluation-design.md')
+schema_root = PosixPath('/private/var/folders/jp/tkxkqws50fsdwv0bh7_9gg8w0000gn/T/tmp_syfhxn4/schemas')
+expected_kind = 'decision-guide', today = datetime.date(2026, 8, 6)
+
+    def validate_markdown_entry(
+        path: Path,
+        *,
+        schema_root: Path,
+        expected_kind: str,
+        today: date,
+    ) -> KnowledgeEntry:
+        metadata, body = parse_markdown_entry(path)
+        _validate_schema(
+            metadata,
+            schema_root / "knowledge-entry.schema.json",
+            path,
+        )
+        if metadata["kind"] != expected_kind:
+            raise KnowledgeError(
+                f"{path} declares kind {metadata['kind']!r}; expected {expected_kind!r}"
+            )
+        if not body.startswith("# "):
+            raise KnowledgeError(f"{path} body must start with one level-one title")
+        for section in REQUIRED_SECTIONS:
+            content = _section_content(body, section)
+            if content is None:
+                raise KnowledgeError(f"{path} is missing section '## {section}'")
+            if len(content) < 3:
+                raise KnowledgeError(f"{path} section '## {section}' is too shallow")
+        lowered = body.lower()
+        for marker in FORBIDDEN_MARKERS:
+            if marker.lower() in lowered:
+                raise KnowledgeError(f"{path} contains forbidden marker {marker!r}")
+        reviewed = metadata["last_reviewed"]
+        if isinstance(reviewed, str):
+            reviewed_on = date.fromisoformat(reviewed)
+        elif isinstance(reviewed, date):
+            reviewed_on = reviewed
+        else:
+            raise KnowledgeError(f"{path} last_reviewed must be a date")
+        if reviewed_on > today:
+>           raise KnowledgeError(
+                f"{path} last_reviewed {reviewed_on.isoformat()} is in the future"
+            )
+E           knowledge_model.KnowledgeError: /private/var/folders/jp/tkxkqws50fsdwv0bh7_9gg8w0000gn/T/tmp_syfhxn4/knowledge/decision-guides/agent-evaluation-design.md last_reviewed 2026-08-29 is in the future
+
+resources/scripts/knowledge_model.py:281: KnowledgeError
+_ ReviewExecutionRuntimeTests.test_knowledge_cache_returns_isolated_snapshots __
+
+self = <test_review_execution.ReviewExecutionRuntimeTests testMethod=test_knowledge_cache_returns_isolated_snapshots>
+
+    def test_knowledge_cache_returns_isolated_snapshots(self) -> None:
+>       manifest, entries = knowledge_model.validate_knowledge_tree(
+            ROOT / "resources" / "knowledge",
+            schema_root=ROOT / "resources" / "schemas",
+            today=dt.date(2026, 8, 6),
+        )
+
+tests/test_review_execution.py:287: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+resources/scripts/knowledge_model.py:409: in validate_knowledge_tree
+    entry = validate_markdown_entry(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/Volumes/SUNSANG 1/Codex/hengmu/resources/knowledge/decision-guides/agent-evaluation-design.md')
+schema_root = PosixPath('/Volumes/SUNSANG 1/Codex/hengmu/resources/schemas')
+expected_kind = 'decision-guide', today = datetime.date(2026, 8, 6)
+
+    def validate_markdown_entry(
+        path: Path,
+        *,
+        schema_root: Path,
+        expected_kind: str,
+        today: date,
+    ) -> KnowledgeEntry:
+        metadata, body = parse_markdown_entry(path)
+        _validate_schema(
+            metadata,
+            schema_root / "knowledge-entry.schema.json",
+            path,
+        )
+        if metadata["kind"] != expected_kind:
+            raise KnowledgeError(
+                f"{path} declares kind {metadata['kind']!r}; expected {expected_kind!r}"
+            )
+        if not body.startswith("# "):
+            raise KnowledgeError(f"{path} body must start with one level-one title")
+        for section in REQUIRED_SECTIONS:
+            content = _section_content(body, section)
+            if content is None:
+                raise KnowledgeError(f"{path} is missing section '## {section}'")
+            if len(content) < 3:
+                raise KnowledgeError(f"{path} section '## {section}' is too shallow")
+        lowered = body.lower()
+        for marker in FORBIDDEN_MARKERS:
+            if marker.lower() in lowered:
+                raise KnowledgeError(f"{path} contains forbidden marker {marker!r}")
+        reviewed = metadata["last_reviewed"]
+        if isinstance(reviewed, str):
+            reviewed_on = date.fromisoformat(reviewed)
+        elif isinstance(reviewed, date):
+            reviewed_on = reviewed
+        else:
+            raise KnowledgeError(f"{path} last_reviewed must be a date")
+        if reviewed_on > today:
+>           raise KnowledgeError(
+                f"{path} last_reviewed {reviewed_on.isoformat()} is in the future"
+            )
+E           knowledge_model.KnowledgeError: /Volumes/SUNSANG 1/Codex/hengmu/resources/knowledge/decision-guides/agent-evaluation-design.md last_reviewed 2026-08-29 is in the future
+
+resources/scripts/knowledge_model.py:281: KnowledgeError
+=========================== short test summary info ============================
+FAILED tests/test_architecture_tool.py::ArchitectureToolTests::test_legacy_review_migration_downgrades_trust_and_binds_inputs
+FAILED tests/test_cli_wrappers.py::CliWrapperTests::test_validate_knowledge_real_tree_and_invalid_root
+FAILED tests/test_review_execution.py::ReviewExecutionRuntimeTests::test_knowledge_cache_is_content_bound_and_revalidates_changes
+FAILED tests/test_review_execution.py::ReviewExecutionRuntimeTests::test_knowledge_cache_returns_isolated_snapshots
+4 failed, 217 passed, 106 subtests passed in 102.59s (0:01:42)
