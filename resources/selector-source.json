@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
   "repository": "https://github.com/qingye-lab/hengmu",
-  "commit": "6c4e983e5df769634fa60effebe12e7557e9b1ac",
-  "plugin_version": "1.1.3"
+  "commit": "9b9a0a5df0cbded4f10fc17f785dda0e2deb2c71",
+  "plugin_version": "1.2.0"
 }
