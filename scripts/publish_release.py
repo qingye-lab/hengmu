@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import subprocess
 import sys
 import time
@@ -17,6 +18,10 @@ from typing import Any, Protocol
 
 class ReleaseError(RuntimeError):
     """The release state or remote verification is unsafe."""
+
+
+MIN_GH_VERSION = (2, 93, 0)
+GH_VERSION_PATTERN = re.compile(r"^gh version ([0-9]+)\.([0-9]+)\.([0-9]+)(?:\s|$)")
 
 
 @dataclass(frozen=True)
@@ -42,6 +47,8 @@ class ReleaseState:
 
 
 class ReleaseClient(Protocol):
+    def require_supported_gh_version(self) -> None: ...
+
     def require_immutable_releases(self, repository: str) -> None: ...
 
     def get_release(self, repository: str, tag: str) -> ReleaseState | None: ...
@@ -222,6 +229,7 @@ def publish_release(
     delay_seconds: float = 10.0,
 ) -> str:
     assets = expected_assets(dist.resolve(), tag)
+    client.require_supported_gh_version()
     client.require_immutable_releases(repository)
     state = client.get_release(repository, tag)
     if state is not None and not state.draft:
@@ -273,6 +281,27 @@ class GhReleaseClient:
         if process.returncode != 0 and not allow_failure:
             raise ReleaseError(process.stderr.strip() or "GitHub CLI command failed")
         return process
+
+    def require_supported_gh_version(self) -> None:
+        requirement = (
+            "GitHub Release publication requires gh >= 2.93.0; "
+            "install or upgrade GitHub CLI before publishing"
+        )
+        try:
+            process = self._run(["version"], allow_failure=True)
+        except ReleaseError as exc:
+            raise ReleaseError(f"{requirement}: {exc}") from exc
+        if process.returncode != 0:
+            detail = process.stderr.strip() or "gh version failed"
+            raise ReleaseError(f"{requirement}: {detail}")
+        first_line = process.stdout.splitlines()[0] if process.stdout else ""
+        match = GH_VERSION_PATTERN.match(first_line)
+        if match is None:
+            raise ReleaseError(f"{requirement}: version output is malformed")
+        version = tuple(int(part) for part in match.groups())
+        if version < MIN_GH_VERSION:
+            installed = ".".join(str(part) for part in version)
+            raise ReleaseError(f"{requirement}: found gh {installed}")
 
     def require_immutable_releases(self, repository: str) -> None:
         process = self._run(

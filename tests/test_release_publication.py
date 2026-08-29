@@ -28,11 +28,18 @@ class FakeReleaseClient:
         *,
         verify_results: list[bool] | None = None,
         immutable_error: str | None = None,
+        gh_version_error: str | None = None,
     ) -> None:
         self.state = state
         self.verify_results = list(verify_results or [True])
         self.immutable_error = immutable_error
+        self.gh_version_error = gh_version_error
         self.calls: list[tuple[object, ...]] = []
+
+    def require_supported_gh_version(self) -> None:
+        self.calls.append(("gh-version",))
+        if self.gh_version_error is not None:
+            raise publish_release.ReleaseError(self.gh_version_error)
 
     def require_immutable_releases(self, repository: str) -> None:
         self.calls.append(("immutable", repository))
@@ -135,6 +142,10 @@ class DraftAwareGhClient(publish_release.GhReleaseClient):
     def _run(self, arguments, *, allow_failure=False):
         arguments = tuple(arguments)
         self.calls.append(arguments)
+        if arguments == ("version",):
+            return CompletedProcess(
+                [], 0, "gh version 2.98.0\nhttps://github.com/cli/cli\n", ""
+            )
         endpoint = arguments[-1]
         if endpoint.endswith("/immutable-releases"):
             return CompletedProcess([], 0, '{"enabled": true}', "")
@@ -352,8 +363,12 @@ class ReleasePublicationTests(unittest.TestCase):
                         client=client,
                     )
                 self.assertEqual(
-                    client.calls[:2],
-                    [("immutable", "owner/repo"), ("get", "owner/repo", "v1.1.0")],
+                    client.calls[:3],
+                    [
+                        ("gh-version",),
+                        ("immutable", "owner/repo"),
+                        ("get", "owner/repo", "v1.1.0"),
+                    ],
                 )
                 self.assertFalse(
                     any(
@@ -377,8 +392,9 @@ class ReleasePublicationTests(unittest.TestCase):
         )
         self.assertEqual(outcome, "published")
         self.assertEqual(
-            client.calls[:4],
+            client.calls[:5],
             [
+                ("gh-version",),
                 ("immutable", "owner/repo"),
                 ("get", "owner/repo", "v1.1.0"),
                 ("publish", "v1.1.0"),
@@ -414,6 +430,14 @@ class ReleasePublicationTests(unittest.TestCase):
                             self.dist,
                             client=client,
                         )
+                self.assertEqual(
+                    client.calls[:3],
+                    [
+                        ("gh-version",),
+                        ("immutable", "owner/repo"),
+                        ("get", "owner/repo", "v1.1.0"),
+                    ],
+                )
                 self.assertFalse(
                     any(
                         call[0] in {"create", "upload", "publish"}
@@ -476,15 +500,36 @@ class ReleasePublicationTests(unittest.TestCase):
 
     def test_missing_local_asset_fails_before_remote_access(self) -> None:
         (self.dist / self.assets[-1].name).unlink()
-        client = FakeReleaseClient()
-        with self.assertRaisesRegex(publish_release.ReleaseError, "missing"):
-            publish_release.prepare_release(
+        for operation in (
+            publish_release.prepare_release,
+            publish_release.publish_release,
+        ):
+            with self.subTest(operation=operation.__name__):
+                client = FakeReleaseClient()
+                with self.assertRaisesRegex(publish_release.ReleaseError, "missing"):
+                    operation(
+                        "owner/repo",
+                        "v1.1.0",
+                        self.dist,
+                        client=client,
+                    )
+                self.assertEqual(client.calls, [])
+
+    def test_unsupported_gh_version_stops_before_all_remote_calls(self) -> None:
+        client = FakeReleaseClient(
+            gh_version_error="GitHub Release publication requires gh >= 2.93.0"
+        )
+        with self.assertRaisesRegex(
+            publish_release.ReleaseError,
+            r"requires gh >= 2\.93\.0",
+        ):
+            publish_release.publish_release(
                 "owner/repo",
                 "v1.1.0",
                 self.dist,
                 client=client,
             )
-        self.assertEqual(client.calls, [])
+        self.assertEqual(client.calls, [("gh-version",)])
 
     def test_immutable_release_preflight_failure_has_zero_remote_mutation(
         self,
@@ -509,7 +554,56 @@ class ReleasePublicationTests(unittest.TestCase):
                         self.dist,
                         client=client,
                     )
-                self.assertEqual(client.calls, [("immutable", "owner/repo")])
+                self.assertEqual(
+                    client.calls,
+                    [("gh-version",), ("immutable", "owner/repo")],
+                )
+
+    def test_gh_version_preflight_accepts_only_supported_stable_versions(
+        self,
+    ) -> None:
+        client = publish_release.GhReleaseClient()
+        for stdout in (
+            "gh version 2.93.0\n",
+            "gh version 2.98.0 (2026-08-21)\nhttps://github.com/cli/cli\n",
+        ):
+            with self.subTest(stdout=stdout):
+                completed = CompletedProcess([], 0, stdout, "")
+                with patch.object(client, "_run", return_value=completed) as run:
+                    client.require_supported_gh_version()
+                run.assert_called_once_with(["version"], allow_failure=True)
+
+        failures = (
+            CompletedProcess([], 0, "gh version 2.75.0\n", ""),
+            CompletedProcess([], 1, "", "version failed"),
+            CompletedProcess([], 0, "", ""),
+            CompletedProcess([], 0, "GitHub CLI 2.98.0\n", ""),
+            CompletedProcess([], 0, "gh version 2.93.0-rc.1\n", ""),
+            CompletedProcess([], 0, "invalid\ngh version 2.98.0\n", ""),
+        )
+        for completed in failures:
+            with (
+                self.subTest(completed=completed),
+                patch.object(client, "_run", return_value=completed),
+                self.assertRaisesRegex(
+                    publish_release.ReleaseError,
+                    r"requires gh >= 2\.93\.0",
+                ),
+            ):
+                client.require_supported_gh_version()
+
+        with (
+            patch.object(
+                publish_release.subprocess,
+                "run",
+                side_effect=OSError("gh is unavailable"),
+            ),
+            self.assertRaisesRegex(
+                publish_release.ReleaseError,
+                r"requires gh >= 2\.93\.0",
+            ),
+        ):
+            client.require_supported_gh_version()
 
     def test_gh_immutable_release_preflight_is_read_only_and_fail_closed(
         self,

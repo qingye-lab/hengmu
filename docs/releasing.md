@@ -108,7 +108,8 @@
    SBOMs, and verifies their remote digests. This `prepare` phase does not check
    the repository administration setting and does not publish.
 20. From an authenticated administrator environment, with the same six verified
-    files in `dist`, run the separate publication phase:
+    files in `dist`, use GitHub CLI 2.93.0 or newer and run the separate
+    publication phase:
 
     ```bash
     python3 scripts/publish_release.py publish \
@@ -117,12 +118,17 @@
       --dist dist
     ```
 
-    The command first reads back immutable-release enablement, then accepts only
-    a complete exact draft. It never creates, uploads, or replaces an asset. It
-    publishes once, requires the resulting Release to report `draft: false` and
-    `immutable: true` with the exact inventory, and verifies the Release and all
-    six assets with at most five attempts separated by ten seconds. Repeating
-    `publish` against an immutable published Release is read-only.
+    The command enumerates the six local assets, then requires a stable GitHub
+    CLI version of at least 2.93.0 before any remote administration call. GitHub
+    CLI 2.75.0 failed this publication path locally and 2.98.0 succeeded; 2.93.0
+    is GitHub's patched minimum and was not itself exercised on this host. After
+    the CLI check, the command reads back immutable-release enablement and
+    accepts only a complete exact draft. It never creates, uploads, or replaces
+    an asset. It publishes once, requires the resulting Release to report
+    `draft: false` and `immutable: true` with the exact inventory, and verifies
+    the Release and all six assets with at most five attempts separated by ten
+    seconds. Repeating `publish` against an immutable published Release is
+    read-only.
 
 After publication, verify both artifact digest and attestation:
 

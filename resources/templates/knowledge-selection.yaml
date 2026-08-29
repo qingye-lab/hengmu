@@ -41,7 +41,7 @@ selector:
   source:
     repository: https://github.com/qingye-lab/hengmu
     commit: "0000000000000000000000000000000000000000"
-    plugin_version: "1.1.2"
+    plugin_version: "1.1.3"
     plugin_manifest_sha256: "0000000000000000000000000000000000000000000000000000000000000000"
   implementation_inputs:
     - {path: requirements-runtime.lock, sha256: "0000000000000000000000000000000000000000000000000000000000000000"}

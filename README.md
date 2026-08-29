@@ -16,7 +16,7 @@
     <img alt="CI" src="https://github.com/qingye-lab/hengmu/actions/workflows/ci.yml/badge.svg?branch=main">
   </a>
   <a href="https://github.com/qingye-lab/hengmu/releases">
-    <img alt="Version 1.1.2" src="https://img.shields.io/badge/version-1.1.2-173FBE">
+    <img alt="Version 1.1.3" src="https://img.shields.io/badge/version-1.1.3-173FBE">
   </a>
   <img alt="Python 3.11–3.14" src="https://img.shields.io/badge/python-3.11%E2%80%933.14-161719">
   <a href="LICENSE">
@@ -241,7 +241,7 @@ python3 -m pip install --require-hashes -r requirements-runtime.lock
 python3 resources/scripts/architecture_tool.py --version
 ```
 
-The last command should print `architecture_tool.py 1.1.2`. On Windows
+The last command should print `architecture_tool.py 1.1.3`. On Windows
 PowerShell, activate with `.venv\Scripts\Activate.ps1`. Installation does not
 grant permissions or enable Hooks; review each host's agent permissions before
 allowing repository writes or shell execution.
