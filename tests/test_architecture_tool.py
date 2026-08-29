@@ -731,7 +731,7 @@ class ArchitectureToolTests(unittest.TestCase):
         _, knowledge = architecture_tool.validate_knowledge_tree(
             ROOT / "resources" / "knowledge",
             schema_root=ROOT / "resources" / "schemas",
-            today=date(2026, 8, 6),
+            today=date(2026, 8, 29),
         )
         decision = architecture_tool.load_yaml(
             ROOT / "resources" / "templates" / "architecture-decision.yaml"

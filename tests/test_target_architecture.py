@@ -1132,6 +1132,33 @@ setup(name="example", install_requires=RUNTIME_REQUIREMENTS)
                         today=first_stale,
                     )
 
+    def test_knowledge_validator_rejects_future_review_date(self) -> None:
+        source = (
+            ROOT
+            / "resources"
+            / "knowledge"
+            / "decision-guides"
+            / "agent-evaluation-design.md"
+        )
+        future = self.root / "future.md"
+        future.write_text(
+            source.read_text(encoding="utf-8").replace(
+                "last_reviewed: '2026-08-29'",
+                "last_reviewed: '2026-08-30'",
+            ),
+            encoding="utf-8",
+        )
+        with self.assertRaisesRegex(
+            KnowledgeError,
+            "last_reviewed 2026-08-30 is in the future",
+        ):
+            validate_markdown_entry(
+                future,
+                schema_root=ROOT / "resources" / "schemas",
+                expected_kind="decision-guide",
+                today=date(2026, 8, 29),
+            )
+
     def test_knowledge_validator_rejects_shallow_and_stale_entries(self) -> None:
         source = (
             ROOT / "resources" / "knowledge" / "foundations" / "quality-attributes.md"

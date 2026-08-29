@@ -187,7 +187,7 @@ class CliWrapperTests(unittest.TestCase):
     def test_validate_knowledge_real_tree_and_invalid_root(self) -> None:
         code, stdout, stderr = invoke_main(
             validate_knowledge,
-            ["--today", "2026-08-27"],
+            ["--today", "2026-08-29"],
         )
         self.assertEqual((code, stderr), (0, ""))
         self.assertIn("Knowledge validation passed", stdout)
@@ -195,7 +195,7 @@ class CliWrapperTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             code, _, stderr = invoke_main(
                 validate_knowledge,
-                ["--knowledge-root", temporary, "--today", "2026-08-27"],
+                ["--knowledge-root", temporary, "--today", "2026-08-29"],
             )
         self.assertEqual(code, 2)
         self.assertIn("Knowledge validation failed", stderr)
