@@ -1073,27 +1073,50 @@ setup(name="example", install_requires=RUNTIME_REQUIREMENTS)
     def test_ai_knowledge_2026_freshness_boundaries_are_exact(self) -> None:
         cases = (
             (
-                ROOT
-                / "resources"
-                / "knowledge"
-                / "technology-profiles"
-                / "model-context-protocol.md",
+                "technology-profiles",
+                "model-context-protocol.md",
                 "technology-profile",
                 date(2026, 10, 13),
                 date(2026, 10, 14),
             ),
             (
-                ROOT
-                / "resources"
-                / "knowledge"
-                / "technology-profiles"
-                / "a2a-protocol.md",
+                "technology-profiles",
+                "opentelemetry-genai.md",
+                "technology-profile",
+                date(2026, 10, 13),
+                date(2026, 10, 14),
+            ),
+            (
+                "technology-profiles",
+                "a2a-protocol.md",
                 "technology-profile",
                 date(2026, 11, 27),
                 date(2026, 11, 28),
             ),
+            (
+                "technology-profiles",
+                "agent-skills.md",
+                "technology-profile",
+                date(2026, 11, 27),
+                date(2026, 11, 28),
+            ),
+            (
+                "decision-guides",
+                "agent-evaluation-design.md",
+                "decision-guide",
+                date(2026, 11, 27),
+                date(2026, 11, 28),
+            ),
+            (
+                "reference-architectures",
+                "secure-agent-tool-runtime.md",
+                "reference-architecture",
+                date(2026, 11, 27),
+                date(2026, 11, 28),
+            ),
         )
-        for path, expected_kind, last_current, first_stale in cases:
+        for directory, filename, expected_kind, last_current, first_stale in cases:
+            path = ROOT / "resources" / "knowledge" / directory / filename
             with self.subTest(path=path.name):
                 validate_markdown_entry(
                     path,

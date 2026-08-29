@@ -21,9 +21,19 @@ sources:
   url: https://modelcontextprotocol.io/specification/2026-07-28
   authority: standard
   supports:
-  - MCP-WIRE
   - MCP-AUTH
   - MCP-ANNOTATIONS
+- title: Model Context Protocol versioning and compatibility revision 2026-07-28
+  url: https://modelcontextprotocol.io/specification/2026-07-28/basic/versioning
+  authority: standard
+  supports:
+  - MCP-WIRE
+  - MCP-DISCOVERY
+- title: Model Context Protocol server discovery revision 2026-07-28
+  url: https://modelcontextprotocol.io/specification/2026-07-28/server/discover
+  authority: standard
+  supports:
+  - MCP-DISCOVERY
 - title: Model Context Protocol security best practices
   url: https://modelcontextprotocol.io/specification/2026-07-28/basic/security_best_practices
   authority: standard
@@ -43,16 +53,19 @@ application.
 
 ## Mechanism
 
-Bind initialization, capability negotiation, JSON-RPC messages, transport,
-lifecycles, and authorization decisions to the protocol revision implemented by
-each participant. Keep the host responsible for consent and policy instead of
-treating server metadata or model output as authority.
+For revision 2026-07-28, carry protocol version, client identity, and client
+capabilities in every request's `_meta`; Streamable HTTP mirrors the version in
+`MCP-Protocol-Version` and rejects a header/body mismatch. A client may call
+`server/discover` to obtain supported versions, capabilities, and server
+identity, or invoke another RPC and handle `UnsupportedProtocolVersionError`.
+Keep the host responsible for consent and policy instead of treating
+self-reported server metadata or model output as authority.
 
 ## Fit when
 
 An application needs an interoperable boundary for independently owned context
-or tools and can operate version negotiation, consent, authorization, and
-server trust explicitly.
+or tools and can operate per-request version and capability metadata, consent,
+authorization, and server trust explicitly.
 
 ## Avoid when
 
@@ -62,7 +75,7 @@ effects, and untrusted content.
 
 ## Required capabilities
 
-Protocol-revision negotiation, server identity, transport security,
+Per-request revision and capability metadata, server identity, transport security,
 least-privilege authorization where authorization is used, explicit consent,
 schema validation, timeouts, audit records, and revocation are required.
 
@@ -91,17 +104,21 @@ not required.
 
 ## Migration and exit
 
-Introduce one read-only server behind an allowlist, bind the negotiated
-revision and capabilities in evidence, then expand authority only after
-negative-path tests. Preserve a direct adapter until the MCP boundary can be
-removed without changing the user contract.
+Introduce one read-only server behind an allowlist, bind the requested revision
+and capability metadata in evidence, then expand authority only after
+negative-path tests. Use `initialize` only when an explicit dual-era client or
+server falls back to legacy revision 2025-11-25 or earlier. Preserve a direct
+adapter until the MCP boundary can be removed without changing the user
+contract.
 
 ## Evidence to inspect
 
-Inspect the implemented protocol revision, initialization exchange,
-capabilities, transport, server identity, authorization mode, consent surface,
-tool schemas, annotation handling, token audience, audit trail, and tested
-failure paths.
+Inspect the revision, client identity, and capabilities carried in each
+request's `_meta`; for HTTP, inspect the matching `MCP-Protocol-Version`
+header. Inspect any optional `server/discover` result, transport, server
+identity, authorization mode, consent surface, tool schemas, annotation
+handling, token audience, audit trail, modern-version errors, and any explicit
+legacy fallback path.
 
 ## Evidence that changes the recommendation
 
@@ -124,6 +141,7 @@ current decision.
 
 ## Claim map
 
-- MCP-WIRE: The 2026-07-28 specification defines the bound protocol lifecycle and capability negotiation.
+- MCP-WIRE: Revision 2026-07-28 carries protocol version, client identity, and capabilities as per-request metadata, with the protocol version mirrored in the Streamable HTTP header.
+- MCP-DISCOVERY: Servers implement `server/discover`, but clients may instead invoke another RPC and handle a version error; there is no modern initialization handshake.
 - MCP-AUTH: Authorization support does not transfer consent, token-audience, or least-privilege responsibility away from the host and deployment.
 - MCP-ANNOTATIONS: Tool annotations are untrusted metadata and cannot authorize an operation.

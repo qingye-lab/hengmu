@@ -19,18 +19,26 @@ last_reviewed: '2026-08-29'
 review_after_days: 45
 source_policy: official-docs-required
 sources:
-- title: OpenTelemetry GenAI semantic conventions registry
-  url: https://opentelemetry.io/docs/specs/semconv/registry/attributes/gen-ai/
-  authority: standard
-  supports:
-  - OTEL-ATTRIBUTES
-  - OTEL-SENSITIVE
-- title: OpenTelemetry semantic conventions snapshot 67dff02
-  url: https://github.com/open-telemetry/semantic-conventions/tree/67dff024110be5bd9f318006e733f4078e0f4c97
+- title: OpenTelemetry GenAI semantic conventions snapshot 67dff02
+  url: https://github.com/open-telemetry/semantic-conventions-genai/tree/67dff024110be5bd9f318006e733f4078e0f4c97
   authority: maintainer
   supports:
   - OTEL-SNAPSHOT
+- title: OpenTelemetry GenAI model manifest snapshot 67dff02
+  url: https://github.com/open-telemetry/semantic-conventions-genai/blob/67dff024110be5bd9f318006e733f4078e0f4c97/model/manifest.yaml
+  authority: maintainer
+  supports:
   - OTEL-MATURITY
+- title: OpenTelemetry GenAI attributes registry snapshot 67dff02
+  url: https://github.com/open-telemetry/semantic-conventions-genai/blob/67dff024110be5bd9f318006e733f4078e0f4c97/docs/registry/attributes/gen-ai.md
+  authority: maintainer
+  supports:
+  - OTEL-ATTRIBUTES
+- title: OpenTelemetry GenAI span conventions snapshot 67dff02
+  url: https://github.com/open-telemetry/semantic-conventions-genai/blob/67dff024110be5bd9f318006e733f4078e0f4c97/docs/gen-ai/gen-ai-spans.md
+  authority: maintainer
+  supports:
+  - OTEL-SENSITIVE
 dynamic_facts: true
 version_range: Semantic conventions snapshot 67dff024110be5bd9f318006e733f4078e0f4c97, schema gen-ai-dev/1.42.0-dev, Development maturity.
 ---
