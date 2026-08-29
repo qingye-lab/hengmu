@@ -1,0 +1,237 @@
+schema_version: '1.2'
+review:
+  id: hengmu-20260829-v1-1-2-remote-draft-lookup-project-verified
+  kind: project
+  workflow: project-architecture
+  subject:
+    id: hengmu
+    name: Hengmu
+    repository: .
+  performed_at: '2026-08-29T01:38:35+00:00'
+  commit: 80f20dd9e8bc9a44858d27db92f458af40d6cea7
+  scope: ['.']
+  verification_state: verified
+  reviewers: [architecture-verifier]
+  verification_run:
+    id: hengmu-v1-1-2-remote-draft-lookup-verifier-20260829-013829
+    surface: codex-subagent-read-only
+    started_at: '2026-08-29T01:38:29+00:00'
+    completed_at: '2026-08-29T01:38:35+00:00'
+  source_candidate:
+    path: .architecture/reviews/2026-08-29-v1-1-2-remote-draft-lookup-project-candidates.yaml
+    review_id: hengmu-20260829-v1-1-2-remote-draft-lookup-project-candidates
+    sha256: 6aacb7c8a7b147039910ac176e470786fb770df0531e915f46d1bff5d8227a48
+    commit: 80f20dd9e8bc9a44858d27db92f458af40d6cea7
+  profile: .architecture/reviews/inputs/2026-08-29-v1-1-2-remote-draft-lookup-profile.yaml
+  repository_identity: hengmu
+  profile_sha256: fe210e83d03b1c50c51918a2b748187b54b81f6a5fe7c328fa3055f08bd99127
+  dirty_tree: false
+  rule_packs:
+    - {id: project-core, version: 1.0.0, sha256: b211d548ad5fe367b9dab8416051c43f3a206da81bd2a8e7596cd788ed3f100c}
+    - {id: plugin-platform, version: 1.0.0, sha256: 7ae17488df7a78ce1b857d3f842bd51b87de4ec30576fbe250cfa991472b3700}
+    - {id: test-automation-platform, version: 1.0.0, sha256: 23efb3c02cd9e4e2ec2cb83d1505b30dd780aff2a9ac7157506b361cb783c5aa}
+  scope_manifest: ['.']
+summary:
+  architecture: >-
+    Independent read-only agent verification at V2 confirms the remote-anchor
+    Hengmu 1.1.2 authenticated GitHub Release state-discovery repair at commit
+    80f20dd9e8bc9a44858d27db92f458af40d6cea7. The verifier,
+    architecture-verifier at canonical task /root/v1_1_1_architecture_verifier,
+    confirmed that source tree 9605a679ee2d26f0db063c2d8487d4430e5d1311 is
+    byte-identical to the independently reviewed local implementation while the
+    remote source and selector identities remain reachable. It verified the
+    published-by-tag fast path, HTTP-404-only exhaustive enumeration, exact-tag
+    match, authoritative numeric-ID read, exact-six prepare-only boundary,
+    immutable administrator publication boundary, and provenance preservation.
+    It independently checked 31 rules (28 assessed and three not applicable),
+    six critical flows, seven audit Knowledge entries, 25 unique source anchors,
+    and zero findings. The clean provider records 214 passing tests plus 79
+    passing subtests in JUnit 293. This is non-human V2 verification of local
+    source bytes and contracts; it does not establish hosted, remote Release,
+    attestation, immutable-publication, or current-host outcomes.
+  raw_findings: 0
+  confirmed: 0
+  rejected: 0
+  needs_evidence: 0
+coverage:
+  - rule_id: PROJECT.BOUNDARY.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - &router {path: skills/hengmu/SKILL.md, commit: 80f20dd9e8bc9a44858d27db92f458af40d6cea7, blob_sha: 19f859ecd6778d7da2b19cfb65d2f2ded5b4f102, line_start: 8, line_end: 47, observation: "The stable public entry still routes each intent to one focused workflow without reimplementing the routed procedure."}
+      - &draft_lookup {path: scripts/publish_release.py, commit: 80f20dd9e8bc9a44858d27db92f458af40d6cea7, blob_sha: e74e496a9dbf9a06ea60c809ec31e03e7ec555a4, line_start: 257, line_end: 451, observation: "GhReleaseClient owns authenticated Release lookup: the published-by-tag fast path validates tag identity, while only HTTP 404 enters complete paginated exact-tag discovery and an identity-checked numeric-ID authority read."}
+  - rule_id: PROJECT.DEPENDENCY.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - &provider_execution {path: resources/scripts/architecture_tool.py, commit: 80f20dd9e8bc9a44858d27db92f458af40d6cea7, blob_sha: f4fcfcbb4d4a6cb7a990abda8e200a9cfc44da98, line_start: 1349, line_end: 1590, observation: "Evidence Provider execution resolves a cataloged executable, bounds environment and time, isolates caches, records dependency closure, and validates structured output."}
+      - &package_boundary {path: scripts/package_plugin.py, commit: 80f20dd9e8bc9a44858d27db92f458af40d6cea7, blob_sha: 2f9a23f6aea9d2b2fa157f1833e18c4ee93b3640, line_start: 168, line_end: 273, observation: "Packaging retains a sorted runtime allowlist, rejects unsafe entries, and emits deterministic archives without changing the 1.1.2 runtime boundary."}
+  - {rule_id: PROJECT.COHESION.001, status: assessed, finding_ids: [], evidence: [*router, *draft_lookup, *package_boundary]}
+  - {rule_id: PROJECT.FRONTEND.001, status: not_applicable, finding_ids: [], reason: "Hengmu has no frontend/backend request boundary or client-owned authoritative business invariant."}
+  - rule_id: PROJECT.DATA.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - &decision_contract {path: resources/scripts/architecture_tool.py, commit: 80f20dd9e8bc9a44858d27db92f458af40d6cea7, blob_sha: f4fcfcbb4d4a6cb7a990abda8e200a9cfc44da98, line_start: 3404, line_end: 3580, observation: "Decision validation binds acceptance, source artifacts, Knowledge Selection, and remediation authority to validated identities and hashes."}
+  - {rule_id: PROJECT.OWNERSHIP.001, status: assessed, finding_ids: [], evidence: [*decision_contract, *draft_lookup]}
+  - rule_id: PROJECT.CONTRACT.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - &review_schema {path: resources/schemas/review.schema.json, commit: 80f20dd9e8bc9a44858d27db92f458af40d6cea7, blob_sha: fb65714fe2a3261ed327a52ed8c92d4af7bb2673, line_start: 1, line_end: 310, observation: "Review schema 1.2 defines identity, coverage, source, Knowledge, critical-flow, tool-evidence, and candidate lifecycle bindings."}
+      - &artifact_contract {path: resources/scripts/artifact_types.py, commit: 80f20dd9e8bc9a44858d27db92f458af40d6cea7, blob_sha: ddbef89631529eaf14327b084bc368d079d26c3d, line_start: 1, line_end: 50, observation: "Internal Review types remain explicitly post-schema-validation views of the authoritative artifact schema."}
+      - *draft_lookup
+  - {rule_id: PROJECT.TRANSACTION.001, status: not_applicable, finding_ids: [], reason: "The product has no cross-system business transaction; local artifacts and Release assets use bounded state transitions."}
+  - rule_id: PROJECT.IDEMPOTENCY.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - &release_state {path: scripts/publish_release.py, commit: 80f20dd9e8bc9a44858d27db92f458af40d6cea7, blob_sha: e74e496a9dbf9a06ea60c809ec31e03e7ec555a4, line_start: 103, line_end: 254, observation: "The two-stage state machine prepares absent or draft state and permits publication only from an exact draft after immutable administration preflight."}
+      - &init_safety {path: resources/scripts/architecture_tool.py, commit: 80f20dd9e8bc9a44858d27db92f458af40d6cea7, blob_sha: f4fcfcbb4d4a6cb7a990abda8e200a9cfc44da98, line_start: 4886, line_end: 4955, observation: "Project-audit preparation validates existing control-plane state and bounded initialization refuses overwrite."}
+  - rule_id: PROJECT.RELIABILITY.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - &ci_guard {path: .github/workflows/ci.yml, commit: 80f20dd9e8bc9a44858d27db92f458af40d6cea7, blob_sha: 61ab2d7db43d032f3a696dd20a4d05e53600d422, line_start: 169, line_end: 196, observation: "The workflow retains an always-running Quality gate and makes draft preparation contingent on not-cancelled, successful summary-gate, and v-tag predicates."}
+      - &ci_guard_tests {path: tests/test_ci_gate.py, commit: 80f20dd9e8bc9a44858d27db92f458af40d6cea7, blob_sha: 19b745f07f3b9fa6bbba39bf9359052e5d1ce5dd, line_start: 23, line_end: 100, observation: "Tests bind the exact tag guard and exercise success plus gate failure, cancellation, skip, branch push, and non-v-tag counterexamples."}
+      - &release_tests {path: tests/test_release_publication.py, commit: 80f20dd9e8bc9a44858d27db92f458af40d6cea7, blob_sha: be19603b10d83ab345737578d9ae69157c774f51, line_start: 583, line_end: 838, observation: "Regression tests prove the one-request published fast path, later-page exact draft recovery, zero and duplicate exact matches, substring rejection, malformed and identity failures, prepare recovery, and one-time publish with immutable readback."}
+      - *provider_execution
+  - {rule_id: PROJECT.STATE.001, status: assessed, finding_ids: [], evidence: [*release_state, *draft_lookup, *release_tests, *ci_guard]}
+  - rule_id: PROJECT.SECURITY.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - &actions_validator {path: scripts/validate_repository.py, commit: 80f20dd9e8bc9a44858d27db92f458af40d6cea7, blob_sha: 379d4947459ffd7e39c71b9f6965b0a98504bdbb, line_start: 958, line_end: 1001, observation: "Workflow uses scalars are parsed and only repository-local actions or GitHub-owned actions pinned to lowercase 40-hex commits are accepted."}
+      - *draft_lookup
+      - *release_state
+  - rule_id: PROJECT.PRIVACY.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - &host_boundary {path: docs/host-compatibility.md, commit: 80f20dd9e8bc9a44858d27db92f458af40d6cea7, blob_sha: 22cf86f104444b216ebcdcd48cdb01f3e825117a, line_start: 30, line_end: 70, observation: "The portable host contract excludes silent installation, permission changes, hooks, and unconfigured provider execution."}
+  - {rule_id: PROJECT.OBSERVABILITY.001, status: assessed, finding_ids: [], evidence: [*provider_execution, *release_tests, *ci_guard_tests]}
+  - rule_id: PROJECT.CONFIG.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - &contract_tests {path: tests/test_repository_contract.py, commit: 80f20dd9e8bc9a44858d27db92f458af40d6cea7, blob_sha: 5fc3e362fa136c624b3e37ff67c8110b711bda28, line_start: 27, line_end: 169, observation: "Repository contract tests bind supported Python endpoints, two-tree coverage, action references, Review typing, and current 1.1.2 plugin, selector, and template alignment."}
+      - &benchmark_default {path: tests/test_behavior_benchmark.py, commit: 80f20dd9e8bc9a44858d27db92f458af40d6cea7, blob_sha: 5d729982b10f165240985d1ee0bad480dde3153a, line_start: 27, line_end: 59, observation: "The benchmark parser is exercised directly to prove its omitted skill-version argument resolves to the current manifest version without running a benchmark."}
+      - *actions_validator
+  - rule_id: PROJECT.PERFORMANCE.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - &benchmark_report {path: benchmarks/reports/1.0.3-model-behavior.md, commit: 80f20dd9e8bc9a44858d27db92f458af40d6cea7, blob_sha: 13349180b3f711ba3a11cfb6e5bb0cb78a56b863, line_start: 5, line_end: 66, observation: "The retained behavioral benchmark identifies models, trials, duration, immutable source context, and run bindings without converting missing usage into a performance claim."}
+  - {rule_id: PROJECT.TEST.001, status: assessed, finding_ids: [], evidence: [*ci_guard_tests, *benchmark_default, *release_tests, *contract_tests, *provider_execution]}
+  - rule_id: PROJECT.DEPLOY.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - *ci_guard
+      - &release_workflow {path: .github/workflows/release.yml, commit: 80f20dd9e8bc9a44858d27db92f458af40d6cea7, blob_sha: 8398b98ce9e3a047114c4f32f77a51f87868b081, line_start: 139, line_end: 164, observation: "The unchanged reusable workflow attests both archives and SBOMs and invokes only prepare for the exact draft; it does not publish."}
+      - *draft_lookup
+      - *package_boundary
+  - rule_id: PROJECT.CHANGE.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - &manifests {path: .codex-plugin/plugin.json, commit: 80f20dd9e8bc9a44858d27db92f458af40d6cea7, blob_sha: 67bcd54d7e96941e11e1d4544a504bf4c5d0c7d3, line_start: 1, line_end: 41, observation: "The native manifest declares Hengmu 1.1.2 and Python 3.11 through 3.14 while retaining the existing Skill surface and capabilities."}
+      - {path: plugin.json, commit: 80f20dd9e8bc9a44858d27db92f458af40d6cea7, blob_sha: 3a9fe23a2bdab3448c063f43698722bba687cad5, line_start: 1, line_end: 24, observation: "The portable manifest declares the aligned Hengmu 1.1.2 identity under Agent Plugins schema 1.0."}
+      - &selector {path: resources/selector-source.json, commit: 80f20dd9e8bc9a44858d27db92f458af40d6cea7, blob_sha: 0d1590fd47368338a1174b6ebc54dca557394345, line_start: 1, line_end: 6, observation: "Selector metadata declares plugin version 1.1.2 and anchors its source to implementation commit fff03b55c11b71f627e97295fc7bf5e39d2b2d5b."}
+      - &selection_template {path: resources/templates/knowledge-selection.yaml, commit: 80f20dd9e8bc9a44858d27db92f458af40d6cea7, blob_sha: 964a4d9dd6f533235e535b4b700df021295c8d98, line_start: 39, line_end: 45, observation: "The distributable Knowledge Selection template declares plugin version 1.1.2 and aligns with both manifests and selector metadata."}
+      - &release_history {path: CHANGELOG.md, commit: 80f20dd9e8bc9a44858d27db92f458af40d6cea7, blob_sha: acc145d8efb9aaa096358e11743e5dd23a5cd1bd, line_start: 10, line_end: 30, observation: "The changelog records v1.1.1 as tagged but unpublished with its draft retained, and scopes v1.1.2 to authenticated exact-tag draft recovery."}
+      - {path: docs/roadmap.md, commit: 80f20dd9e8bc9a44858d27db92f458af40d6cea7, blob_sha: 67362108e753be19f92d129defa363b6a641bb1d, line_start: 18, line_end: 58, observation: "The roadmap preserves the v1.1.1 draft and two-stage release boundary while identifying hosted v1.1.2 evidence as pending."}
+  - {rule_id: PROJECT.DEBT.001, status: assessed, finding_ids: [], evidence: [*contract_tests, *release_tests, *draft_lookup]}
+  - {rule_id: PROJECT.DESIGN.001, status: assessed, finding_ids: [], evidence: [*router, *release_state, *draft_lookup, *ci_guard]}
+  - {rule_id: PLUGIN.MANIFEST.001, status: assessed, finding_ids: [], evidence: [*manifests, *selector, *selection_template]}
+  - rule_id: PLUGIN.AUTHORITY.001
+    status: assessed
+    finding_ids: []
+    evidence:
+      - &release_docs {path: docs/releasing.md, commit: 80f20dd9e8bc9a44858d27db92f458af40d6cea7, blob_sha: fc1dac385dd7c1e7874524d1a8721270e50f325a, line_start: 84, line_end: 127, observation: "Release documentation keeps immutable enablement and publication as separately authorized administrator actions after hosted draft preparation."}
+      - *host_boundary
+      - *draft_lookup
+  - {rule_id: PLUGIN.ISOLATION.001, status: assessed, finding_ids: [], evidence: [*provider_execution, *package_boundary]}
+  - {rule_id: PLUGIN.LIFECYCLE.001, status: assessed, finding_ids: [], evidence: [*manifests, *contract_tests, *release_docs, *release_history]}
+  - {rule_id: PLUGIN.SUPPLYCHAIN.001, status: assessed, finding_ids: [], evidence: [*ci_guard, *release_workflow, *release_state, *draft_lookup, *actions_validator, *package_boundary]}
+  - {rule_id: TESTPLATFORM.RUN.001, status: assessed, finding_ids: [], evidence: [*provider_execution, *ci_guard]}
+  - {rule_id: TESTPLATFORM.ISOLATION.001, status: assessed, finding_ids: [], evidence: [*provider_execution, *package_boundary]}
+  - {rule_id: TESTPLATFORM.EVIDENCE.001, status: assessed, finding_ids: [], evidence: [*provider_execution, *contract_tests, *release_tests, *ci_guard_tests]}
+  - {rule_id: TESTPLATFORM.SCHEDULE.001, status: not_applicable, finding_ids: [], reason: "Hengmu has synchronous local validation and bounded GitHub workflow jobs, not a shared scheduler, worker pool, tenancy model, lease, or abandoned-work queue."}
+  - {rule_id: TESTPLATFORM.FLAKE.001, status: assessed, finding_ids: [], evidence: [*benchmark_report, *provider_execution, *ci_guard]}
+findings: []
+evidence_sources:
+  - .architecture/evidence/test-results-20260829t012711036543z-80f20dd9e8bc.yaml
+  - .architecture/reviews/inputs/2026-08-29-v1-1-2-remote-draft-lookup-knowledge-context.yaml
+  - .architecture/reviews/inputs/2026-08-29-v1-1-2-remote-draft-lookup-knowledge-selection.yaml
+  - .architecture/reviews/inputs/2026-08-29-v1-1-2-remote-draft-lookup-profile.yaml
+  - .architecture/reviews/inputs/2026-08-29-v1-1-2-remote-draft-lookup-repository-facts.yaml
+  - .codex-plugin/plugin.json
+  - CHANGELOG.md
+  - README.md
+  - README.zh-CN.md
+  - docs/roadmap.md
+  - plugin.json
+  - resources/scripts/architecture_tool.py
+  - resources/selector-source.json
+  - resources/templates/knowledge-selection.yaml
+  - scripts/publish_release.py
+  - scripts/run_behavior_benchmark.py
+  - tests/test_architecture_tool.py
+  - tests/test_constrained_target_architecture.py
+  - tests/test_package_plugin.py
+  - tests/test_release_publication.py
+  - tests/test_repository_contract.py
+  - .github/workflows/ci.yml
+  - .github/workflows/release.yml
+  - benchmarks/reports/1.0.3-model-behavior.md
+  - docs/host-compatibility.md
+  - docs/releasing.md
+  - resources/schemas/review.schema.json
+  - resources/scripts/artifact_types.py
+  - scripts/package_plugin.py
+  - scripts/validate_repository.py
+  - skills/hengmu/SKILL.md
+  - tests/test_behavior_benchmark.py
+  - tests/test_ci_gate.py
+limitations:
+  - This is independent-agent V2 verification, not human verification or independent GitHub approval, and it does not claim V3, V4, or V5.
+  - The architecture-owner reports that v1.1.1 tag run 33220607881 is red and retained draft 378815289 remains unpublished; the verifier did not independently retrieve or mutate that remote state.
+  - The hosted eight-lane v1.1.2 matrix, stable Quality gate, tag workflow, and draft preparation have not run for commit 80f20dd9e8bc9a44858d27db92f458af40d6cea7; local configuration and tests do not prove GitHub scheduler or API behavior.
+  - No real v1.1.2 draft, exact six-asset remote inventory, GitHub provenance attestation, SBOM attestation, immutable publication, or post-publication verification has been observed.
+  - Repository rulesets, GitHub Actions policy settings, v* tag protection, and the remote immutable-releases setting remain unverified by this local audit.
+  - The clean provider ran only on macOS arm64 with Python 3.13; other supported hosted operating-system and Python lanes remain unverified.
+  - The current Codex host installation, routing, and Knowledge Selection smoke has not been performed for v1.1.2.
+  - The repository has one maintainer and no independent GitHub approval identity; this independent-agent V2 verification must not be represented as human review or independent GitHub approval.
+  - At verifier completion, the nine Phase A governance files were uncommitted; this Verified artifact does not convert them into committed or hosted evidence.
+  - The audit Knowledge Context was validated as an exact rendering of the fresh Selection and is listed as evidence context; schema 1.2 trust binds the Selection itself, not a separate Context field.
+coverage_complete: true
+tool_evidence:
+  - provider_id: test-results
+    run_path: .architecture/evidence/test-results-20260829t012711036543z-80f20dd9e8bc.yaml
+    run_sha256: 7d26fbc1c452a57a4854b704af75849f03a6201803aa436dbeec1d7835898f45
+repository_facts:
+  path: .architecture/reviews/inputs/2026-08-29-v1-1-2-remote-draft-lookup-repository-facts.yaml
+  sha256: 2d1e06312ef7c1d813ae906910b3f60ae19aaf379cf94dc8a6bfc44ffc314fe8
+knowledge_selection:
+  path: .architecture/reviews/inputs/2026-08-29-v1-1-2-remote-draft-lookup-knowledge-selection.yaml
+  sha256: 41810a997c12643fb9c4af46216f0fcdc6e182d2f6881d5e03637a7363f0d01d
+selected_knowledge:
+  - {id: foundation.data-ownership, version: 1.0.0, sha256: 260f240ec9782f5a42a68481652912532cfcd6a0b07fdc5366d44388cc3d0204}
+  - {id: foundation.evidence-reasoning, version: 1.0.0, sha256: e3c370e04b8a9be5e64ea0d107281043652b1cdba3393fb61b57efd77262650f}
+  - {id: foundation.proportional-design, version: 1.0.0, sha256: ccfa63d523fab3503c47dbf73fc7a9ae85c7fc516856bcf422322c0d92a409df}
+  - {id: foundation.quality-attributes, version: 1.0.0, sha256: 50d92ab7563d70605408ba4592d9445f79f6eb0cecb50195471b56e42418b680}
+  - {id: foundation.system-boundaries, version: 1.0.0, sha256: a326964ec74303e0f08f3e7207e4836a0ff04c93c7f8516e6190b47925ec06db}
+  - {id: domain.plugin-platform, version: 1.0.0, sha256: b72a0e3b6959464b32c9a4d44b50baa40b4baf13b5b14f65f99d094f301bf58c}
+  - {id: domain.test-automation-platform, version: 1.0.0, sha256: 7ce2621239bad831f4a6689a1718b5dd1cdbbf1d6d2e3bb9a6d043457a70e016}
+critical_flow_coverage:
+  - {id: plugin-discovery-and-skill-execution, status: assessed, reason: "Both 1.1.2 manifest forms, the selector anchor, stable router, and deterministic package boundary were inspected; current-host smoke remains a limitation.", evidence: [*manifests, *selector, *router, *package_boundary]}
+  - {id: finding-verification-and-policy-enforcement, status: assessed, reason: "Review and Decision trust bindings plus clean provider execution remain schema- and hash-bound; the new provider records 214 tests and 79 subtests with valid structured output.", evidence: [*review_schema, *artifact_contract, *decision_contract, *provider_execution]}
+  - {id: architecture-knowledge-and-behavior-evaluation, status: assessed, reason: "The fresh seven-entry audit Selection, exact Context, aligned 1.1.2 template, benchmark default, retained benchmark report, and clean passing provider run were inspected.", evidence: [*selection_template, *benchmark_default, *benchmark_report, *provider_execution]}
+  - {id: greenfield-architecture-decision, status: assessed, reason: "Decision validation continues to distinguish Design Brief authority from remediation Review authority and requires bound Knowledge.", evidence: [*decision_contract]}
+  - {id: safe-project-initialization, status: assessed, reason: "Preparation reuses valid control-plane state and initialization remains overwrite-refusing.", evidence: [*init_safety]}
+  - {id: deterministic-release-packaging, status: assessed, reason: "The exact-six prepare-only workflow, authenticated exact-tag draft lookup, numeric-ID authority read, versioned package boundary, action-pin validation, and regression tests were inspected; hosted execution, attestations, immutable publication, and remote Release outcomes remain limitations.", evidence: [*package_boundary, *ci_guard, *ci_guard_tests, *release_workflow, *release_state, *draft_lookup, *release_tests, *actions_validator]}
+unknowns:
+  - Hosted v1.1.2 matrix, Quality gate, tag results, and remote repository controls remain unknown until independently observed for this commit.
+  - Real v1.1.2 draft creation, remote asset verification, attestations, immutable publication, and current-host smoke remain unknown.
+  - The architecture-owner-observed v1.1.1 failed run and retained unpublished draft were not independently retrieved by the verifier.
