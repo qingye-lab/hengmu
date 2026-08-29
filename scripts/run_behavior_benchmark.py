@@ -17,7 +17,7 @@ from typing import Any
 import yaml
 from jsonschema import Draft202012Validator, FormatChecker
 
-DEFAULT_SKILL_VERSION = "1.1.3"
+DEFAULT_SKILL_VERSION = "1.2.0"
 TREATMENT_CONDITIONS = ("base", "full", "compressed")
 
 

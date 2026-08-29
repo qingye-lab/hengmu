@@ -21,10 +21,14 @@ GitHub Issues may track execution only when they link back to this file.
 - v1.1.2 was published as immutable on 2026-08-29T02:49:40Z after authenticated
   draft discovery, exact-six inventory verification, attestations, and the
   separate administrator publication phase completed.
+- v1.1.3 was published as immutable on 2026-08-29T06:19:03Z after the patched
+  GitHub CLI publication preflight, hosted pull-request/main/tag `Quality gate`
+  runs, exact-six asset and attestation verification, and current-host smoke
+  completed.
 
 ## v1.1 engineering trust
 
-Status: v1.1.3 publication CLI verification patch.
+Status: complete through the immutable v1.1.3 publication.
 
 Required outcomes:
 
@@ -56,16 +60,16 @@ publication phase: local asset enumeration still happens first, while every
 remote administration, Release lookup, publication, and verification call is
 blocked unless a stable GitHub CLI version at or above 2.93.0 is identified.
 
-Done when all local gates pass, the hosted eight-lane matrix and summary gate
-pass, release-stage evidence reaches V4, and a v1.1.3 patch release proves the
-CLI preflight before repeating the exact-six draft, attestation, immutable
-publication, and current-host smoke gates. Repository rulesets and
-immutable-release settings remain a separately observed remote administration
-step; the tag workflow neither enables the setting nor publishes.
+The v1.1.3 pull-request, main, and tag workflows passed the stable summary
+gate; its exact-six draft, attestations, immutable publication, and current-host
+installation, routing, and Knowledge replay were independently verified.
+Repository rulesets and immutable-release settings remain separately observed
+remote administration; the tag workflow neither enables the setting nor
+publishes.
 
 ## v1.2 AI Knowledge 2026
 
-Status: planned; blocked on v1.1.
+Status: source implementation in progress; release gates remain pending.
 
 Add versioned, freshness-bound Knowledge for MCP, A2A, Agent Skills,
 OpenTelemetry GenAI, agent evaluation design, and secure agent-tool runtimes.

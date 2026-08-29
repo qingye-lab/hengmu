@@ -1,5 +1,5 @@
 schema_version: "2.0"
-content_version: "2.0.0"
+content_version: "2.1.0"
 format: markdown-frontmatter
 packs:
   - {id: foundations, path: foundations, kind: foundation, required: true}

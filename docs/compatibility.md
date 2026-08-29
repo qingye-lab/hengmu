@@ -67,7 +67,7 @@ package format, installation path, Skill/prompt, observed result, and date in
 release evidence or a sanitized compatibility report. Treat that evidence as
 time-bound: host updates can change behavior without changing Hengmu's package.
 The latest release-time observation is recorded in
-[Hengmu 1.1.2 host compatibility evidence](compatibility-evidence/2026-08-29-hengmu-1.1.2.md).
+[Hengmu 1.1.3 host compatibility evidence](compatibility-evidence/2026-08-29-hengmu-1.1.3.md).
 The earlier
 [Hengmu 1.0.4 report](compatibility-evidence/2026-08-10-hengmu-1.0.4.md)
 remains time-bound historical evidence.
@@ -102,7 +102,7 @@ evidence is time-bound and must not be represented as universal compatibility.
 - Aggregate Portfolio Reviews continue to use the trusted `1.1` portfolio
   contract in 0.3; per-project facts and selections are hash-bound evidence.
 - The 128 YAML knowledge entries remain read-only compatibility data. New
-  Decisions use the 205 Markdown entries registered by the ten-pack manifest.
+  Decisions use the 211 Markdown entries registered by the ten-pack manifest.
 - Repository-local Rule Packs are supported under `.architecture/rules/` and
   must use Rule Pack schema `1.1`; organization packs cannot shadow bundled IDs.
 - Evidence Provider commands are project configuration, not portable defaults.
