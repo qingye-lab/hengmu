@@ -7,10 +7,22 @@ and this project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.1.3] - 2026-08-29
+
+Release status: implementation pending release verification. v1.1.2 remains
+the published immutable Release.
+
+### Fixed
+
+- The separately authorized publication phase now fails before any GitHub
+  administration or Release read when the installed GitHub CLI is missing,
+  malformed, prerelease, or older than the patched 2.93.0 minimum.
+
 ## [1.1.2] - 2026-08-29
 
-Release status: unreleased. v1.1.1 remains tagged but unpublished, and its
-exact six-asset draft is retained without mutation.
+Release status: published immutable at 2026-08-29T02:49:40Z. v1.1.1 remains
+tagged but unpublished, and its exact six-asset draft is retained without
+mutation.
 
 ### Fixed
 

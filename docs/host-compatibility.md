@@ -25,7 +25,10 @@ installation path, routed Skill, and observed result.
 
 The current dated Codex observation and explicit unverified-host boundaries are
 recorded in the
-[Hengmu 1.0.4 host compatibility report](compatibility-evidence/2026-08-10-hengmu-1.0.4.md).
+[Hengmu 1.1.2 host compatibility report](compatibility-evidence/2026-08-29-hengmu-1.1.2.md).
+The prior
+[Hengmu 1.0.4 report](compatibility-evidence/2026-08-10-hengmu-1.0.4.md)
+remains available as historical evidence.
 
 ## Capability equivalence boundary
 

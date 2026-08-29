@@ -66,8 +66,11 @@ When adding a host-specific claim, record the client version, operating system,
 package format, installation path, Skill/prompt, observed result, and date in
 release evidence or a sanitized compatibility report. Treat that evidence as
 time-bound: host updates can change behavior without changing Hengmu's package.
-The current release-time observation is recorded in
-[Hengmu 1.0.4 host compatibility evidence](compatibility-evidence/2026-08-10-hengmu-1.0.4.md).
+The latest release-time observation is recorded in
+[Hengmu 1.1.2 host compatibility evidence](compatibility-evidence/2026-08-29-hengmu-1.1.2.md).
+The earlier
+[Hengmu 1.0.4 report](compatibility-evidence/2026-08-10-hengmu-1.0.4.md)
+remains time-bound historical evidence.
 
 Automated CI cannot launch every Codex desktop, CLI, or ChatGPT plugin surface.
 Before a release, maintainers should install the built ZIP or local marketplace

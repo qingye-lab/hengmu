@@ -123,13 +123,19 @@ class SupplyChainTests(unittest.TestCase):
             ),
         )
         publication = script.index("def publish_release(")
+        version_preflight = script.index(
+            "client.require_supported_gh_version()",
+            publication,
+        )
         preflight = script.index(
             "client.require_immutable_releases(repository)",
             publication,
         )
         lookup = script.index("client.get_release(repository, tag)", publication)
+        self.assertLess(version_preflight, preflight)
         self.assertLess(preflight, lookup)
         preparation = script[script.index("def prepare_release(") : publication]
+        self.assertNotIn("require_supported_gh_version", preparation)
         self.assertNotIn("require_immutable_releases", preparation)
         self.assertNotIn("client.publish(", preparation)
         publication_body = script[publication : script.index("class GhReleaseClient:")]

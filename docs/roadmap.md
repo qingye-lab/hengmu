@@ -18,10 +18,13 @@ GitHub Issues may track execution only when they link back to this file.
 - v1.1.1 was tagged on 2026-08-28 but remained unpublished. Its tag workflow
   retained an exact six-asset draft, then failed because the post-upload lookup
   used GitHub's published-only tag endpoint, which does not return drafts.
+- v1.1.2 was published as immutable on 2026-08-29T02:49:40Z after authenticated
+  draft discovery, exact-six inventory verification, attestations, and the
+  separate administrator publication phase completed.
 
 ## v1.1 engineering trust
 
-Status: v1.1.2 draft-lookup recovery.
+Status: v1.1.3 publication CLI verification patch.
 
 Required outcomes:
 
@@ -48,13 +51,17 @@ that endpoint as the published fast path and, only after a 404, completely
 paginates authenticated Releases, requires one exact tag match, and reads the
 numeric Release ID as the authoritative draft, immutable, and asset state.
 The retained v1.1.1 tag and draft are not moved, published, or mutated.
+v1.1.3 adds a fail-closed GitHub CLI version check to the separately authorized
+publication phase: local asset enumeration still happens first, while every
+remote administration, Release lookup, publication, and verification call is
+blocked unless a stable GitHub CLI version at or above 2.93.0 is identified.
 
 Done when all local gates pass, the hosted eight-lane matrix and summary gate
-pass, release-stage evidence reaches V4, the v1.1.2 tag prepares its exact
-six-asset draft, and a separate local administrator publication verifies the
-immutable Release. Repository rulesets and immutable-release settings remain a
-separately observed remote administration step; the tag workflow neither
-enables the setting nor publishes.
+pass, release-stage evidence reaches V4, and a v1.1.3 patch release proves the
+CLI preflight before repeating the exact-six draft, attestation, immutable
+publication, and current-host smoke gates. Repository rulesets and
+immutable-release settings remain a separately observed remote administration
+step; the tag workflow neither enables the setting nor publishes.
 
 ## v1.2 AI Knowledge 2026
 

@@ -152,7 +152,7 @@ class RepositoryContractTests(unittest.TestCase):
             selector["plugin_version"],
             template["selector"]["source"]["plugin_version"],
         }
-        self.assertEqual(versions, {"1.1.2"})
+        self.assertEqual(versions, {"1.1.3"})
 
         schema = json.loads(
             (
