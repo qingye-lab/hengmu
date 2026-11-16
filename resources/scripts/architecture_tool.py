@@ -20,7 +20,13 @@ from typing import Any, cast
 
 from build_project_profile import ProfileBuildError, build_profile, derive_domains
 from inspect_repository import InspectionError, inspect_repository
-from knowledge_model import KnowledgeError, validate_knowledge_tree
+from knowledge_model import (
+    FRESHNESS_SKIP_HELP,
+    KnowledgeError,
+    freshness_enforced,
+    set_freshness_enforcement,
+    validate_knowledge_tree,
+)
 from select_knowledge import (
     SELECTOR_IMPLEMENTATION_PATHS,
     SelectionError,
@@ -4315,7 +4321,7 @@ def validate_knowledge(today: date | None = None) -> dict[str, Any]:
     provider_ids = [provider["id"] for provider in providers["providers"]]
     if len(provider_ids) != len(set(provider_ids)):
         raise ArchitectureError(f"{provider_path} has duplicate provider IDs")
-    if stale:
+    if stale and freshness_enforced():
         raise ArchitectureError(
             "Stale architecture knowledge entries: " + ", ".join(sorted(stale))
         )
@@ -8323,6 +8329,11 @@ def build_parser() -> argparse.ArgumentParser:
         action="version",
         version=f"%(prog)s {TOOL_VERSION}",
     )
+    parser.add_argument(
+        "--skip-freshness",
+        action="store_true",
+        help=FRESHNESS_SKIP_HELP,
+    )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     prepare_project = subparsers.add_parser(
@@ -9308,6 +9319,7 @@ def run(args: argparse.Namespace) -> int:
 def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
+    set_freshness_enforcement(not args.skip_freshness)
     try:
         return run(args)
     except (

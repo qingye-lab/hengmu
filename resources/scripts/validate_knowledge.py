@@ -10,7 +10,12 @@ from pathlib import Path
 
 from architecture_tool import ArchitectureError
 from architecture_tool import validate_knowledge as validate_legacy
-from knowledge_model import KnowledgeError, validate_knowledge_tree
+from knowledge_model import (
+    FRESHNESS_SKIP_HELP,
+    KnowledgeError,
+    set_freshness_enforcement,
+    validate_knowledge_tree,
+)
 
 RESOURCE_ROOT = Path(__file__).resolve().parent.parent
 
@@ -23,7 +28,13 @@ def main() -> int:
         default=RESOURCE_ROOT / "knowledge",
     )
     parser.add_argument("--today", type=date.fromisoformat)
+    parser.add_argument(
+        "--skip-freshness",
+        action="store_true",
+        help=FRESHNESS_SKIP_HELP,
+    )
     args = parser.parse_args()
+    set_freshness_enforcement(not args.skip_freshness)
     try:
         manifest, entries = validate_knowledge_tree(
             args.knowledge_root,
