@@ -154,20 +154,17 @@ class SupplyChainTests(unittest.TestCase):
 
         quality = ci["jobs"]["quality"]
         self.assertEqual(
-            quality["strategy"]["matrix"]["os"],
-            ["ubuntu-latest", "macos-latest", "windows-latest"],
+            quality["strategy"]["matrix"],
+            "${{ fromJSON(needs.plan.outputs.matrix) }}",
         )
-        self.assertEqual(
-            quality["strategy"]["matrix"]["python-version"],
-            ["3.11", "3.14"],
+        ci_plan_spec = importlib.util.spec_from_file_location(
+            "ci_plan", ROOT / "scripts" / "ci_plan.py"
         )
-        self.assertEqual(
-            quality["strategy"]["matrix"]["include"],
-            [
-                {"os": "ubuntu-latest", "python-version": "3.12"},
-                {"os": "ubuntu-latest", "python-version": "3.13"},
-            ],
-        )
+        assert ci_plan_spec and ci_plan_spec.loader
+        ci_plan = importlib.util.module_from_spec(ci_plan_spec)
+        ci_plan_spec.loader.exec_module(ci_plan)
+        self.assertEqual(len(set(ci_plan.FULL_LANES)), 8)
+        self.assertEqual(len(ci_plan.build_matrix("push")["include"]), 8)
         quality_steps = {step["name"]: step for step in quality["steps"]}
         coverage_command = quality_steps["Run tests with branch coverage"]["run"]
         self.assertRegex(coverage_command, r"(?:^|\s)--cov(?:\s|$)")

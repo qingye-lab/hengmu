@@ -17,6 +17,11 @@ SPEC = importlib.util.spec_from_file_location("evaluate_ci_gate", SCRIPT)
 assert SPEC and SPEC.loader
 evaluate_ci_gate = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(evaluate_ci_gate)
+PLAN_SCRIPT = ROOT / "scripts" / "ci_plan.py"
+PLAN_SPEC = importlib.util.spec_from_file_location("ci_plan", PLAN_SCRIPT)
+assert PLAN_SPEC and PLAN_SPEC.loader
+ci_plan = importlib.util.module_from_spec(PLAN_SPEC)
+PLAN_SPEC.loader.exec_module(ci_plan)
 
 
 class CiGateTests(unittest.TestCase):
@@ -45,15 +50,8 @@ class CiGateTests(unittest.TestCase):
             (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8"),
             Loader=yaml.BaseLoader,
         )
-        matrix = workflow["jobs"]["quality"]["strategy"]["matrix"]
-        base = {
-            (operating_system, python)
-            for operating_system in matrix["os"]
-            for python in matrix["python-version"]
-        }
-        included = {(item["os"], item["python-version"]) for item in matrix["include"]}
         self.assertEqual(
-            base | included,
+            set(ci_plan.FULL_LANES),
             {
                 ("ubuntu-latest", "3.11"),
                 ("ubuntu-latest", "3.12"),
@@ -65,9 +63,30 @@ class CiGateTests(unittest.TestCase):
                 ("windows-latest", "3.14"),
             },
         )
+        for event in ("push", "schedule", "workflow_dispatch"):
+            self.assertEqual(
+                len(ci_plan.build_matrix(event)["include"]),
+                len(ci_plan.FULL_LANES),
+            )
+        self.assertEqual(
+            {
+                (i["os"], i["python-version"])
+                for i in ci_plan.build_matrix("pull_request")["include"]
+            },
+            set(ci_plan.PULL_REQUEST_LANES),
+        )
+        self.assertIn(("ubuntu-latest", "3.13"), ci_plan.PULL_REQUEST_LANES)
+        quality = workflow["jobs"]["quality"]
+        self.assertEqual(
+            quality["strategy"]["matrix"],
+            "${{ fromJSON(needs.plan.outputs.matrix) }}",
+        )
+        for name, job in workflow["jobs"].items():
+            if name != "release":
+                self.assertIn("timeout-minutes", job, name)
         summary = workflow["jobs"]["quality-gate"]
         self.assertEqual(summary["if"], "always()")
-        self.assertEqual(summary["needs"], ["quality", "dependency-review"])
+        self.assertEqual(summary["needs"], ["plan", "quality", "dependency-review"])
         release = workflow["jobs"]["release"]
         self.assertEqual(release["needs"], ["quality-gate"])
         self.assertEqual(
@@ -75,6 +94,22 @@ class CiGateTests(unittest.TestCase):
             "${{ !cancelled() && needs.quality-gate.result == 'success' "
             "&& startsWith(github.ref, 'refs/tags/v') }}",
         )
+
+    def test_docs_only_pull_request_may_skip_matrix(self) -> None:
+        evaluate = evaluate_ci_gate.evaluate
+        self.assertTrue(evaluate("pull_request", "skipped", "success", True)[0])
+        self.assertFalse(evaluate("pull_request", "skipped", "success", False)[0])
+        self.assertFalse(evaluate("pull_request", "skipped", "failure", True)[0])
+        self.assertFalse(evaluate("push", "skipped", "skipped", True)[0])
+        self.assertFalse(evaluate("pull_request", "failure", "success", True)[0])
+
+    def test_docs_only_detection(self) -> None:
+        docs = ci_plan.is_docs_only
+        self.assertTrue(docs("pull_request", ["README.md", "CHANGELOG.md"]))
+        self.assertFalse(docs("pull_request", ["README.md", "scripts/x.py"]))
+        self.assertFalse(docs("pull_request", ["skills/a/SKILL.md"]))
+        self.assertFalse(docs("pull_request", []))
+        self.assertFalse(docs("push", ["README.md"]))
 
     def test_release_guard_truth_table(self) -> None:
         cases = (
