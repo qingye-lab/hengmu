@@ -9319,7 +9319,8 @@ def run(args: argparse.Namespace) -> int:
 def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
-    set_freshness_enforcement(not args.skip_freshness)
+    if args.skip_freshness:
+        set_freshness_enforcement(False)
     try:
         return run(args)
     except (

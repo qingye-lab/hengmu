@@ -34,7 +34,8 @@ def main() -> int:
         help=FRESHNESS_SKIP_HELP,
     )
     args = parser.parse_args()
-    set_freshness_enforcement(not args.skip_freshness)
+    if args.skip_freshness:
+        set_freshness_enforcement(False)
     try:
         manifest, entries = validate_knowledge_tree(
             args.knowledge_root,

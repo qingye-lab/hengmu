@@ -6,6 +6,7 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+import os
 import re
 from dataclasses import dataclass
 from datetime import UTC, date, datetime
@@ -24,7 +25,10 @@ FRESHNESS_SKIP_HELP = (
     "must not block pull requests; schema, hash, HTTPS-source and "
     "future-date checks still run."
 )
-_ENFORCE_FRESHNESS = True
+FRESHNESS_SKIP_ENV = "HENGMU_SKIP_FRESHNESS"
+# The environment variable lets a CI job apply the same policy to every
+# subprocess, such as tests that run the CLI against the real knowledge tree.
+_ENFORCE_FRESHNESS = os.environ.get(FRESHNESS_SKIP_ENV, "") not in {"1", "true"}
 
 
 def set_freshness_enforcement(enforce: bool) -> None:

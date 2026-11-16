@@ -20,7 +20,11 @@ TODAY = date(2030, 1, 1)
 
 class FreshnessSwitchTests(unittest.TestCase):
     def setUp(self) -> None:
-        self.addCleanup(knowledge_model.set_freshness_enforcement, True)
+        self.addCleanup(
+            knowledge_model.set_freshness_enforcement,
+            knowledge_model.freshness_enforced(),
+        )
+        knowledge_model.set_freshness_enforcement(True)
         self._tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self._tmp.cleanup)
         self.dir = Path(self._tmp.name)
