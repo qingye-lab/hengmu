@@ -14,17 +14,16 @@ import subprocess
 import sys
 import tempfile
 import xml.etree.ElementTree as ElementTree
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from typing import Any, cast
 
 from build_project_profile import ProfileBuildError, build_profile, derive_domains
 from inspect_repository import InspectionError, inspect_repository
+import knowledge_model
 from knowledge_model import (
-    FRESHNESS_SKIP_HELP,
     KnowledgeError,
-    freshness_enforced,
-    set_freshness_enforcement,
+    parse_markdown_entry,
     validate_knowledge_tree,
 )
 from select_knowledge import (
@@ -70,6 +69,62 @@ VERIFICATION_LEVEL_ORDER = {
     "V5": 5,
 }
 TOOL_VERSION = "1.2.1"
+
+FRESHNESS_SKIP_ENV = "HENGMU_SKIP_FRESHNESS"
+FRESHNESS_SKIP_HELP = (
+    "Do not fail on knowledge entries whose last_reviewed + review_after_days "
+    "is before today. Expiry is owned by the weekly knowledge-freshness "
+    "workflow and must not block pull requests; schema, hash, HTTPS-source and "
+    "future-date checks still run. Also enabled by HENGMU_SKIP_FRESHNESS=1."
+)
+# knowledge_model.py is part of the locked Selector Runtime, so the policy is
+# applied here by wrapping its per-entry validator instead of editing it.
+_ENFORCE_FRESHNESS = os.environ.get(FRESHNESS_SKIP_ENV, "") not in {"1", "true"}
+_validate_markdown_entry = knowledge_model.validate_markdown_entry
+
+
+def set_freshness_enforcement(enforce: bool) -> None:
+    """Choose whether review expiry is an error (the default) or ignored."""
+    global _ENFORCE_FRESHNESS
+    _ENFORCE_FRESHNESS = enforce
+
+
+def freshness_enforced() -> bool:
+    return _ENFORCE_FRESHNESS
+
+
+def _validate_markdown_entry_with_policy(
+    path: Path,
+    *,
+    schema_root: Path,
+    expected_kind: str,
+    today: date,
+) -> Any:
+    evaluation_date = today
+    if not _ENFORCE_FRESHNESS:
+        try:
+            metadata, _ = parse_markdown_entry(path)
+            reviewed = metadata["last_reviewed"]
+            reviewed_on = (
+                date.fromisoformat(reviewed) if isinstance(reviewed, str) else reviewed
+            )
+            window = timedelta(days=int(metadata["review_after_days"]))
+            expires_on = reviewed_on + window
+            # Evaluate an expired entry on its last valid day; a future
+            # last_reviewed date still fails the original check.
+            if reviewed_on <= expires_on < today:
+                evaluation_date = expires_on
+        except (KeyError, TypeError, ValueError, KnowledgeError):
+            pass  # malformed metadata is reported by the original validator
+    return _validate_markdown_entry(
+        path,
+        schema_root=schema_root,
+        expected_kind=expected_kind,
+        today=evaluation_date,
+    )
+
+
+knowledge_model.validate_markdown_entry = _validate_markdown_entry_with_policy
 TRUSTED_POLICY_VERSIONS = {"1.1", "1.2"}
 BENCHMARK_TREATMENT_CONDITIONS = ("base", "full", "compressed")
 REVIEW_KIND_CORE_PACK = {

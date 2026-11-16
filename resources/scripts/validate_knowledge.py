@@ -8,14 +8,13 @@ import sys
 from datetime import date
 from pathlib import Path
 
-from architecture_tool import ArchitectureError
-from architecture_tool import validate_knowledge as validate_legacy
-from knowledge_model import (
+from architecture_tool import (
     FRESHNESS_SKIP_HELP,
-    KnowledgeError,
+    ArchitectureError,
     set_freshness_enforcement,
-    validate_knowledge_tree,
 )
+from architecture_tool import validate_knowledge as validate_legacy
+from knowledge_model import KnowledgeError, validate_knowledge_tree
 
 RESOURCE_ROOT = Path(__file__).resolve().parent.parent
 

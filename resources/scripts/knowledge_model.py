@@ -6,7 +6,6 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
-import os
 import re
 from dataclasses import dataclass
 from datetime import UTC, date, datetime
@@ -19,30 +18,8 @@ from jsonschema import Draft202012Validator, FormatChecker
 
 SAFE_YAML_LOADER = getattr(yaml, "CSafeLoader", yaml.SafeLoader)
 
-FRESHNESS_SKIP_HELP = (
-    "Do not fail on entries whose last_reviewed + review_after_days is before "
-    "today. Expiry is owned by the weekly knowledge-freshness workflow and "
-    "must not block pull requests; schema, hash, HTTPS-source and "
-    "future-date checks still run."
-)
-FRESHNESS_SKIP_ENV = "HENGMU_SKIP_FRESHNESS"
-# The environment variable lets a CI job apply the same policy to every
-# subprocess, such as tests that run the CLI against the real knowledge tree.
-_ENFORCE_FRESHNESS = os.environ.get(FRESHNESS_SKIP_ENV, "") not in {"1", "true"}
-
-
-def set_freshness_enforcement(enforce: bool) -> None:
-    """Set whether review-expiry is an error for calls that do not override it."""
-    global _ENFORCE_FRESHNESS
-    _ENFORCE_FRESHNESS = enforce
-
-
-def freshness_enforced() -> bool:
-    return _ENFORCE_FRESHNESS
-
-
 _KNOWLEDGE_TREE_CACHE: dict[
-    tuple[Path, Path, str, str, bool],
+    tuple[Path, Path, str, str],
     tuple[dict[str, Any], dict[str, KnowledgeEntry]],
 ] = {}
 _SCHEMA_CACHE: dict[tuple[Path, str], dict[str, Any]] = {}
@@ -272,7 +249,6 @@ def validate_markdown_entry(
     schema_root: Path,
     expected_kind: str,
     today: date,
-    enforce_freshness: bool = True,
 ) -> KnowledgeEntry:
     metadata, body = parse_markdown_entry(path)
     _validate_schema(
@@ -308,7 +284,7 @@ def validate_markdown_entry(
             f"{path} last_reviewed {reviewed_on.isoformat()} is in the future"
         )
     age = (today - reviewed_on).days
-    if enforce_freshness and age > metadata["review_after_days"]:
+    if age > metadata["review_after_days"]:
         raise KnowledgeError(
             f"{path} is stale by {age - metadata['review_after_days']} day(s)"
         )
@@ -385,10 +361,7 @@ def validate_knowledge_tree(
     *,
     schema_root: Path,
     today: date | None = None,
-    enforce_freshness: bool | None = None,
 ) -> tuple[dict[str, Any], dict[str, KnowledgeEntry]]:
-    if enforce_freshness is None:
-        enforce_freshness = _ENFORCE_FRESHNESS
     knowledge_root = knowledge_root.resolve()
     schema_root = schema_root.resolve()
     evaluation_date = today or datetime.now(UTC).date()
@@ -398,7 +371,6 @@ def validate_knowledge_tree(
         schema_root,
         evaluation_date.isoformat(),
         input_sha256 or "<unreadable-input>",
-        enforce_freshness,
     )
     cached = _KNOWLEDGE_TREE_CACHE.get(cache_key)
     if cached is not None:
@@ -441,7 +413,6 @@ def validate_knowledge_tree(
                 schema_root=schema_root,
                 expected_kind=pack["kind"],
                 today=evaluation_date,
-                enforce_freshness=enforce_freshness,
             )
             if entry.id in entries:
                 raise KnowledgeError(
